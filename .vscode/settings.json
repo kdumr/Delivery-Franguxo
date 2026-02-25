@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^php -l \"e:\\\\Meus Documentos\\\\Desktop\\\\Sistema Delivery Franguxo\\\\includes\\\\class-dashboard-shortcode\\.php\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
