@@ -1,0 +1,3205 @@
+<?php
+
+use MydPro\Includes\Store_Data;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$orders = $this->orders_object;
+
+?>
+
+<div id="hide-prints">
+		<?php require MYD_PLUGIN_PATH . 'templates/order/print.php'; ?>
+</div>
+
+<!-- panel-inline.css moved to assets and is enqueued by the plugin bootstrap -->
+
+<div class="myd-orders-shell">
+
+	<!-- Barra lateral vertical esquerda (colocada abaixo do top-bar) -->
+	<div class="myd-sidebar-left">
+		<div class="myd-sidebar-header">
+			<div class="myd-sidebar-logo">
+				<?php // Exibe imagem de perfil na sidebar; usa URL do plugin se disponível ?>
+				<?php if ( defined( 'MYD_PLUGIN_URL' ) ) : ?>
+					<img src="<?php echo esc_url( rtrim( MYD_PLUGIN_URL, '/' ) . '/assets/img/franguxoperfil.png' ); ?>" alt="Franguxo" class="myd-sidebar-avatar" />
+				<?php else: ?>
+					<img src="<?php echo esc_url( plugins_url( 'assets/img/franguxoperfil.png', dirname( __FILE__ ) . '/../../myd-delivery-pro.php' ) ); ?>" alt="Franguxo" class="myd-sidebar-avatar" />
+				<?php endif; ?>
+			</div>
+		</div>
+		
+		<nav class="myd-sidebar-nav">
+			<a href="#myd-section-menu" class="myd-sidebar-item" data-section="done" title="Menu">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11.3861 1.21065C11.7472 0.929784 12.2528 0.929784 12.6139 1.21065L21.6139 8.21065C21.8575 8.4001 22 8.69141 22 9V20.5C22 21.3284 21.3284 22 20.5 22H15V14C15 13.4477 14.5523 13 14 13H10C9.44772 13 9 13.4477 9 14V22H3.5C2.67157 22 2 21.3284 2 20.5V9C2 8.69141 2.14247 8.4001 2.38606 8.21065L11.3861 1.21065Z" fill="#333333"></path> </g></svg>
+				</svg>
+			</a>
+
+			<!-- Link adicional: Relatórios -->
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=myd-delivery-reports' ) ); ?>" class="myd-sidebar-item" title="Relatórios" target="_blank" rel="noopener noreferrer">
+				<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+					<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+					<g id="SVGRepo_iconCarrier">
+						<path d="M4 5V19C4 19.5523 4.44772 20 5 20H19" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+						<path d="M18 9L13 13.9999L10.5 11.4998L7 14.9998" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+					</g>
+				</svg>
+			</a>
+
+			<!-- Botão Notas de Atualização -->
+			<button type="button" id="myd-update-notes-btn" class="myd-sidebar-item" title="Notas de Atualização" style="background:none;border:none;padding:0;margin:0;cursor:pointer;">
+				<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" width="24" height="24">
+					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+					<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+					<g id="SVGRepo_iconCarrier">
+						<path d="m9.47368421 4.15789474v2.10526315h-7.36842105v12.86315791h12.63157894v-7.6h2.1052632v7.368421c0 1.1578948-.9473685 2.1052632-2.1052632 2.1052632h-12.63157894c-1.15789474 0-2.10526316-.9473684-2.10526316-2.1052632v-12.63157891c0-1.15789473.94736842-2.10526315 2.10526316-2.10526315zm0 10.52631576v2.1052632h-5.26315789v-2.1052632zm3.15789469-3.1578947v2.1052631h-8.42105258v-2.1052631zm0-3.15789475v2.10526315h-8.42105258v-2.10526315zm3.1578948-5.26315789.9868421 2.17105263 2.1710526.9868421-2.1710526.98684211-.9868421 2.17105263-.9868421-2.17105263-2.1710527-.98684211 2.1710527-.9868421zm-3.1578948-2.10526316.6578948 1.44736842 1.4473684.65789474-1.4473684.65789473-.6578948 1.44736843-.6578947-1.44736843-1.4473684-.65789473 1.4473684-.65789474z" fill="#000000" transform="translate(3 1)"></path>
+					</g>
+				</svg>
+			</button>
+
+		</nav>
+		
+		<div class="myd-sidebar-footer">
+			<button type="button" class="myd-sidebar-item" id="myd-sidebar-settings" title="Configurações" style="color:#fff;">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M19.14 12.94C19.18 12.64 19.2 12.33 19.2 12C19.2 11.68 19.18 11.36 19.13 11.06L21.16 9.48C21.34 9.34 21.39 9.07 21.28 8.87L19.36 5.55C19.24 5.33 18.99 5.26 18.77 5.33L16.38 6.29C15.88 5.91 15.35 5.59 14.76 5.35L14.4 2.81C14.36 2.57 14.16 2.4 13.92 2.4H10.08C9.84 2.4 9.65 2.57 9.61 2.81L9.25 5.35C8.66 5.59 8.12 5.92 7.63 6.29L5.24 5.33C5.02 5.25 4.77 5.33 4.65 5.55L2.74 8.87C2.62 9.08 2.66 9.34 2.86 9.48L4.89 11.06C4.84 11.36 4.8 11.69 4.8 12C4.8 12.31 4.82 12.64 4.87 12.94L2.84 14.52C2.66 14.66 2.61 14.93 2.72 15.13L4.64 18.45C4.76 18.67 5.01 18.74 5.23 18.67L7.62 17.71C8.12 18.09 8.65 18.41 9.24 18.65L9.6 21.19C9.65 21.43 9.84 21.6 10.08 21.6H13.92C14.16 21.6 14.36 21.43 14.39 21.19L14.75 18.65C15.34 18.41 15.88 18.09 16.37 17.71L18.76 18.67C18.98 18.75 19.23 18.67 19.35 18.45L21.27 15.13C21.39 14.91 21.34 14.66 21.15 14.52L19.14 12.94ZM12 15.6C10.02 15.6 8.4 13.98 8.4 12C8.4 10.02 10.02 8.4 12 8.4C13.98 8.4 15.6 10.02 15.6 12C15.6 13.98 13.98 15.6 12 15.6Z" fill="#333333"/>
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<div class="fdm-ordres-wrap" id="myd-delivery-orders-full-screen">
+
+		<div class="top-bar">
+	<div class="myd-row-between">
+			<!-- Move select-menu to the left -->
+			<?php // nonce form required by select-menu script ?>
+			<form method="post" id="myd-store-status-form" class="myd-hidden">
+				<?php wp_nonce_field('myd_store_status_box', 'myd_store_status_box_nonce'); ?>
+			</form>
+			<?php
+			// Re-create minimal select-menu markup (adapted from includes/shortcode-store-status-set.php)
+			$current = get_option('myd-delivery-force-open-close-store', 'ignore');
+			$store_open = \MydPro\Includes\Store_Data::is_store_open();
+			$status_map = [
+				'ignore' => ['text' => $store_open ? 'Loja aberta' : 'Loja fechada', 'subtext' => ''],
+				'open'   => ['text' => 'Manter aberta', 'subtext' => ''],
+				'close'  => ['text' => 'Manter fechado', 'subtext' => ''],
+			];
+			$current_texts = $status_map[$current];
+			function myd_get_status_icon_svg_inline($store_open){
+				   // Se for ignore, sempre retorna o SVG verde (aberto/ok)
+				   if ($store_open === 'ignore') {
+					   return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;flex-shrink:0;"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM16.0303 8.96967C16.3232 9.26256 16.3232 9.73744 16.0303 10.0303L11.0303 15.0303C10.7374 15.3232 10.2626 15.3232 9.96967 15.0303L7.96967 13.0303C7.67678 12.7374 7.67678 12.2626 7.96967 11.9697C8.26256 11.6768 8.73744 11.6768 9.03033 11.9697L10.5 13.4393L12.7348 11.2045L14.9697 8.96967C15.2626 8.67678 15.7374 8.67678 16.0303 8.96967Z" fill="#4caf50 "</path> </g></svg>';
+				   }
+				   if ($store_open) return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;flex-shrink:0;"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM16.0303 8.96967C16.3232 9.26256 16.3232 9.73744 16.0303 10.0303L11.0303 15.0303C10.7374 15.3232 10.2626 15.3232 9.96967 15.0303L7.96967 13.0303C7.67678 12.7374 7.67678 12.2626 7.96967 11.9697C8.26256 11.6768 8.73744 11.6768 9.03033 11.9697L10.5 13.4393L12.7348 11.2045L14.9697 8.96967C15.2626 8.67678 15.7374 8.67678 16.0303 8.96967Z" fill="#4caf50 "</path> </g></svg>';
+				   return '<svg width="20" height="20" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;flex-shrink:0;"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>cancel</title> <path d="M16 29c-7.18 0-13-5.82-13-13s5.82-13 13-13 13 5.82 13 13-5.82 13-13 13zM21.961 12.209c0.244-0.244 0.244-0.641 0-0.885l-1.328-1.327c-0.244-0.244-0.641-0.244-0.885 0l-3.761 3.761-3.761-3.761c-0.244-0.244-0.641-0.244-0.885 0l-1.328 1.327c-0.244 0.244-0.244 0.641 0 0.885l3.762 3.762-3.762 3.76c-0.244 0.244-0.244 0.641 0 0.885l1.328 1.328c0.244 0.244 0.641 0.244 0.885 0l3.761-3.762 3.761 3.762c0.244 0.244 0.641 0.244 0.885 0l1.328-1.328c0.244-0.244 0.244-0.641 0-0.885l-3.762-3.76 3.762-3.762z"></path> </g></svg>';
+			}
+			?>
+			<div class="select-menu myd-mr-12" id="myd-store-status-wrap" data-initial-open="<?php echo $store_open ? '1' : '0'; ?>">
+				   <div class="select-btn myd-select-btn <?php
+					   if ($current === 'ignore') {
+						   echo 'status-ignore';
+					   } else {
+						   echo 'status-' . esc_attr($current);
+					   }
+				   ?>" >
+					<div class="myd-select-btn-inner">
+						<?php echo '<span class="myd-store-status-icon">' . myd_get_status_icon_svg_inline($store_open) . '</span>'; ?>
+						<div>
+							   <span class="sBtn-text" style="color:<?php
+								   if($current === 'ignore') {
+									   // Se loja aberta, verde; senão, cinza
+									   echo $store_open ? '#3ab05a' : '#00000099';
+								   } else if($current === 'open') {
+									   echo '#4caf50';
+								   } else if($current === 'close') {
+									   echo '#f44336';
+								   } else {
+									   echo '';
+								   }
+							   ?>;">
+								   <?php echo esc_html($current_texts['text']); ?>
+							   </span>
+							<span class="sBtn-subtext" style="display:<?php echo ($current === 'ignore') ? 'block' : 'none'; ?>;"><?php echo esc_html($current_texts['subtext']); ?></span>
+						</div>
+					</div>
+					<i class="bx bx-chevron-down"></i>
+				</div>
+				<?php
+				// expose the raw svg strings for JS to swap them dynamically
+				if ( function_exists( 'json_encode' ) ) {
+					$svg_open = myd_get_status_icon_svg_inline(true);
+					$svg_close = myd_get_status_icon_svg_inline(false);
+					echo "<script>window.MYD_SVG_OPEN = " . json_encode( $svg_open ) . "; window.MYD_SVG_CLOSE = " . json_encode( $svg_close ) . ";</script>";
+				}
+				?>
+				<div class="options" style="display:none;position:absolute;left:0;margin-top:8px;" role="menu">
+					<div class="option myd-option" data-status="ignore"><i class="bx bx-minus-circle myd-inline-icon myd-minus"></i><span class="option-text">Abrir nos horários definidos</span></div>
+					<div class="option myd-option" data-status="close"><i class="bx bx-x-circle myd-inline-icon myd-close"></i><span class="option-text">Manter fechado</span></div>
+				</div>
+			</div>
+			<!-- Status WhatsApp -->
+			<div id="myd-whatsapp-widget" role="button" tabindex="0" aria-pressed="false" style="margin-left:auto;padding:8px 12px;border:1px solid #eef0f2;border-radius:6px;background:#fff;display:flex;align-items:center;gap:8px;">
+				<div style="flex:0 0 auto;font-weight:600;font-size:14px;color:#333333;">Robô WhatsApp:</div>
+				<div id="myd-whatsapp-status" style="flex:1;color:#666;font-size:14px;">Carregando...</div>
+				<div id="myd-whatsapp-indicator" aria-hidden="true" style="width:12px;height:12px;border-radius:50%;background:#ccc;flex:0 0 auto;border:1px solid #ddd"></div>
+			</div>
+			<script>
+				// expose wrap globally so store.status socket handler can access it
+				(function(){
+					try {
+						var wrap = document.getElementById('myd-store-status-wrap');
+						if (wrap) window.mydStoreStatusWrap = wrap;
+					} catch(e){}
+					// Força o fill do SVG do status já no carregamento e cor do botão
+					try {
+						var btn = document.querySelector('.myd-select-btn');
+						var iconEl = btn ? btn.querySelector('.myd-store-status-icon svg') : null;
+						if(btn) {
+							var cur = btn.classList.contains('status-close') ? 'close' : (btn.classList.contains('status-open') ? 'open' : 'ignore');
+							// cor do botão para ignore + loja aberta
+							if(cur === 'ignore') {
+								var isOpen = false;
+								if(typeof window.MYD_STORE_OPEN !== 'undefined') {
+									isOpen = !!window.MYD_STORE_OPEN;
+								} else {
+									var t = btn.querySelector('.sBtn-text');
+									if(t && t.textContent && t.textContent.toLowerCase().indexOf('aberta') !== -1) isOpen = true;
+								}
+								btn.style.background = isOpen ? '#def1e1' : '';
+							}
+						}
+						if(iconEl) {
+							var cur = btn.classList.contains('status-close') ? 'close' : (btn.classList.contains('status-open') ? 'open' : 'ignore');
+							var paths = iconEl.querySelectorAll('path');
+							if(cur === 'close') {
+								paths.forEach(function(p){ p.setAttribute('fill', '#f44336'); });
+							} else if(cur === 'open') {
+								paths.forEach(function(p){ p.setAttribute('fill', '#4caf50'); });
+							} else {
+								var isOpen = false;
+								if(typeof window.MYD_STORE_OPEN !== 'undefined') {
+									isOpen = !!window.MYD_STORE_OPEN;
+								} else {
+									var t = btn.querySelector('.sBtn-text');
+									if(t && t.textContent && t.textContent.toLowerCase().indexOf('aberta') !== -1) isOpen = true;
+								}
+											var cor = isOpen ? '#4caf50' : '#00000099';
+											paths.forEach(function(p){ p.setAttribute('fill', cor); });
+							}
+						}
+					} catch(e){}
+				})();
+			</script>
+		</div>
+	</div>
+
+	<div class="fdm-orders-content">
+		<!-- Styles migrated to assets/css/panel-inline.css (override, welcome cover, modals, greeting, action bar) -->
+
+		<!-- Cancel confirmation modal -->
+	<div id="myd-cancel-modal" class="myd-modal myd-hidden" aria-hidden="true" role="dialog" aria-modal="true">
+			<div class="myd-modal-backdrop"></div>
+			<div class="myd-modal-dialog">
+				<div class="myd-modal-title">Motivos do cancelamento:</div>
+				<fieldset style="margin:8px 0 12px;border:0;padding:0;">
+					<label style="display:block;margin:6px 0;"><input type="radio" name="myd-cancel-reason" value="cliente_desistiu"> Cliente desistiu</label>
+					<label style="display:block;margin:6px 0;"><input type="radio" name="myd-cancel-reason" value="tempo_espera"> Tempo de espera muito longo</label>
+					<label style="display:block;margin:6px 0;"><input type="radio" name="myd-cancel-reason" value="item_indisponivel"> Item indisponível</label>
+					<label style="display:block;margin:6px 0;"><input type="radio" name="myd-cancel-reason" value="cliente_pediu_errado"> Cliente pediu item errado</label>
+					<label style="display:block;margin:6px 0;"><input type="radio" name="myd-cancel-reason" value="endereco_incorreto"> Endereço incorreto</label>
+					<label style="display:block;margin:6px 0;"><input type="radio" name="myd-cancel-reason" value="outro"> Outro</label>
+					<div id="myd-cancel-reason-other-wrap" style="display:none;margin-top:8px;">
+						<textarea id="myd-cancel-reason-other" name="myd-cancel-reason-other" maxlength="120" rows="1" placeholder="Descreva o motivo (máx. 120 caracteres)" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;resize:none;overflow:hidden;box-sizing:border-box;height:40px;"></textarea>
+					</div>
+				</fieldset>
+				<!-- Payment info for cancel (filled dynamically) -->
+				<div id="myd-cancel-payment-info" style="display:none;margin-top:12px;margin-bottom:12px;padding:8px;border-left:3px solid #ffe6e6;background:#fff6f6;border-radius:4px;">
+					<div id="myd-cancel-payment-text" style="margin-bottom:8px;color:#333;font-size:17px;font-weight:500;"></div>
+					<label style="display:flex;align-items:center;gap:8px;">
+						<input type="checkbox" id="myd-cancel-refund-checkbox" name="myd-cancel-refund" value="1">
+						<span>Desejo reembolsar o valor TOTAL do pedido.</span>
+					</label>
+				</div>
+				<script>
+				(function(){
+					function toggleOther(){
+						var radios = document.getElementsByName('myd-cancel-reason');
+						var wrap = document.getElementById('myd-cancel-reason-other-wrap');
+						var found = false;
+						for (var i=0;i<radios.length;i++){
+							if (radios[i].checked && radios[i].value === 'outro'){
+								found = true;
+								break;
+							}
+						}
+						if (found) {
+							if (wrap) { wrap.style.display = 'block'; var inp = document.getElementById('myd-cancel-reason-other'); try{ inp.focus(); }catch(e){} }
+						} else {
+							if (wrap) { wrap.style.display = 'none'; var inp = document.getElementById('myd-cancel-reason-other'); if (inp) inp.value = ''; }
+						}
+						updateCancelConfirmState();
+					}
+					// attach handlers
+					document.addEventListener('change', function(ev){ if (ev.target && ev.target.name === 'myd-cancel-reason') toggleOther(); });
+					// auto-resize textarea
+					var otherTa = null;
+					function autosizeOther(){
+						if (!otherTa) otherTa = document.getElementById('myd-cancel-reason-other');
+						if (!otherTa) return;
+						otherTa.style.height = 'auto';
+						var h = Math.min(otherTa.scrollHeight, 300);
+						if (h < 40) h = 40;
+						otherTa.style.height = h + 'px';
+					}
+					document.addEventListener('input', function(ev){ if (ev.target && ev.target.id === 'myd-cancel-reason-other') { autosizeOther(); updateCancelConfirmState(); } });
+					// update confirm button state
+					function updateCancelConfirmState(){
+						var confirmBtn = document.getElementById('myd-cancel-modal-confirm');
+						if (!confirmBtn) return;
+						var radios = document.getElementsByName('myd-cancel-reason');
+						var checked = null;
+						for (var i=0;i<radios.length;i++){
+							if (radios[i].checked) { checked = radios[i].value; break; }
+						}
+						if (!checked) { confirmBtn.disabled = true; return; }
+						if (checked === 'outro'){
+							var other = document.getElementById('myd-cancel-reason-other');
+							var v = other ? (other.value || '').trim() : '';
+							if (v.length < 5) { confirmBtn.disabled = true; return; }
+						}
+						confirmBtn.disabled = false;
+					}
+					// also run on load in case modal is prefilled
+					setTimeout(function(){ toggleOther(); autosizeOther(); updateCancelConfirmState(); }, 50);
+				})();
+				</script>
+				<div class="myd-modal-actions">
+					<button type="button" class="myd-btn myd-btn-neutral" id="myd-cancel-modal-close">Não cancelar</button>
+					<button type="button" class="myd-btn myd-btn-danger" id="myd-cancel-modal-confirm">Sim, cancelar pedido</button>
+				</div>
+				<style>
+					/* Visual style for disabled modal action buttons */
+					#myd-cancel-modal .myd-modal-actions .myd-btn[disabled],
+					#myd-cancel-modal .myd-modal-actions .myd-btn:disabled {
+						background: #d1d1d1 !important;
+						border-color: #cfcfcf !important;
+						color: #6b6b6b !important;
+						opacity: 1 !important;
+						cursor: not-allowed !important;
+						box-shadow: none !important;
+					}
+				</style>
+			</div>
+		</div>
+
+		<script>
+		// Consolidated panel helpers: height calc, empty state, printing, counts, dedupe and detail loading
+		document.addEventListener('DOMContentLoaded', function(){
+			// 1) Adjust heights to account for admin bar and plugin top-bar
+			try {
+				var adminBar = document.getElementById('wpadminbar');
+				var topBarEl = document.querySelector('.top-bar');
+				var sidebar = document.querySelector('.myd-sidebar-left');
+
+				function adjustSidebarOffset(){
+					var adminOffset = adminBar ? adminBar.offsetHeight : 0;
+					var topBarOffset = topBarEl ? topBarEl.offsetHeight : (document.querySelector('.top-bar') ? document.querySelector('.top-bar').offsetHeight : 0);
+					var totalOffset = adminOffset + topBarOffset;
+					var h = 'calc(100vh - ' + totalOffset + 'px)';
+					var content = document.querySelector('.fdm-orders-content');
+					var right = document.querySelector('.fdm-orders-full-details');
+					if (content) content.style.setProperty('height', h, 'important');
+					if (right) right.style.setProperty('height', h, 'important');
+					if (sidebar) {
+						// Mobile: convert sidebar to bottom fixed bar
+						if (window.innerWidth <= 600) {
+							sidebar.style.removeProperty('top');
+							sidebar.style.bottom = '0';
+							sidebar.style.left = '0';
+							sidebar.style.right = '0';
+							sidebar.style.height = '60px';
+							sidebar.style.width = '100%';
+							sidebar.style.display = 'flex';
+							sidebar.style.flexDirection = 'row';
+						} else {
+							// Desktop/tablet: vertical left sidebar below top offsets
+							sidebar.style.bottom = '';
+							sidebar.style.left = '';
+							sidebar.style.right = '';
+							// remove inline top/height so CSS controls layout instead of element.style
+							sidebar.style.removeProperty('top');
+							sidebar.style.removeProperty('height');
+							sidebar.style.width = '';
+							sidebar.style.display = '';
+							sidebar.style.flexDirection = '';
+						}
+					}
+				}
+
+				// initial adjust
+				adjustSidebarOffset();
+
+				// recompute on resize
+				window.addEventListener('resize', adjustSidebarOffset);
+
+				// observe topBar changes (dynamic content)
+				if (topBarEl && window.MutationObserver) {
+					var topObs = new MutationObserver(function(){ setTimeout(adjustSidebarOffset, 30); });
+					topObs.observe(topBarEl, { childList:true, subtree:true, attributes:true, attributeFilter:['style','class'] });
+				}
+
+				// observe adminBar changes
+				if (adminBar && window.MutationObserver) {
+					var adminObs = new MutationObserver(function(){ setTimeout(adjustSidebarOffset, 30); });
+					adminObs.observe(adminBar, { childList:true, subtree:true, attributes:true, attributeFilter:['style','class'] });
+				}
+			} catch(e) { /* noop */ }
+
+			// 2) Empty state toggle (welcome cover)
+			function toggleEmptyState(){
+				try {
+					var host = document.querySelector('.fdm-orders-full');
+					var cover = document.getElementById('myd-welcome-cover');
+					if (!host || !cover) return;
+					var anyVisible = false;
+					var nodes = host.querySelectorAll('.fdm-orders-full-items');
+					nodes.forEach(function(n){ 
+						var cs = window.getComputedStyle ? window.getComputedStyle(n) : null;
+						var shown = cs ? cs.display !== 'none' : (n.style.display !== 'none');
+						if (shown) anyVisible = true; 
+					});
+					cover.style.display = anyVisible ? 'none' : 'block';
+					cover.setAttribute('aria-hidden', anyVisible ? 'true' : 'false');
+				} catch(e){}
+			}
+			try { document.querySelectorAll('.fdm-orders-full .fdm-orders-full-items').forEach(function(n){ n.style.display='none'; }); } catch(e){}
+			toggleEmptyState();
+			try{
+				var hostObs = document.querySelector('.fdm-orders-full');
+				if (hostObs && window.MutationObserver) {
+					var obs = new MutationObserver(function(){ setTimeout(toggleEmptyState, 20); });
+					obs.observe(hostObs, { childList:true, subtree:true, attributes:true, attributeFilter:['style'] });
+				}
+			} catch(e){}
+			document.addEventListener('click', function(ev){ if (ev.target.closest && ev.target.closest('.fdm-orders-items')) setTimeout(toggleEmptyState, 40); });
+
+			// 3) Printing via local print server (adds print buttons dynamically)
+			(function(){
+				function sendOrderToLocalPrinter(orderData){
+					return fetch('http://localhost:3420/print', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+				}
+				function ensurePrintButtons(){
+					try{
+						var actions = document.querySelectorAll('.fdm-orders-list-action-full');
+						actions.forEach(function(bar){
+							if (bar.querySelector('.myd-print-btn')) return;
+							var btn = document.createElement('button');
+							btn.type = 'button';
+							btn.className = 'myd-btn myd-print-btn';
+							// round icon-only button
+							btn.setAttribute('aria-label', 'Imprimir pedido');
+							// debug attribute to easily locate inserted buttons
+							btn.setAttribute('data-myd-icon-btn', '1');
+							// debug log to help confirm this script ran in the browser
+							try{ console.log('[MYD] ensurePrintButtons: creating icon print button'); }catch(e){}
+							btn.style.marginRight = '12px';
+							btn.style.width = '40px';
+							btn.style.height = '40px';
+							btn.style.padding = '6px';
+							btn.style.borderRadius = '50%';
+							btn.style.display = 'inline-flex';
+							btn.style.alignItems = 'center';
+							btn.style.justifyContent = 'center';
+							btn.style.border = 'none';
+							btn.style.background = 'transparent';
+							// SVG icon (printer) provided
+							btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 18H6.2C5.0799 18 4.51984 18 4.09202 17.782C3.71569 17.5903 3.40973 17.2843 3.21799 16.908C3 16.4802 3 15.9201 3 14.8V10.2C3 9.0799 3 8.51984 3.21799 8.09202C3.40973 7.71569 3.71569 7.40973 4.09202 7.21799C4.51984 7 5.0799 7 6.2 7H7M17 18H17.8C18.9201 18 19.4802 18 19.908 17.782C20.2843 17.5903 20.5903 17.2843 20.782 16.908C21 16.4802 21 15.9201 21 14.8V10.2C21 9.07989 21 8.51984 20.782 8.09202C20.5903 7.71569 20.2843 7.40973 19.908 7.21799C19.4802 7 18.9201 7 17.8 7H17M7 11H7.01M17 7V5.4V4.6C17 4.03995 17 3.75992 16.891 3.54601C16.7951 3.35785 16.6422 3.20487 16.454 3.10899C16.2401 3 15.9601 3 15.4 3H8.6C8.03995 3 7.75992 3 7.54601 3.10899C7.35785 3.20487 7.20487 3.35785 7.10899 3.54601C7 3.75992 7 4.03995 7 4.6V5.4V7M17 7H7M8.6 21H15.4C15.9601 21 16.2401 21 16.454 20.891C16.6422 20.7951 16.7951 20.6422 16.891 20.454C17 20.2401 17 19.9601 17 19.4V16.6C17 16.0399 17 15.7599 16.891 15.546C16.7951 15.3578 16.6422 15.2049 16.454 15.109C16.2401 15 15.9601 15 15.4 15H8.6C8.03995 15 7.75992 15 7.54601 15.109C7.35785 15.2049 7.20487 15.3578 7.10899 15.546C7 15.7599 7 16.0399 7 16.6V19.4C7 19.9601 7 20.2401 7.10899 20.454C7.20487 20.6422 7.35785 20.7951 7.54601 20.891C7.75992 21 8.03995 21 8.6 21Z" stroke="#ffae00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+							btn.onclick = async function(ev){
+								try{
+									return;
+								}catch(err){ console.error('Erro no clique do botão de impressão', err); }
+							};
+							var parent = bar.querySelector('.myd-quick-actions') || bar; parent.insertBefore(btn, parent.firstChild);
+						});
+					}catch(e){}
+				}
+				var obsPrint = new MutationObserver(function(){ ensurePrintButtons(); }); obsPrint.observe(document.body, { childList:true, subtree:true }); ensurePrintButtons();
+			})();
+
+			// 4) Live counts refresher
+			(function(){
+				function refreshOrderSectionCounts(){
+					try{
+						var secNew = document.querySelector('#myd-section-new .myd-orders-accordion-body');
+						var secProd = document.querySelector('#myd-section-production .myd-orders-accordion-body');
+						var secDone = document.querySelector('#myd-section-done .myd-orders-accordion-body');
+						var cntNew = secNew ? secNew.querySelectorAll('.fdm-orders-items').length : 0;
+						var cntProd = secProd ? secProd.querySelectorAll('.fdm-orders-items').length : 0;
+						var cntDone = secDone ? secDone.querySelectorAll('.fdm-orders-items').length : 0;
+						var elNew = document.querySelector('#myd-section-new .myd-orders-section-count');
+						var elProd = document.querySelector('#myd-section-production .myd-orders-section-count');
+						var elDone = document.querySelector('#myd-section-done .myd-orders-section-count');
+						if(elNew) elNew.textContent = cntNew; if(elProd) elProd.textContent = cntProd; if(elDone) elDone.textContent = cntDone;
+						
+						// Atualizar badges da sidebar
+						var badgeNew = document.getElementById('myd-sidebar-badge-new');
+						var badgeProd = document.getElementById('myd-sidebar-badge-production');
+						var badgeDone = document.getElementById('myd-sidebar-badge-done');
+						if(badgeNew) badgeNew.textContent = cntNew;
+						if(badgeProd) badgeProd.textContent = cntProd;
+						if(badgeDone) badgeDone.textContent = cntDone;
+					}catch(e){}
+				}
+				if(!window.MydRefreshOrderCounts) window.MydRefreshOrderCounts = refreshOrderSectionCounts;
+				if(document.readyState==='complete' || document.readyState==='interactive') setTimeout(refreshOrderSectionCounts,50); else document.addEventListener('DOMContentLoaded', function(){ setTimeout(refreshOrderSectionCounts,50); });
+				try{
+					var loop = document.querySelector('.fdm-orders-loop');
+					if(loop && window.MutationObserver){
+						var obs = new MutationObserver(function(m){ var changed = false; for(var i=0;i<m.length;i++){ var rec = m[i]; if(rec.addedNodes && rec.addedNodes.length) { changed = true; break; } if(rec.removedNodes && rec.removedNodes.length) { changed = true; break; } } if(changed) setTimeout(refreshOrderSectionCounts, 30); });
+						obs.observe(loop, { childList:true, subtree:true });
+					}
+				}catch(e){}
+			})();
+
+			// 5) Sidebar navigation
+			(function(){
+				try{
+					var sidebarItems = document.querySelectorAll('.myd-sidebar-item[data-section]');
+					sidebarItems.forEach(function(item){
+						item.addEventListener('click', function(e){
+							e.preventDefault();
+							var section = this.getAttribute('data-section');
+							var targetId = '#myd-section-' + section;
+							var targetEl = document.querySelector(targetId);
+							
+							// Remover active de todos e adicionar no clicado
+							sidebarItems.forEach(function(i){ i.classList.remove('active'); });
+							this.classList.add('active');
+							
+							// Scroll suave até a seção
+							if(targetEl){
+								targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+								// Expandir accordion se estiver fechado
+								var accordionBtn = targetEl.querySelector('.myd-orders-accordion-btn');
+								var accordionBody = targetEl.querySelector('.myd-orders-accordion-body');
+								if(accordionBtn && accordionBody){
+									if(accordionBody.style.display === 'none' || !accordionBody.style.display){
+										accordionBody.style.display = 'block';
+										accordionBtn.classList.add('active');
+									}
+								}
+							}
+						});
+					});
+					
+					// Detectar seção visível e atualizar sidebar active
+					function updateActiveSection(){
+						try{
+							var sections = [
+								{id: '#myd-section-new', section: 'new'},
+								{id: '#myd-section-production', section: 'production'},
+								{id: '#myd-section-done', section: 'done'}
+							];
+							var scrollTop = document.querySelector('.fdm-orders-loop') ? document.querySelector('.fdm-orders-loop').scrollTop : 0;
+							
+							sections.forEach(function(s){
+								var el = document.querySelector(s.id);
+								if(el){
+									var rect = el.getBoundingClientRect();
+									if(rect.top >= 0 && rect.top < window.innerHeight / 2){
+										var sidebarItem = document.querySelector('.myd-sidebar-item[data-section="' + s.section + '"]');
+										if(sidebarItem && !sidebarItem.classList.contains('active')){
+											sidebarItems.forEach(function(i){ i.classList.remove('active'); });
+											sidebarItem.classList.add('active');
+										}
+									}
+								}
+							});
+						}catch(e){}
+					}
+					
+					var loopEl = document.querySelector('.fdm-orders-loop');
+					if(loopEl){
+						loopEl.addEventListener('scroll', function(){ setTimeout(updateActiveSection, 100); });
+					}
+				}catch(e){ console.error('Erro ao inicializar sidebar navigation', e); }
+			})();
+
+			// 6) Merge duplicate sections helper (runs once + observer)
+			(function(){
+				function ensureMerge(){
+					try{
+						var ids = [{id:'#myd-section-new', title:'Novos Pedidos'},{id:'#myd-section-production', title:'Em produção'},{id:'#myd-section-done', title:'Concluídos'}];
+						ids.forEach(function(def){
+							var nodes = document.querySelectorAll(def.id);
+							if (!nodes || nodes.length <= 1) return;
+							var keeper = nodes[0];
+							var keeperBody = keeper.querySelector('.myd-orders-accordion-body') || keeper;
+							for (var i = 1; i < nodes.length; i++){
+								var n = nodes[i];
+								var items = n.querySelectorAll ? n.querySelectorAll('.fdm-orders-items') : [];
+								Array.prototype.forEach.call(items, function(it){ try { keeperBody.appendChild(it); } catch(e){ try { keeperBody.insertAdjacentElement('beforeend', it); } catch(_){} } });
+								try { n.parentNode && n.parentNode.removeChild(n); } catch(e){}
+							}
+							try{ var cntEl = keeper.querySelector('.myd-orders-section-count'); if (cntEl) cntEl.textContent = keeperBody.querySelectorAll('.fdm-orders-items').length; } catch(e){}
+						});
+						if (window.MydDedupeOrders && typeof window.MydDedupeOrders === 'function') { try { window.MydDedupeOrders(); } catch(e){} }
+					}catch(e){}
+				}
+				if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(ensureMerge, 50); else document.addEventListener('DOMContentLoaded', function(){ setTimeout(ensureMerge, 50); });
+				try{ var loop = document.querySelector('.fdm-orders-loop'); if (loop && window.MutationObserver) { var obs = new MutationObserver(function(){ setTimeout(ensureMerge, 50); }); obs.observe(loop, { childList: true, subtree: true }); } }catch(e){}
+			})();
+
+			// 6) Detail loader: fetch and inject full details when needed
+			(function(){
+				var loopEl = document.querySelector('.fdm-orders-loop');
+				if (!loopEl) return;
+
+				function smoothScrollIntoView(el){
+					if (!el) return;
+					try {
+						var adminBar = document.getElementById('wpadminbar');
+						var offset = adminBar ? adminBar.offsetHeight : 0;
+						var rect = el.getBoundingClientRect();
+						var top = rect.top + window.pageYOffset - (offset + 8);
+						window.scrollTo({ top: top, behavior: 'smooth' });
+					} catch(_) { try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(__) {} }
+				}
+
+				function fetchAndAttachFull(orderId){
+					function attach(fullHtml){
+						if (!fullHtml) return false;
+						var host = document.querySelector('.fdm-orders-full');
+						if (!host) return false;
+						var parsed = null;
+						if (window.DOMParser && typeof DOMParser === 'function') {
+							try { parsed = new DOMParser().parseFromString(fullHtml, 'text/html'); } catch(e){ parsed = document.createElement('div'); parsed.innerHTML = fullHtml; }
+						} else { parsed = document.createElement('div'); parsed.innerHTML = fullHtml; }
+						var sel = '#content-' + CSS.escape(String(orderId));
+						var fullEl = null;
+						try { fullEl = parsed.querySelector(sel); } catch(_){ fullEl = null; }
+						if (!fullEl) {
+							var candidates = parsed.querySelectorAll ? parsed.querySelectorAll('.fdm-orders-full-items') : [];
+							for (var i=0;i<candidates.length;i++){ if (String(candidates[i].id) === ('content-' + String(orderId))) { fullEl = candidates[i]; break; } }
+						}
+						if (!fullEl) return false;
+						try { var existing = host.querySelector(sel); if (existing && existing.parentNode) existing.parentNode.removeChild(existing); } catch(_){ }
+						try { fullEl.style.display = 'none'; } catch(_){ }
+						try { host.appendChild(fullEl); } catch(e){ try { host.insertAdjacentElement('beforeend', fullEl); } catch(_){ } }
+						return true;
+					}
+
+					// Try admin-ajax first
+					try {
+						if (window.order_ajax_object && window.order_ajax_object.ajax_url && window.order_ajax_object.nonce){
+							fetch(window.order_ajax_object.ajax_url, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cache-Control': 'no-cache' }, body: 'action=update_orders&nonce=' + encodeURIComponent(window.order_ajax_object.nonce) }).then(function(r){ return r.json(); }).then(function(resp){ if (resp && resp.full) attach(resp.full); }).catch(function(){});
+							return;
+						}
+					} catch(_){ }
+
+					// Fallback REST
+					var restUrl = (window.location && window.location.origin ? window.location.origin : '') + '/wp-json/my-delivery/v1/orders?oid=' + encodeURIComponent(String(orderId));
+					fetch(restUrl, { credentials: 'same-origin' }).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(resp){ if (resp && resp.full) attach(resp.full); }).catch(function(){});
+				}
+
+				loopEl.addEventListener('click', function(e){
+					var item = e.target && e.target.closest ? e.target.closest('.fdm-orders-items') : null;
+					if (!item) return;
+					try { item.setAttribute('data-order-clicked','true'); } catch(_){ }
+					setTimeout(function(){
+						var id = item.getAttribute('id'); if (!id) return;
+						var sel = '#content-' + CSS.escape(String(id)); var fullEl = document.querySelector(sel);
+						if (!fullEl) { fetchAndAttachFull(id, true); } else { try { document.querySelectorAll('.fdm-orders-full-items').forEach(function(n){ n.style.display = 'none'; }); fullEl.style.display = 'block'; var cont = document.querySelector('.fdm-orders-full-details'); if (cont) cont.style.display = 'block'; smoothScrollIntoView(fullEl); } catch(_) {} }
+					}, 30);
+				});
+
+				// show injected details when inserted after click
+				var fullHost = document.querySelector('.fdm-orders-full');
+				if (fullHost && window.MutationObserver) {
+					var obs = new MutationObserver(function(muts){
+						muts.forEach(function(m){
+							if (!m.addedNodes || !m.addedNodes.length) return;
+							Array.prototype.forEach.call(m.addedNodes, function(node){
+								if (!(node && node.nodeType === 1)) return;
+								if (!node.classList || !node.classList.contains('fdm-orders-full-items')) return;
+								var id = (node.id || '').replace('content-',''); if (!id) return;
+								var item = document.getElementById(id);
+								if (item && (item.getAttribute('data-order-clicked') === 'true' || item.classList.contains('fdm-active'))) {
+									try { document.querySelectorAll('.fdm-orders-full-items').forEach(function(n){ if(n!==node) n.style.display = 'none'; }); node.style.display = 'block'; var cont = document.querySelector('.fdm-orders-full-details'); if (cont) cont.style.display = 'block'; try { smoothScrollIntoView(node); } catch(_) {} } catch(_) {}
+								}
+							});
+						});
+					});
+					obs.observe(fullHost, { childList: true });
+				}
+			})();
+		});
+		</script>
+
+		<div class="fdm-orders-list">
+			
+
+			<div class="fdm-orders-loop">
+				<?php require MYD_PLUGIN_PATH . 'templates/order/order-list.php'; ?>
+			</div>
+
+			<script>
+			// Guard: merge duplicate myd sections and move items to canonical containers
+			(function(){
+				function ensureMerge(){
+					try{
+						var ids = [{id:'#myd-section-new', title:'Novos Pedidos'},{id:'#myd-section-production', title:'Em produção'},{id:'#myd-section-done', title:'Concluídos'}];
+						ids.forEach(function(def){
+							var nodes = document.querySelectorAll(def.id);
+							if (!nodes || nodes.length <= 1) return;
+							var keeper = nodes[0];
+							var keeperBody = keeper.querySelector('.myd-orders-accordion-body') || keeper;
+							for (var i = 1; i < nodes.length; i++){
+								var n = nodes[i];
+								// move any order items into keeperBody
+								var items = n.querySelectorAll ? n.querySelectorAll('.fdm-orders-items') : [];
+								Array.prototype.forEach.call(items, function(it){ try { keeperBody.appendChild(it); } catch(e){ try { keeperBody.insertAdjacentElement('beforeend', it); } catch(_){} } });
+								// remove the duplicate container
+								try { n.parentNode && n.parentNode.removeChild(n); } catch(e){}
+							}
+							// update count if present
+							try{
+								var cntEl = keeper.querySelector('.myd-orders-section-count');
+								if (cntEl) cntEl.textContent = keeperBody.querySelectorAll('.fdm-orders-items').length;
+							} catch(e){}
+						});
+						// run global dedupe if present
+						if (window.MydDedupeOrders && typeof window.MydDedupeOrders === 'function') {
+							try { window.MydDedupeOrders(); } catch(e){}
+						}
+					}catch(e){/* silent */}
+				}
+				if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(ensureMerge, 50); else document.addEventListener('DOMContentLoaded', function(){ setTimeout(ensureMerge, 50); });
+				// also observe future additions and merge on-the-fly
+				try{
+					var loop = document.querySelector('.fdm-orders-loop');
+					if (loop && window.MutationObserver) {
+						var obs = new MutationObserver(function(){ setTimeout(ensureMerge, 50); });
+						obs.observe(loop, { childList: true, subtree: true });
+					}
+				}catch(e){}
+			})();
+			</script>
+		</div>
+
+		<div class="fdm-orders-full-details">
+			<!-- Top action bar removed as requested -->
+			<?php 
+				$current_user = function_exists('wp_get_current_user') ? wp_get_current_user() : null; 
+				$__myd_user_name = ($current_user && isset($current_user->ID) && $current_user->ID)
+					? ( $current_user->display_name ?: $current_user->user_login )
+					: __('Usuário', 'myd-delivery-pro');
+			?>
+
+			<div class="fdm-orders-full">
+				<div id="myd-welcome-cover" class="myd-welcome-cover" aria-hidden="false">
+					<div class="myd-welcome-title-row">👋 Olá, <?php echo esc_html($__myd_user_name); ?></div>
+					<div class="myd-welcome-grid">
+
+						<div class="myd-skel myd-skel-mid">
+								<div class="myd-schedule-card">
+								<div class="myd-font-600" style="color:#2c2c2c;margin-bottom:8px;">Horário de funcionamento</div>
+								<div class="myd-flex myd-gap-8" style="margin-bottom:12px;color:#5a5a5a;">
+									<div class="myd-day-label" data-day="today">Hoje</div>
+									<div class="myd-day-label" data-day="tomorrow">Amanhã</div>
+								</div>
+								<div class="myd-schedule-chip">18:00 - 23:00</div>
+							</div>
+						</div>
+						<div class="myd-skel myd-skel-mid">
+							<div class="myd-paused-card myd-paused-card--center">
+								<div class="myd-font-600 myd-color-muted" style="margin-bottom:8px;">Itens pausados no cardápio</div>
+								<div class="myd-paused-count myd-paused-count--big">
+									<?php
+									// Count products where product_available != 'show'
+									$paused_count = 0;
+									$query_args = array(
+										'post_type' => 'mydelivery-produtos',
+										'posts_per_page' => -1,
+										'fields' => 'ids',
+										'no_found_rows' => true,
+									);
+									$prod_q = new WP_Query( $query_args );
+									if ( $prod_q->have_posts() ) {
+										foreach ( $prod_q->posts as $pid ) {
+											$avail = get_post_meta( $pid, 'product_available', true );
+											if ( ! $avail || $avail !== 'show' ) {
+												$paused_count++;
+											}
+										}
+									}
+									wp_reset_postdata();
+									echo intval( $paused_count );
+									?>
+								</div>
+							</div>
+						</div>
+
+						<div class="myd-skel myd-skel-wide">
+							<div class="myd-completed-card myd-card-section" >
+								<?php
+								// Count completed orders for current month and same period previous month
+								$today = new DateTimeImmutable('now', wp_timezone());
+								$month_start = $today->format('Y-m-01 00:00:00');
+								$month_end = $today->format('Y-m-t 23:59:59');
+
+								// previous month start/end matching the same day range
+								$prev = $today->modify('first day of last month');
+								$prev_start = $prev->format('Y-m-01 00:00:00');
+								$prev_end = $prev->format('Y-m-t 23:59:59');
+
+								// Query args helper
+								$base_args = array(
+									'post_type' => 'mydelivery-orders',
+									'posts_per_page' => -1,
+									'fields' => 'ids',
+									'no_found_rows' => true,
+									// contar apenas pedidos com status que representam "concluído"
+									// historicamente o plugin usa tanto 'done' quanto 'finished'
+									'meta_query' => array(
+										array(
+											'key' => 'order_status',
+											'value' => array('done', 'finished'),
+											'compare' => 'IN',
+										),
+									),
+								);
+
+								// current month
+								$args_now = $base_args;
+								$args_now['date_query'] = array(
+									array(
+										'after'     => $month_start,
+										'before'    => $month_end,
+										'inclusive' => true,
+									),
+								);
+								$q_now = new WP_Query( $args_now );
+								$count_now = is_array( $q_now->posts ) ? count( $q_now->posts ) : 0;
+								wp_reset_postdata();
+
+								// previous month (same calendar month previous)
+								$args_prev = $base_args;
+								$args_prev['date_query'] = array(
+									array(
+										'after'     => $prev_start,
+										'before'    => $prev_end,
+										'inclusive' => true,
+									),
+								);
+								$q_prev = new WP_Query( $args_prev );
+								$count_prev = is_array( $q_prev->posts ) ? count( $q_prev->posts ) : 0;
+								wp_reset_postdata();
+								?>
+								<div class="myd-color-muted" style="margin-bottom:8px;">Pedidos concluídos do mês <span title="Mês atual">ⓘ</span></div>
+								<div class="myd-paused-count myd-paused-count--big" style="margin-bottom:16px;"><?php echo intval( $count_now ); ?></div>
+								<div class="myd-color-muted" style="margin-bottom:6px;">Mesmo período do mês anterior</div>
+								<div class="myd-paused-count" style="font-size:32px;font-weight:700;color:#2c2c2c;"><?php echo intval( $count_prev ); ?></div>
+							</div>
+						</div>
+
+					</div>
+
+					<?php
+					// expose opening hours to JS (structure from admin settings)
+					$myd_opening = get_option( 'myd-delivery-time', array() );
+					// normalize to days keys with array of ranges
+					$days = array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+					$normalized = array();
+					foreach ($days as $d) { $normalized[$d] = isset($myd_opening[$d]) ? $myd_opening[$d] : array(); }
+					// also compute today/tomorrow names in lowercase keys
+					$today_idx = (int) date('w'); // 0 (Sunday) .. 6 (Saturday)
+					// map PHP weekday index to our keys (make Sunday last)
+					$map = array( 'sunday','monday','tuesday','wednesday','thursday','friday','saturday' );
+					$today_key = $map[$today_idx];
+					$tomorrow_key = $map[($today_idx + 1) % 7];
+					?>
+					<script>
+					// opening hours data available to JS
+					window.MYD_OPENING_HOURS = <?php echo json_encode($normalized, JSON_UNESCAPED_UNICODE); ?>;
+					window.MYD_OPENING_TODAY_KEY = <?php echo json_encode($today_key); ?>;
+					window.MYD_OPENING_TOMORROW_KEY = <?php echo json_encode($tomorrow_key); ?>;
+					</script>
+					<script>
+					(function(){
+						function formatRanges(ranges){
+							if (!ranges || !ranges.length) return 'Fechado';
+							return ranges.map(function(r){
+								var s = r.start || ''; var e = r.end || '';
+								return (s ? s : '') + (s && e ? ' - ' : '') + (e ? e : '');
+							}).join(' / ');
+						}
+						function updateChip(text){
+							var chip = document.querySelector('#myd-welcome-cover .myd-schedule-card > div:last-child');
+							if (!chip) return;
+							chip.textContent = text;
+						}
+						function bindLabels(){
+							var wrap = document.querySelector('#myd-welcome-cover .myd-schedule-card');
+							if (!wrap) return;
+							var labels = wrap.querySelectorAll('.myd-day-label');
+							if (!labels || labels.length===0){
+								// fallback: find by text (legacy markup)
+								var nodes = wrap.querySelectorAll('div');
+								Array.prototype.forEach.call(nodes, function(n){
+									var txt = (n.textContent || '').trim();
+									if (txt === 'Hoje') n.classList.add('myd-day-label'), n.setAttribute('data-day','today');
+									if (txt === 'Amanhã' || txt === 'Amanha') n.classList.add('myd-day-label'), n.setAttribute('data-day','tomorrow');
+								});
+								labels = wrap.querySelectorAll('.myd-day-label');
+							}
+							Array.prototype.forEach.call(labels, function(l){
+								l.style.cursor = 'pointer';
+								l.addEventListener('click', function(){
+									var day = l.getAttribute('data-day');
+									if (!day) return;
+									// toggle active class
+									Array.prototype.forEach.call(labels, function(x){ x.classList.remove('active'); });
+									l.classList.add('active');
+									var key = day === 'today' ? window.MYD_OPENING_TODAY_KEY : window.MYD_OPENING_TOMORROW_KEY;
+									if (!key) return;
+									var ranges = window.MYD_OPENING_HOURS && window.MYD_OPENING_HOURS[key] ? window.MYD_OPENING_HOURS[key] : [];
+									updateChip(formatRanges(ranges));
+								});
+							});
+							// set initial active state (today)
+							try{
+								var todayEl = wrap.querySelector('.myd-day-label[data-day="today"]');
+								if (todayEl) {
+									Array.prototype.forEach.call(labels, function(x){ x.classList.remove('active'); });
+									todayEl.classList.add('active');
+								}
+							}catch(e){}
+						}
+						// init: set today by default
+						document.addEventListener('DOMContentLoaded', function(){
+							try{ var ranges = window.MYD_OPENING_HOURS && window.MYD_OPENING_HOURS[window.MYD_OPENING_TODAY_KEY] ? window.MYD_OPENING_HOURS[window.MYD_OPENING_TODAY_KEY] : []; updateChip(formatRanges(ranges)); }catch(e){}
+							setTimeout(bindLabels, 20);
+						});
+					})();
+					</script>
+				</div>
+				<?php require MYD_PLUGIN_PATH . 'templates/order/order-content.php'; ?>
+			</div>
+
+			<!-- Tela inicial: bloco retangular quando nenhum detalhe estiver visível -->
+		</div>
+	</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const actionFull = document.querySelector('.fdm-orders-list-action-full');
+	const ordersLoop = document.querySelector('.fdm-orders-loop');
+	if (!actionFull || !ordersLoop) return;
+
+	function updateActionVisibility() {
+		const active = document.querySelector('.fdm-orders-items.fdm-active');
+		let visibleDetail = null;
+		try {
+			const details = document.querySelectorAll('.fdm-orders-full-items');
+			for (const n of details) {
+				const cs = window.getComputedStyle ? window.getComputedStyle(n) : null;
+				const shown = cs ? cs.display !== 'none' : (n.style.display !== 'none');
+				if (shown) { visibleDetail = n; break; }
+			}
+		} catch(_) {}
+
+		if (active || visibleDetail) {
+			// ensure visible
+			actionFull.style.display = 'flex';
+			let id = '';
+			if (active) {
+				id = active.getAttribute('id') || '';
+			} else if (visibleDetail) {
+				id = ((visibleDetail.id || '').replace('content-','')) || '';
+			}
+			document.querySelectorAll('.fdm-btn-order-action').forEach(function(btn){
+				btn.setAttribute('data-manage-order-id', id);
+			});
+
+			// Move bar inside the visible detail pane
+			try {
+				var hostDetail = visibleDetail;
+				if (!hostDetail && id) {
+					hostDetail = document.getElementById('content-' + String(id));
+				}
+				if (hostDetail && actionFull.parentElement !== hostDetail) {
+					// append as last child so it sits at bottom
+					hostDetail.appendChild(actionFull);
+				}
+			} catch(_){ }
+
+			// Show/hide specific buttons according to order status
+			try {
+				var btnConfirm = document.getElementById('fdm-confirm-order');
+				var btnInDelivery = document.getElementById('fdm-indelivery-order');
+				var btnFinished = document.getElementById('fdm-finished-order');
+				var btnCancel = document.getElementById('fdm-cancel-order');
+				// default: show all
+				[btnConfirm, btnInDelivery, btnFinished, btnCancel].forEach(function(b){ if(b){ b.style.display = ''; }});
+				var statusEl = id ? document.getElementById(id) : null;
+				var st = statusEl ? (statusEl.getAttribute('data-order-status') || '').toLowerCase() : '';
+				if (st === 'new') {
+					if (btnConfirm) btnConfirm.style.display = 'flex';
+					if (btnCancel) btnCancel.style.display = 'flex';
+					if (btnInDelivery) btnInDelivery.style.display = 'none';
+					if (btnFinished) btnFinished.style.display = 'none';
+				} else if (st === 'in-delivery') {
+					if (btnFinished) btnFinished.style.display = 'flex';
+					if (btnConfirm) btnConfirm.style.display = 'none';
+					if (btnInDelivery) btnInDelivery.style.display = 'none';
+					if (btnCancel) btnCancel.style.display = 'none';
+				}
+			} catch(_){ /* ignore */ }
+		} else {
+			actionFull.style.display = 'none';
+			document.querySelectorAll('.fdm-btn-order-action').forEach(function(btn){
+				btn.setAttribute('data-manage-order-id', '');
+			});
+		}
+	}
+
+	// Initial state
+	updateActionVisibility();
+
+	// When an order item is clicked, existing handlers will toggle .fdm-active — call update after a short delay
+	ordersLoop.addEventListener('click', function(){ setTimeout(updateActionVisibility, 50); });
+
+	// Also observe class/style changes (in case other scripts toggle active or show details)
+	try {
+		const obs = new MutationObserver(function(mutations){
+			let changed = false;
+			for (const m of mutations) {
+				if (m.type === 'attributes' && (m.attributeName === 'class' || m.attributeName === 'style')) { changed = true; break; }
+				if (m.type === 'childList') { changed = true; break; }
+			}
+			if (changed) updateActionVisibility();
+		});
+		// observe all order items
+		document.querySelectorAll('.fdm-orders-items').forEach(function(it){
+			obs.observe(it, { attributes: true, attributeFilter: ['class'] });
+		});
+		// observe details host for style/class changes
+		const fullHost = document.querySelector('.fdm-orders-full');
+		if (fullHost) {
+			const obs2 = new MutationObserver(function(){ setTimeout(updateActionVisibility, 20); });
+			obs2.observe(fullHost, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+		}
+	} catch(e) { /* ignore in older browsers */ }
+});
+</script>
+
+<script>
+// Impressão: imprimir somente o conteúdo de #hide-prints referente ao pedido clicado
+document.addEventListener('click', function(e){
+	var btn = e.target.closest('.myd-print-btn');
+	if (!btn) return;
+	e.preventDefault();
+	try {
+		var id = btn.getAttribute('data-manage-order-id') || '';
+		if (!id) {
+			var m = (btn.id || '').match(/myd-print-(\d+)/);
+			if (m) id = m[1];
+		}
+		if (!id) return;
+		// On manual click: always perform a single print regardless of configured copies
+		if (typeof window.printOrderSingle === 'function') {
+			window.printOrderSingle(id).then(function(){
+				console.log('[Orders Panel] printOrderSingle completed for order', id);
+			}).catch(function(err){
+				console.error('[Orders Panel] printOrderSingle failed for order ' + id, err);
+			});
+		} else if (typeof triggerAutoPrint === 'function') {
+			// As a fallback, call triggerAutoPrint but ensure only a single copy is sent by temporarily overriding localStorage
+			try {
+				var prev = null;
+				try { prev = localStorage.getItem('myd-print-copies'); } catch(_){ prev = null; }
+				try { localStorage.setItem('myd-print-copies', '1'); } catch(_){ }
+				try { triggerAutoPrint(id); console.log('[Orders Panel] triggerAutoPrint (forced single) called for order', id); } catch(err){ console.error(err); }
+				// restore previous setting shortly after
+				setTimeout(function(){ try { if (prev === null) localStorage.removeItem('myd-print-copies'); else localStorage.setItem('myd-print-copies', prev); } catch(_){} }, 500);
+			} catch(err){ console.error('[Orders Panel] fallback triggerAutoPrint failed for order ' + id, err); }
+		} else if (typeof window._myd_manualPrint === 'function') {
+			// fallback to manual single-print flow
+			window._myd_manualPrint(id).then(function(){
+				console.log('[Orders Panel] manual print (single) completed for order', id);
+			}).catch(function(err){ console.error('[Orders Panel] manual print failed for order ' + id, err); });
+		} else {
+			console.error('[Orders Panel] no available print function for order', id);
+		}
+	} catch(_) { /* noop */ }
+}, true);
+</script>
+
+<script>
+// Intercept cancel actions to require confirmation
+document.addEventListener('DOMContentLoaded', function(){
+	try {
+		var modal = document.getElementById('myd-cancel-modal');
+		if (!modal) return;
+		var btnClose = document.getElementById('myd-cancel-modal-close');
+		var btnConfirm = document.getElementById('myd-cancel-modal-confirm');
+		var pendingTarget = null; // element to trigger after confirm
+
+		function openModal(target){
+			pendingTarget = target || null;
+			// clear previous selections/inputs so modal always opens clean
+			try {
+				var radios = document.getElementsByName('myd-cancel-reason');
+				for (var i=0;i<radios.length;i++){ radios[i].checked = false; }
+				var wrap = document.getElementById('myd-cancel-reason-other-wrap');
+				var otherTa = document.getElementById('myd-cancel-reason-other');
+				if (wrap) wrap.style.display = 'none';
+				if (otherTa) { otherTa.value = ''; otherTa.style.height = '40px'; }
+				// Payment info / refund checkbox
+				var paymentInfo = document.getElementById('myd-cancel-payment-info');
+				var paymentText = document.getElementById('myd-cancel-payment-text');
+				var refundCb = document.getElementById('myd-cancel-refund-checkbox');
+				var paymentType = '';
+				var paymentMethod = '';
+				try {
+					if (target && target.getAttribute) {
+						paymentType = target.getAttribute('data-order-payment-type') || '';
+						paymentMethod = target.getAttribute('data-order-payment-method') || '';
+					}
+				} catch(e){}
+				if (paymentType === 'payment-integration') {
+					if (paymentText) paymentText.textContent = 'Este pedido foi pago online via ' + (paymentMethod || '') + '!';
+					if (paymentInfo) paymentInfo.style.display = 'block';
+					if (refundCb) refundCb.checked = false;
+				} else {
+					if (paymentInfo) paymentInfo.style.display = 'none';
+					if (refundCb) refundCb.checked = false;
+				}
+					// ensure confirm button reflects cleared state
+					try { if (btnConfirm) { btnConfirm.disabled = true; } if (typeof updateCancelConfirmState === 'function') updateCancelConfirmState(); } catch(_e){}
+			} catch(e){}
+			modal.classList.add('show');
+			modal.style.display = 'flex';
+			modal.setAttribute('aria-hidden','false');
+		}
+		function closeModal(){
+			modal.classList.remove('show');
+			modal.style.display = 'none';
+			modal.setAttribute('aria-hidden','true');
+			pendingTarget = null;
+		}
+		function proceed(){
+			try {
+				if (pendingTarget) {
+					// temporarily disable interception and click original target
+					pendingTarget.setAttribute('data-bypass-cancel-confirm','1');
+					pendingTarget.click();
+					pendingTarget.removeAttribute('data-bypass-cancel-confirm');
+				}
+			} catch(_) {}
+		}
+
+			// Do not close modal immediately; it will be closed when the AJAX request completes.
+
+
+		// close events
+		if (btnClose) btnClose.addEventListener('click', closeModal);
+		try { modal.querySelector('.myd-modal-backdrop').addEventListener('click', closeModal); } catch(_){}
+		if (btnConfirm) btnConfirm.addEventListener('click', proceed);
+
+		// allow other scripts to close the cancel modal when async operations finish
+		window.MydCloseCancelModal = function(){ try { closeModal(); } catch(_){} };
+
+		// delegate clicks on cancel buttons
+		document.addEventListener('click', function(e){
+			var el = e.target && e.target.closest ? e.target.closest('.fdm-btn-order-action.myd-cancel-btn') : null;
+			if (!el) return;
+			if (el.getAttribute('data-bypass-cancel-confirm') === '1') return; // let it pass
+			e.preventDefault(); e.stopPropagation();
+			openModal(el);
+		}, true);
+	} catch(e) { /* noop */ }
+});
+</script>
+
+<script>
+// Back button: hide all order cards and full details, returning to the initial welcome screen
+document.addEventListener('click', function(e){
+	try {
+		var clicked = null;
+		if (e.target && e.target.closest) {
+			clicked = e.target.closest('.fdm-btn-order-action-back') || e.target.closest('#fdm-back') || e.target.closest('.myd-progress-back') || e.target.closest('.myd-item-hide');
+		}
+		if (!clicked) return;
+
+		// hide compact order items and full detail items
+		document.querySelectorAll('.fdm-orders-items, .fdm-orders-full-items').forEach(function(n){ try { n.style.display = 'none'; } catch(_){} });
+		// also hide the full details pane if present
+		document.querySelectorAll('.fdm-orders-full-details').forEach(function(n){ try { n.style.display = 'none'; } catch(_){} });
+
+		// Try to trigger any existing empty-state toggle present in the page
+		try { if (typeof toggleEmptyState === 'function') setTimeout(toggleEmptyState, 20); } catch(_){}
+		try { if (typeof MydRefreshOrderCounts === 'function') setTimeout(MydRefreshOrderCounts, 20); } catch(_){}
+	} catch(e) { /* silent */ }
+}, true);
+</script>
+
+<script>
+// Menu button: when user clicks the Menu in sidebar, hide all orders and return to welcome
+document.addEventListener('click', function(e){
+	try {
+		var clicked = null;
+		if (e.target && e.target.closest) {
+			clicked = e.target.closest('a[href="#myd-section-menu"], .myd-sidebar-item[title="Menu"], .myd-sidebar-item[data-section="done"]');
+		}
+		if (!clicked) return;
+
+		// hide compact order cards and injected full-details
+		document.querySelectorAll('.fdm-orders-full-items').forEach(function(n){ try { n.style.display = 'none'; } catch(_){} });
+		// refresh empty state / counts if helpers exist
+		try { if (typeof toggleEmptyState === 'function') setTimeout(toggleEmptyState, 20); } catch(_){}
+		try { if (typeof MydRefreshOrderCounts === 'function') setTimeout(MydRefreshOrderCounts, 20); } catch(_){}
+	} catch(e) { /* silent */ }
+}, true);
+</script>
+
+<script>
+// Carregamento sob demanda do detalhe: se faltar o #content-<id>, busca e injeta
+document.addEventListener('DOMContentLoaded', function(){
+	try {
+		var loopEl = document.querySelector('.fdm-orders-loop');
+		if (!loopEl) return;
+
+			// helper para rolar sem "puxar" a tela para baixo na primeira abertura
+			function smoothScrollIntoView(el){
+				if (!el) return;
+				try {
+					var adminBar = document.getElementById('wpadminbar');
+					var offset = adminBar ? adminBar.offsetHeight : 0;
+					var rect = el.getBoundingClientRect();
+					var top = rect.top + window.pageYOffset - (offset + 8);
+					window.scrollTo({ top: top, behavior: 'smooth' });
+				} catch(_) {
+					try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(__) {}
+				}
+			}
+
+			function fetchAndAttachFull(orderId, thenShow){
+			function attach(fullHtml){
+				if (!fullHtml) return false;
+				var host = document.querySelector('.fdm-orders-full');
+				if (!host) return false;
+				var parsed = null;
+				if (window.DOMParser && typeof DOMParser === 'function') {
+					try { parsed = new DOMParser().parseFromString(fullHtml, 'text/html'); }
+					catch(e){ parsed = document.createElement('div'); parsed.innerHTML = fullHtml; }
+				} else { parsed = document.createElement('div'); parsed.innerHTML = fullHtml; }
+				var sel = '#content-' + CSS.escape(String(orderId));
+				var fullEl = null;
+				try { fullEl = parsed.querySelector(sel); } catch(_){ fullEl = null; }
+				if (!fullEl) {
+					var candidates = parsed.querySelectorAll ? parsed.querySelectorAll('.fdm-orders-full-items') : [];
+					for (var i=0;i<candidates.length;i++){ if (String(candidates[i].id) === ('content-' + String(orderId))) { fullEl = candidates[i]; break; } }
+				}
+				if (!fullEl) return false;
+				try { var existing = host.querySelector(sel); if (existing && existing.parentNode) existing.parentNode.removeChild(existing); } catch(_){ }
+				try { fullEl.style.display = 'none'; } catch(_){ }
+				try { host.appendChild(fullEl); } catch(e){ try { host.insertAdjacentElement('beforeend', fullEl); } catch(_){ } }
+						if (thenShow) {
+							try {
+								// esconder outros e garantir exibição do painel
+								document.querySelectorAll('.fdm-orders-full-items').forEach(function(n){ n.style.display = 'none'; });
+								fullEl.style.display = 'block';
+								if (window.innerWidth <= 768) {
+									var cont = document.querySelector('.fdm-orders-full-details');
+									if (cont) cont.style.display = 'block';
+								}
+								// rolar para o detalhe
+								smoothScrollIntoView(fullEl);
+							} catch(_) { }
+						}
+				return true;
+			}
+
+			// Tenta admin-ajax primeiro
+			try {
+				if (window.order_ajax_object && window.order_ajax_object.ajax_url && window.order_ajax_object.nonce){
+					fetch(window.order_ajax_object.ajax_url, {
+						method: 'POST', credentials: 'same-origin',
+						headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cache-Control': 'no-cache' },
+						body: 'action=update_orders&nonce=' + encodeURIComponent(window.order_ajax_object.nonce)
+					}).then(function(r){ return r.json(); }).then(function(resp){
+						if (resp && resp.full) attach(resp.full);
+					}).catch(function(){});
+					return;
+				}
+			} catch(_){ }
+
+			// Fallback REST
+			var restUrl = (window.location && window.location.origin ? window.location.origin : '') + '/wp-json/my-delivery/v1/orders?oid=' + encodeURIComponent(String(orderId));
+			fetch(restUrl, { credentials: 'same-origin' }).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(resp){
+				if (resp && resp.full) attach(resp.full);
+			}).catch(function(){});
+		}
+
+		loopEl.addEventListener('click', function(e){
+			var item = e.target && e.target.closest ? e.target.closest('.fdm-orders-items') : null;
+			if (!item) return;
+				try { item.setAttribute('data-order-clicked','true'); } catch(_){}
+			// esperar o handler padrão marcar ativo e tentar mostrar
+			setTimeout(function(){
+				var id = item.getAttribute('id');
+				if (!id) return;
+				var sel = '#content-' + CSS.escape(String(id));
+					var fullEl = document.querySelector(sel);
+					if (!fullEl) {
+						// não existe: buscar, injetar e mostrar
+						fetchAndAttachFull(id, true);
+					} else {
+						// existe: garantir exibição
+						try {
+							document.querySelectorAll('.fdm-orders-full-items').forEach(function(n){ n.style.display = 'none'; });
+							fullEl.style.display = 'block';
+							var cont = document.querySelector('.fdm-orders-full-details');
+							if (cont) cont.style.display = 'block';
+							smoothScrollIntoView(fullEl);
+						} catch(_) {}
+					}
+			}, 30);
+		});
+
+			// Se o detalhe for inserido após o clique, exibir automaticamente
+			var fullHost = document.querySelector('.fdm-orders-full');
+			if (fullHost && window.MutationObserver) {
+				var obs = new MutationObserver(function(muts){
+					muts.forEach(function(m){
+						if (!m.addedNodes || !m.addedNodes.length) return;
+						Array.prototype.forEach.call(m.addedNodes, function(node){
+							if (!(node && node.nodeType === 1)) return;
+							if (!node.classList || !node.classList.contains('fdm-orders-full-items')) return;
+							var id = (node.id || '').replace('content-','');
+							if (!id) return;
+							var item = document.getElementById(id);
+							if (item && (item.getAttribute('data-order-clicked') === 'true' || item.classList.contains('fdm-active'))) {
+								try {
+									document.querySelectorAll('.fdm-orders-full-items').forEach(function(n){ if(n!==node) n.style.display = 'none'; });
+									node.style.display = 'block';
+									var cont = document.querySelector('.fdm-orders-full-details');
+									if (cont) cont.style.display = 'block';
+									try { smoothScrollIntoView(node); } catch(_) {}
+								} catch(_) {}
+							}
+						});
+					});
+				});
+				obs.observe(fullHost, { childList: true });
+			}
+	} catch(e) { /* noop */ }
+});
+</script>
+
+
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	window.__PANEL_SCRIPT_LOADED = true;
+	var pushUrl = '<?php echo esc_js( get_option( 'myd_push_server_url', '' ) ); ?>';
+	console.log('[Orders Panel][DEBUG] pushUrl value:', pushUrl || '(empty)');
+	if (!pushUrl) { console.warn('[Orders Panel][DEBUG] pushUrl vazio - configurar em settings'); return; }
+	if (typeof io === 'undefined') { console.error('[Orders Panel][DEBUG] socket.io (io) não definido - script CDN carregou?'); return; }
+
+	// Audio: implementação controlada — toca `trim.mp3` em loop quando há pedidos pendentes
+	// e só para quando todos os pedidos pendentes forem removidos via eventos do websocket.
+	var MydAudio = (function(){
+		var audio = null;
+		var isLooping = false;
+		var STORAGE_KEY = 'myd_audio_unlocked_v1';
+
+		function init(){
+			if(!audio){
+				try { audio = new Audio('/wp-content/plugins/sistema-delivery-franguxo/assets/songs/trim.mp3'); }
+				catch(e){ console.warn('[Orders Panel] falha ao criar Audio', e); audio = null; }
+				if (audio){ audio.preload = 'auto'; audio.volume = 1.0; audio.loop = true; }
+			}
+		}
+
+		function startLoop(){
+			try{
+				init(); if(!audio) return;
+				if (isLooping) return;
+				audio.loop = true;
+				isLooping = true;
+				try { audio.currentTime = 0; } catch(_){ }
+				var p = null;
+				try { p = audio.play(); } catch(err) { console.warn('[Orders Panel] audio.play() threw', err); }
+				if (p && p.catch) {
+					p.catch(function(err){ console.warn('[Orders Panel] áudio bloqueado ou falhou ao tocar', err); });
+				}
+			} catch(e){ console.warn('[Orders Panel] erro ao iniciar loop de áudio', e); }
+		}
+
+		function stop(){
+			try{
+				if(!audio) return;
+				audio.loop = false;
+				isLooping = false;
+				audio.pause();
+				try { audio.currentTime = 0; } catch(_){ }
+			} catch(e){ /* noop */ }
+		}
+
+		function markUnlocked(){ try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch(_){ } }
+
+		function isUnlocked(){ try { return !!localStorage.getItem(STORAGE_KEY); } catch(_){ return false; } }
+
+		function tryUnlockViaAudioContext(done){
+			try {
+				var AudioCtx = window.AudioContext || window.webkitAudioContext;
+				if (AudioCtx) {
+					var ctx = window.__MYD_UNLOCK_AUDIO_CTX;
+					if (!ctx) {
+						try { ctx = new AudioCtx(); window.__MYD_UNLOCK_AUDIO_CTX = ctx; }
+						catch(e){ ctx = null; }
+					}
+					if (ctx && typeof ctx.resume === 'function') {
+						ctx.resume().then(function(){ markUnlocked(); if (done) done(true); }).catch(function(){ if (done) done(false); });
+						return;
+					}
+				}
+			} catch(e) { /* ignore */ }
+			if (done) done(false);
+		}
+
+		function tryUnlockViaPlayPause(done){
+			try {
+				init(); if(!audio) { if(done) done(true); return; }
+				var p = null;
+				try { p = audio.play(); } catch(e){ p = null; }
+				if (p && p.then) {
+					p.then(function(){ try { audio.pause(); audio.currentTime = 0; } catch(_){ } markUnlocked(); if(done) done(true); })
+					.catch(function(){ markUnlocked(); if(done) done(false); });
+				} else {
+					try { audio.pause(); audio.currentTime = 0; } catch(_){ }
+					markUnlocked(); if(done) done(true);
+				}
+			} catch(e){ markUnlocked(); if(done) done(false); }
+		}
+
+		function unlock(){
+			if (isUnlocked()) return; // already
+			// First try AudioContext, then fallback to play/pause
+			tryUnlockViaAudioContext(function(ok){ if (ok) return; tryUnlockViaPlayPause(function(){ /* noop */ }); });
+			// ensure we attempt again on first user gesture if blocked
+			function onGesture(){ try { tryUnlockViaPlayPause(function(){ /* noop */ }); } catch(_){} finally { removeListeners(); } }
+			function addListeners(){ try { ['click','keydown','touchstart'].forEach(function(ev){ document.addEventListener(ev, onGesture, true); }); } catch(e){} }
+			function removeListeners(){ try { ['click','keydown','touchstart'].forEach(function(ev){ document.removeEventListener(ev, onGesture, true); }); } catch(e){} }
+			addListeners();
+		}
+
+		// auto-init unlock attempt once on load
+		try { if (!isUnlocked()) { unlock(); } } catch(_){ }
+
+		return { startLoop: startLoop, stop: stop, unlock: unlock };
+	})();
+
+// Fallback global manual print function (used if triggerAutoPrint isn't available yet)
+window._myd_manualPrint = function(orderId){
+	if (!orderId) {
+		console.warn('[Orders Panel] manual print skipped: missing order id');
+		return Promise.reject(new Error('missing_order_id'));
+	}
+	if (typeof fetch !== 'function') {
+		console.error('[Orders Panel] manual print requires fetch API');
+		return Promise.reject(new Error('fetch_not_available'));
+	}
+	try {
+		var encodedBody = 'action=get_order_print_data&order_id=' + encodeURIComponent(orderId);
+		return fetch('/wp-admin/admin-ajax.php', {
+			method: 'POST',
+			body: encodedBody,
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+			credentials: 'same-origin'
+		}).then(function(r){
+			if(!r.ok) throw new Error('print_data_fetch_failed_status_' + r.status);
+			return r.json();
+		}).then(function(resp){
+			if(resp && resp.success && resp.data){
+				var orderData = resp.data;
+				var payload = { orderData: orderData, escpos: true };
+				try { var storedPrinter = localStorage.getItem('myd-default-printer'); if (storedPrinter) payload.printer = storedPrinter; } catch(_){ }
+				try { var storedCopies = localStorage.getItem('myd-print-copies'); if (storedCopies) payload.copies = storedCopies; } catch(_){ }
+				var body = null;
+				try { body = JSON.stringify(payload); } catch(err){ return Promise.reject(err); }
+				// Determine copies
+				var copies = 1;
+				try { var sc = localStorage.getItem('myd-print-copies'); if (sc) copies = parseInt(String(sc), 10) || 1; } catch(_) {}
+				if (copies < 1) copies = 1;
+				var MAX_COPIES = 10; if (copies > MAX_COPIES) copies = MAX_COPIES;
+
+				function sendLocalCopy(n){
+					if (n > copies) return Promise.resolve();
+					return fetch('http://127.0.0.1:3420/print', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
+						.catch(function(){
+							return fetch('http://localhost:3420/print', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body });
+						}).then(function(res){
+							if (!res || !res.ok) throw new Error('local_print_failed');
+							console.log('[Orders Panel] manual local print acknowledged for order ' + orderId + ' (copy ' + n + ')');
+							return new Promise(function(resolve){ setTimeout(resolve, 180); }).then(function(){ return sendLocalCopy(n+1); });
+						}).catch(function(err){
+							console.error('[Orders Panel] manual local print failed for copy ' + n + ' for order ' + orderId, err);
+							// continue with next copies
+							return sendLocalCopy(n+1);
+						});
+				}
+
+				return sendLocalCopy(1);
+			}
+			throw new Error('missing_order_data_for_print');
+		}).catch(function(err){
+			console.error('[Orders Panel] manual print flow failed for order ' + orderId, err);
+			throw err;
+		});
+	} catch(err) {
+		console.error('[Orders Panel] unexpected manual print error for order ' + orderId, err);
+		return Promise.reject(err);
+	}
+};
+
+// Manual single-print function: always send exactly one request to local print server
+window.printOrderSingle = function(orderId){
+	
+	if (!orderId) {
+		console.warn('[Orders Panel] printOrderSingle skipped: missing order id');
+		return Promise.reject(new Error('missing_order_id'));
+	}
+	if (typeof fetch !== 'function') {
+		console.error('[Orders Panel] printOrderSingle requires fetch API');
+		return Promise.reject(new Error('fetch_not_available'));
+	}
+	try {
+		var encodedBody = 'action=get_order_print_data&order_id=' + encodeURIComponent(orderId);
+		return fetch('/wp-admin/admin-ajax.php', {
+			method: 'POST',
+			body: encodedBody,
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+			credentials: 'same-origin'
+		}).then(function(r){
+			if(!r.ok) throw new Error('print_data_fetch_failed_status_' + r.status);
+			return r.json();
+		}).then(function(resp){
+			
+			if(resp && resp.success && resp.data){
+				var orderData = resp.data;
+				var payload = { orderData: orderData, escpos: true };
+				try { var storedPrinter = localStorage.getItem('myd-default-printer'); if (storedPrinter) payload.printer = storedPrinter; } catch(_){ }
+				// single copy
+				payload.copies = 1;
+				var body = null;
+				try { body = JSON.stringify(payload); } catch(err){ return Promise.reject(err); }
+				return fetch('http://127.0.0.1:3420/print', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
+					.catch(function(){
+						return fetch('http://localhost:3420/print', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body });
+					}).then(function(res){
+						if (!res || !res.ok) throw new Error('local_print_failed');
+						console.log('[Orders Panel] printOrderSingle acknowledged for order', orderId);
+						return res;
+					});
+			}
+			throw new Error('missing_order_data_for_print');
+		}).catch(function(err){
+			console.error('[Orders Panel] printOrderSingle flow failed for order ' + orderId, err);
+			throw err;
+		});
+	} catch(err) {
+		console.error('[Orders Panel] unexpected printOrderSingle error for order ' + orderId, err);
+		return Promise.reject(err);
+	}
+};
+
+		// Áudio de evento único: removido (no-op)
+		var MydSingleSound = (function(){
+			function playFinished(){ /* audio disabled */ }
+			return { playFinished: playFinished };
+		})();
+
+	// Gerencia pedidos pendentes para tocar/pausar som conforme houver novos pedidos
+	// Nota: separar remoção disparada por websocket (remover e possivelmente parar som)
+	// de remoção local (por exemplo ações do UI). Assim, somente eventos vindos
+	// do socket irão interromper a reprodução.
+	var MydAlert = (function(){
+		var pending = new Set();
+		function add(id){ try { pending.add(String(id)); MydAudio.startLoop(); } catch(_){ } }
+		// removeLocal: apenas remove do conjunto de pendentes mas NÃO para o som
+		function removeLocal(id){ try { pending.delete(String(id)); } catch(_){ } }
+		// removeFromSocket: chamada quando o websocket confirma que o pedido mudou
+		// para um estado terminal (confirmed/canceled/done) — então podemos
+		// remover e, se não houver mais pendentes, parar o áudio.
+		function removeFromSocket(id){ try { pending.delete(String(id)); if (pending.size === 0) MydAudio.stop(); } catch(_){ } }
+		function count(){ try { return pending.size; } catch(_){ return 0; } }
+		return { add: add, removeLocal: removeLocal, removeFromSocket: removeFromSocket, count: count };
+	})();
+
+	function connectSocketWithToken(token){
+		try {
+			var socket = io(pushUrl, { auth: { token: token } });
+			// expose socket so other code can emit/listen if needed
+			try { window.mydPushSocket = socket; } catch(_){ }
+			console.log('[Orders Panel][DEBUG] tentando conectar socket para', pushUrl);
+
+			// helpers to place orders in correct section and update counts
+			function extractStatusFromPayload(p){
+				try {
+					if (!p) return '';
+					// common direct fields
+					if (typeof p.status === 'string' && p.status.trim() !== '') return p.status;
+					if (typeof p.order_status === 'string' && p.order_status.trim() !== '') return p.order_status;
+					if (p.order && typeof p.order.status === 'string' && p.order.status.trim() !== '') return p.order.status;
+					if (p.data && typeof p.data.status === 'string' && p.data.status.trim() !== '') return p.data.status;
+					// sometimes payload is nested: payload.data.order.status
+					if (p.data && p.data.order && typeof p.data.order.status === 'string' && p.data.order.status.trim() !== '') return p.data.order.status;
+					// fallback to any string-like field
+					for (var k in p) {
+						if (!p.hasOwnProperty(k)) continue;
+						try { if (typeof p[k] === 'string' && /status/i.test(k)) return p[k]; } catch(_){}
+					}
+				} catch(e) { /* noop */ }
+				return '';
+			}
+
+			function normalizeStatus(s){
+				if(!s) return 'new';
+				s = String(s).toLowerCase().trim();
+				// Normalize separators: underscores and spaces -> dash
+				s = s.replace(/[_\s]+/g, '-');
+				// handle some incoming variants
+				if (['created','received','pending'].indexOf(s) !== -1) return 'new';
+				if (['processing','preparing','accepted','accept','accepted-order','preparando','confirmado','ready-for-preparation','ready'].indexOf(s) !== -1) return 'confirmed';
+				// Normalize different ways of expressing in-delivery
+				if (['in-delivery','indelivery','in-delivery','in-delivery','out-for-delivery','out-for-shipping','despachado'].indexOf(s) !== -1 || s === 'in-delivery') return 'in-delivery';
+				// Map 'finished' or 'completed' to 'done'
+				if (s === 'finished' || s === 'completed') return 'done';
+				return s;
+			}
+
+			function sendToLocalPrintServer(payload){
+				if (!payload) return Promise.reject(new Error('missing_payload'));
+				if (typeof fetch !== 'function') {
+					return Promise.reject(new Error('fetch_not_available'));
+				}
+				var body = null;
+				try { body = JSON.stringify(payload); } catch(err){ return Promise.reject(err); }
+				var candidates = [];
+				try {
+					if (typeof window !== 'undefined' && window.MYD_LOCAL_PRINT_ENDPOINT) {
+						candidates.push(String(window.MYD_LOCAL_PRINT_ENDPOINT));
+					}
+				} catch(_){ }
+				candidates.push('http://127.0.0.1:3420/print');
+				candidates.push('http://localhost:3420/print');
+				var index = 0;
+				function attempt(){
+					if (index >= candidates.length) {
+						return Promise.reject(new Error('all_local_print_endpoints_failed'));
+					}
+					var url = candidates[index++];
+					return fetch(url, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: body
+					}).catch(function(err){
+						console.warn('[Orders Panel] failed sending to local print server via ' + url, err);
+						return attempt();
+					});
+				}
+				return attempt();
+			}
+
+			function triggerAutoPrint(orderId){
+				if (!orderId) {
+					console.warn('[Orders Panel] auto-print skipped: missing order id');
+					return;
+				}
+
+				// Expor globalmente para que handlers fora deste escopo possam chamar
+				try { window.triggerAutoPrint = triggerAutoPrint; } catch(_) { /* noop */ }
+				if (typeof fetch !== 'function') {
+					console.error('[Orders Panel] auto-print requires fetch API');
+					return;
+				}
+				console.log('[Orders Panel] auto-print triggered for order', orderId);
+				try {
+					var encodedBody = 'action=get_order_print_data&order_id=' + encodeURIComponent(orderId);
+					fetch('/wp-admin/admin-ajax.php', {
+						method: 'POST',
+						body: encodedBody,
+						headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+						credentials: 'same-origin'
+					}).then(function(r){
+						if(!r.ok){ throw new Error('print_data_fetch_failed_status_' + r.status); }
+						return r.json();
+					}).then(function(resp){
+						if(resp && resp.success && resp.data){
+							var orderData = resp.data;
+							console.log('[Orders Panel] orderData fetched for auto-print:', orderData);
+							var payload = { orderData: orderData, escpos: true };
+							try {
+								var storedPrinter = localStorage.getItem('myd-default-printer');
+								if (storedPrinter) payload.printer = storedPrinter;
+							} catch(_){ }
+							try {
+								var storedCopies = localStorage.getItem('myd-print-copies');
+								if (storedCopies) payload.copies = storedCopies;
+							} catch(_){ }
+							// Determine number of copies (ensure integer >=1)
+							var copies = 1;
+							try {
+								var sc = localStorage.getItem('myd-print-copies');
+								if (sc) { copies = parseInt(String(sc), 10) || 1; }
+							} catch(_) { }
+							if (copies < 1) copies = 1;
+							// Cap copies to avoid accidental huge loops
+							var MAX_COPIES = 10;
+							if (copies > MAX_COPIES) copies = MAX_COPIES;
+
+							function sendCopyAttempt(n){
+								if (n > copies) return Promise.resolve();
+								return sendToLocalPrintServer(payload).then(function(res){
+									console.log('[Orders Panel] local print server acknowledged copy ' + n + ' for order', orderId);
+									// small delay between copies
+									return new Promise(function(resolve){ setTimeout(resolve, 180); }).then(function(){ return sendCopyAttempt(n+1); });
+								}).catch(function(err){
+									console.error('[Orders Panel] failed sending copy ' + n + ' to local print server', err);
+									// continue attempting next copies to maximize chance
+									return sendCopyAttempt(n+1);
+								});
+							}
+
+							return sendCopyAttempt(1).then(function(){
+								console.log('[Orders Panel] completed print attempts for order', orderId);
+							}).catch(function(err){
+								console.error('[Orders Panel] error during multi-copy print attempts for order ' + orderId, err);
+							});
+						}
+						throw new Error('missing_order_data_for_print');
+					}).catch(function(err){
+						console.error('[Orders Panel] auto-print flow failed for order ' + orderId, err);
+					});
+				} catch(err) {
+					console.error('[Orders Panel] unexpected auto-print error for order ' + orderId, err);
+				}
+			}
+
+			function getTargetContainerByStatus(status){
+				status = normalizeStatus(status);
+				var container = null;
+				// map individual statuses to their proper accordion bodies
+				if (status === 'new') {
+					container = document.querySelector('#myd-section-new .myd-orders-accordion-body');
+				} else if (status === 'in-delivery') {
+					// 'Em entrega' has its own section
+					container = document.querySelector('#myd-section-in-delivery .myd-orders-accordion-body');
+				} else if (['confirmed','waiting'].indexOf(status) !== -1) {
+					container = document.querySelector('#myd-section-production .myd-orders-accordion-body');
+				} else {
+					container = document.querySelector('#myd-section-done .myd-orders-accordion-body');
+				}
+				if (!container) container = document.querySelector('.fdm-orders-loop');
+				return container;
+			}
+
+			function placeOrder(container, el, toTop){
+				try {
+					if (toTop) {
+						// find first order item to insert before; otherwise prepend normally
+						var firstOrder = container.querySelector ? container.querySelector('.fdm-orders-items') : null;
+						if (firstOrder && firstOrder.parentNode === container) {
+							container.insertBefore(el, firstOrder);
+						} else if (container.firstElementChild) {
+							container.insertBefore(el, container.firstElementChild);
+						} else {
+							container.appendChild(el);
+						}
+					} else {
+						container.appendChild(el);
+					}
+				} catch(e) {
+					try { container.insertAdjacentElement(toTop ? 'afterbegin' : 'beforeend', el); } catch(_){}
+				}
+				if (window.MydRefreshOrderCounts && typeof window.MydRefreshOrderCounts === 'function') { try { window.MydRefreshOrderCounts(); } catch(_){} }
+			}
+
+			function highlightJustInserted(id){
+				try { var inserted = document.querySelector('.fdm-orders-items#' + CSS.escape(String(id))); if(inserted){ inserted.classList.add('fdm-new-arrival'); setTimeout(function(){ try{ inserted.classList.remove('fdm-new-arrival'); }catch(_){ } }, 7000); } } catch(_){ }
+			}
+
+			function fetchAndInsertOrderCard(orderId){
+				function insertOrReplaceFullDetails(orderId, fullHtml){
+					try{
+						if (!fullHtml) return;
+						var host = document.querySelector('.fdm-orders-full');
+						if (!host) return;
+						var parsed = null;
+						if (window.DOMParser && typeof DOMParser === 'function') {
+							try { parsed = new DOMParser().parseFromString(fullHtml, 'text/html'); }
+							catch(e){ parsed = document.createElement('div'); parsed.innerHTML = fullHtml; }
+						} else {
+							parsed = document.createElement('div'); parsed.innerHTML = fullHtml;
+						}
+						var sel = '#content-' + CSS.escape(String(orderId));
+						var fullEl = null;
+						try { fullEl = parsed.querySelector(sel); } catch(_){ fullEl = null; }
+						if (!fullEl) {
+							var candidates = parsed.querySelectorAll ? parsed.querySelectorAll('.fdm-orders-full-items') : [];
+							for (var i=0;i<candidates.length;i++){ if (String(candidates[i].id) === ('content-' + String(orderId))) { fullEl = candidates[i]; break; } }
+						}
+						if (!fullEl) return;
+						// remove any existing details for this order
+						try{
+							var existing = host.querySelector(sel);
+							if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+						}catch(_){ }
+						// keep it hidden until user clicks the list item
+						try { fullEl.style.display = 'none'; } catch(_){ }
+						try { host.appendChild(fullEl); } catch(e){ try { host.insertAdjacentElement('beforeend', fullEl); } catch(_){ } }
+					} catch(e){ /* noop */ }
+				}
+				// Prefer using localized admin-ajax endpoint when available to get full HTML loops
+				try {
+					if (window.order_ajax_object && window.order_ajax_object.ajax_url && window.order_ajax_object.nonce){
+						return fetch(window.order_ajax_object.ajax_url, {
+							method: 'POST', credentials: 'same-origin',
+							headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cache-Control': 'no-cache' },
+							body: 'action=update_orders&nonce=' + encodeURIComponent(window.order_ajax_object.nonce)
+						}).then(function(r){ return r.json(); }).then(function(resp){
+							var loopHtml = resp && (resp.loop || resp.t) ? (resp.loop || resp.t) : '';
+							if (!loopHtml) return;
+							var dp = null;
+							if (window.DOMParser && typeof DOMParser === 'function') { try { dp = new DOMParser().parseFromString(loopHtml, 'text/html'); } catch(e) { dp = document.createElement('div'); dp.innerHTML = loopHtml; } }
+							else { dp = document.createElement('div'); dp.innerHTML = loopHtml; }
+							var found = null;
+							try { found = dp.querySelector('.fdm-orders-items#' + CSS.escape(String(orderId))); } catch(e){ found = null; }
+							if (!found) {
+								var all = dp.querySelectorAll ? dp.querySelectorAll('.fdm-orders-items') : [];
+								for (var i=0;i<all.length;i++){ if (String(all[i].id) === String(orderId)) { found = all[i]; break; } }
+							}
+							if (found){
+								var st = found.getAttribute ? found.getAttribute('data-order-status') : null;
+								var container2 = getTargetContainerByStatus(st);
+								try {
+									// Remove any existing list item with same id to avoid duplicates
+									var existingItem = document.querySelector('.fdm-orders-items#' + CSS.escape(String(orderId)));
+									if (existingItem && existingItem.parentNode) {
+										existingItem.parentNode.removeChild(existingItem);
+									}
+								} catch(_){ }
+								placeOrder(container2, found, true);
+								highlightJustInserted(orderId);
+								// also inject/replace full details if present in the response
+								try { insertOrReplaceFullDetails(orderId, resp && resp.full ? resp.full : ''); } catch(_){ }
+							}
+						});
+					}
+				} catch(e) { console.warn('[Orders Panel] admin-ajax update_orders failed path', e); }
+
+				// Fallback: try REST endpoint (may not include HTML in all setups)
+				var restUrl = (window.location && window.location.origin ? window.location.origin : '') + '/wp-json/my-delivery/v1/orders?oid=' + encodeURIComponent(String(orderId));
+				return fetch(restUrl, { credentials: 'same-origin' }).then(function(r){ if(!r.ok) throw new Error('fetch_failed'); return r.json(); }).then(function(resp){
+					var loopHtml = resp && (resp.loop || resp.t) ? (resp.loop || resp.t) : '';
+					if(!loopHtml && !(resp && resp.full)) return; // some REST impls only return status; nothing to insert
+					var parser = null;
+					if (window.DOMParser && typeof DOMParser === 'function') {
+						try { parser = new DOMParser().parseFromString(loopHtml || resp.full || '', 'text/html'); } catch(e) { parser = document.createElement('div'); parser.innerHTML = (loopHtml || resp.full || ''); }
+					} else { parser = document.createElement('div'); parser.innerHTML = loopHtml; }
+					var newItem = null;
+					try { newItem = parser.querySelector ? parser.querySelector('.fdm-orders-items#' + CSS.escape(String(orderId))) : null; } catch(e){ newItem = null; }
+					if(!newItem) {
+						var nodes = parser.querySelectorAll ? parser.querySelectorAll('.fdm-orders-items') : [];
+						for(var i2=0;i2<nodes.length;i2++){ if(String(nodes[i2].id) === String(orderId)){ newItem = nodes[i2]; break; } }
+					}
+					if(newItem){
+						var st = newItem.getAttribute ? newItem.getAttribute('data-order-status') : null;
+						var container2 = getTargetContainerByStatus(st);
+						try {
+							// Remove any existing list item with same id to avoid duplicates
+							var existingItem = document.querySelector('.fdm-orders-items#' + CSS.escape(String(orderId)));
+							if (existingItem && existingItem.parentNode) {
+								existingItem.parentNode.removeChild(existingItem);
+							}
+						} catch(_){ }
+						placeOrder(container2, newItem, true);
+						highlightJustInserted(orderId);
+						try { if (String(st || '') === 'new') { MydAlert.add(orderId); } } catch(_){ }
+					}
+					// try to inject full details if REST provided it
+					try { insertOrReplaceFullDetails(orderId, resp && resp.full ? resp.full : ''); } catch(_){ }
+				}).catch(function(e){ console.warn('[Orders Panel] failed to fetch order HTML for id', orderId, e); });
+			}
+			socket.on('connect', function(){ 
+				console.log('[Orders Panel] socket connected, id:', socket.id); 
+				// Log rooms after connection
+				setTimeout(function(){ console.log('[Orders Panel] socket rooms:', Array.from(socket.rooms || [])); }, 100);
+			});
+			socket.on('disconnect', function(reason){ console.log('[Orders Panel] socket disconnected:', reason); });
+			socket.on('connect_error', function(err){ console.error('[Orders Panel] socket connect error:', err); });
+			socket.on('order.status', function(payload){
+				console.log('[Orders Panel] received order.status raw payload:', payload);
+				try {
+					if (!payload || !payload.order_id) return console.warn('[Orders Panel] order.status missing order_id', payload);
+					var id = String(payload.order_id);
+					// Extract status from various payload shapes
+					var extracted = extractStatusFromPayload(payload);
+					console.log('[Orders Panel] extracted status from payload:', extracted);
+					var rawStatus = extracted || (payload.status || '');
+					var status = normalizeStatus(rawStatus);
+					console.log('[Orders Panel] normalized status:', status, ' (raw:', rawStatus, ') for order', id);
+					try { if (status === 'new') { MydAlert.add(id); } } catch(_){ }
+					// Se o status mudou para confirmado ou cancelado, interrompe o som
+					// (usar remoção específica para eventos vindos do websocket)
+					try { if (status === 'confirmed' || status === 'canceled') { MydAlert.removeFromSocket(id); } } catch(_){ }
+					var item = document.querySelector('.fdm-orders-items#' + CSS.escape(id));
+					if (!item) {
+						// Try to fetch the card and insert it without a full reload
+						return void fetchAndInsertOrderCard(id);
+					}
+					// map status to label and color (same mapping as PHP)
+					var map = {
+						'new': { text: '<?php echo esc_js( __( 'New', 'myd-delivery-pro' ) ); ?>', color: '#d0ad02' },
+						'confirmed': { text: '<?php echo esc_js( __( 'Confirmed', 'myd-delivery-pro' ) ); ?>', color: '#208e2a' },
+						'in-delivery': { text: '<?php echo esc_js( __( 'In Delivery', 'myd-delivery-pro' ) ); ?>', color: '#d8800d' },
+						'done': { text: '<?php echo esc_js( __( 'Done', 'myd-delivery-pro' ) ); ?>', color: '#037d91' },
+						'waiting': { text: '<?php echo esc_js( __( 'Waiting', 'myd-delivery-pro' ) ); ?>', color: '#4e6585' }
+					};
+					var data = map[status] || map[normalizeStatus(status)];
+					if (!data) return;
+					var badge = item.querySelector('.fdm-order-list-items-status');
+					if (badge) {
+						// Hide badge for terminal statuses
+						if (['done', 'finished', 'canceled', 'refunded'].indexOf(status) !== -1) {
+							badge.style.display = 'none';
+						} else {
+							badge.textContent = data.text;
+							badge.style.background = data.color;
+							badge.style.display = ''; // Ensure it's visible for other statuses
+						}
+					}
+					// keep status attribute up to date
+					item.setAttribute('data-order-status', status);
+					// If order moved to a terminal status, remove "new" highlight which may override colors
+					if (['done', 'finished', 'canceled', 'refunded'].indexOf(status) !== -1) {
+						try {
+							item.classList.remove('fdm-new-unclicked');
+							item.removeAttribute('data-order-clicked');
+							// remove inline style overrides so attribute-selectors can apply
+							item.style.removeProperty('background');
+							item.style.removeProperty('border');
+						} catch (e) { /* ignore */ }
+					}
+					// toggle quick actions (Cancelar + Preparar) in the corresponding detail
+					try {
+						var detail = document.getElementById('content-' + String(id));
+						if (detail) {
+							var qa = detail.querySelector('.myd-quick-actions');
+							function ensureQA(){ if(!qa){ qa = document.createElement('div'); qa.className = 'myd-quick-actions'; detail.appendChild(qa);} }
+							function renderNew(){
+								ensureQA(); qa.innerHTML = '';
+								var cancelBtn = document.createElement('div');
+								cancelBtn.className = 'fdm-btn-order-action myd-cancel-btn';
+								cancelBtn.id = 'myd-cancel-' + String(id);
+								cancelBtn.setAttribute('data-manage-order-id', String(id));
+								cancelBtn.setAttribute('data-manage-order-action', 'canceled');
+								cancelBtn.textContent = '<?php echo esc_js( __( 'Cancel', 'myd-delivery-pro' ) ); ?>';
+								var prepBtn = document.createElement('div');
+								prepBtn.className = 'fdm-btn-order-action myd-preparar-btn';
+								prepBtn.id = 'myd-preparar-' + String(id);
+								prepBtn.setAttribute('data-manage-order-id', String(id));
+								prepBtn.setAttribute('data-manage-order-action', 'confirmed');
+								prepBtn.textContent = 'Preparar';
+								qa.appendChild(cancelBtn); qa.appendChild(prepBtn); qa.style.display = 'flex';
+							}
+							function renderConfirmed(){
+								ensureQA(); qa.innerHTML = '';
+								var cancelBtn = document.createElement('div');
+								cancelBtn.className = 'fdm-btn-order-action myd-cancel-btn';
+								cancelBtn.id = 'myd-cancel-' + String(id);
+								cancelBtn.setAttribute('data-manage-order-id', String(id));
+								cancelBtn.setAttribute('data-manage-order-action', 'canceled');
+								cancelBtn.textContent = '<?php echo esc_js( __( 'Cancel', 'myd-delivery-pro' ) ); ?>';
+								var shipBtn = document.createElement('div');
+								shipBtn.className = 'fdm-btn-order-action myd-despachar-btn';
+								shipBtn.id = 'myd-despachar-' + String(id);
+								shipBtn.setAttribute('data-manage-order-id', String(id));
+								shipBtn.setAttribute('data-manage-order-action', 'in-delivery');
+								shipBtn.textContent = 'Despachar pedido';
+								qa.appendChild(cancelBtn); qa.appendChild(shipBtn); qa.style.display = 'flex';
+							}
+							if (status === 'new') {
+								renderNew();
+							} else if (status === 'confirmed') {
+								renderConfirmed();
+							} else if (qa) {
+								qa.style.display = 'none';
+							}
+						}
+					} catch(_){ }
+					// move item to the correct section if needed
+					try {
+						var target = getTargetContainerByStatus(status);
+						if (target) {
+							// move to the top of the target section
+							try { if (item.parentElement !== target) item.parentElement && item.parentElement.removeChild(item); } catch(_){ }
+							placeOrder(target, item, true);
+						}
+					} catch(_){ }
+
+					// If order became confirmed, forward order info to local print server
+					if (status === 'confirmed') {
+						try {
+							triggerAutoPrint(id);
+						} catch(err) {
+							console.error('[Orders Panel] auto-print trigger failed for order ' + id, err);
+						}
+					}
+
+					// If order became done (finished/completed), play check sound and ensure it is removed from pending alerts
+					if (status === 'done') {
+						try {
+							MydSingleSound.playFinished();
+						} catch(e) { console.warn('[Orders Panel] failed to play finished sound', e); }
+						try { MydAlert.removeFromSocket(id); } catch(_) {}
+					}
+				} catch(e) { console.error(e); }
+			});
+			// Real-time store status listener
+			socket.on('store.status', function(payload){
+				console.log('[Orders Panel] received store.status:', payload);
+				try {
+					if(!payload || typeof payload.open === 'undefined') return;
+					if(!window.mydStoreStatusWrap) return;
+					var wrap = window.mydStoreStatusWrap;
+					var btn = wrap.querySelector('.select-btn');
+					wrap.setAttribute('data-open', payload.open ? '1':'0');
+						// Se backend enviar 
+						// , atualiza data-current para refletir override atual
+						if(payload.force && ['ignore','open','close'].includes(payload.force)) {
+							wrap.setAttribute('data-current', payload.force);
+						}
+						var curForce = wrap.getAttribute('data-current') || 'ignore';
+					if(btn){
+							btn.classList.remove('status-open','status-close','status-ignore');
+								if(curForce === 'ignore'){
+									btn.classList.add('status-ignore');
+									// Forçar cor do texto e do SVG para #333333, exceto se loja aberta
+									var textEl = btn.querySelector('.sBtn-text');
+									var isOpen = false;
+									if(typeof payload !== 'undefined' && typeof payload.open !== 'undefined') {
+										isOpen = !!payload.open;
+									} else if(typeof window.MYD_STORE_OPEN !== 'undefined') {
+										isOpen = !!window.MYD_STORE_OPEN;
+									}
+									if(textEl) textEl.style.color = isOpen ? '#3ab05a' : '#00000099';
+									// cor do botão
+									btn.style.background = isOpen ? '#def1e1' : '';
+									var iconEl = btn.querySelector('.myd-store-status-icon svg');
+									if(iconEl) {
+										iconEl.setAttribute('fill', isOpen ? '#4caf50' : '#00000099');
+										iconEl.setAttribute('stroke', isOpen ? '#4caf50' : '#00000099');
+										// Corrige paths internos
+										var paths = iconEl.querySelectorAll('path');
+										paths.forEach(function(p){ p.setAttribute('fill', isOpen ? '#4caf50' : '#00000099'); p.setAttribute('stroke', isOpen ? '#4caf50' : '#00000099'); });
+									}
+								}else{
+								btn.classList.add('status-'+curForce);
+								var iconEl = btn.querySelector('.myd-store-status-icon svg');
+								if(iconEl) {
+									var paths = iconEl.querySelectorAll('path');
+									if(curForce === 'close') {
+										paths.forEach(function(p){ p.setAttribute('fill', '#f44336'); p.setAttribute('stroke', '#f44336'); });
+									} else if(curForce === 'open') {
+										paths.forEach(function(p){ p.setAttribute('fill', '#4caf50'); p.setAttribute('stroke', '#4caf50'); });
+									} else if(curForce === 'ignore') {
+										// cor depende se a loja está aberta
+										var isOpen = false;
+										if(typeof payload !== 'undefined' && typeof payload.open !== 'undefined') {
+											isOpen = !!payload.open;
+										} else if(typeof window.MYD_STORE_OPEN !== 'undefined') {
+											isOpen = !!window.MYD_STORE_OPEN;
+										}
+										var cor = isOpen ? '#4caf50' : '#6936f4ff';
+										paths.forEach(function(p){ p.setAttribute('fill', cor); p.setAttribute('stroke', cor); });
+									}
+								}
+							}
+						var textEl = btn.querySelector('.sBtn-text');
+						var subEl = btn.querySelector('.sBtn-subtext');
+							if(textEl) {
+								if(curForce === 'open') textEl.textContent = 'Loja aberta';
+								else if(curForce === 'close') textEl.textContent = 'Manter fechado';
+								else textEl.textContent = payload.open ? 'Loja aberta' : 'Loja fechada';
+							}
+
+						// apply color to sBtn-text: green when open, red when closed
+						try {
+							var t = btn.querySelector('.sBtn-text');
+							if (t) {
+								var isOpen = (curForce === 'ignore') ? !!payload.open : (curForce === 'open');
+								if (isOpen) t.style.color = '#4caf50'; else t.style.color = '#00000099';
+							}
+						} catch(_){ }
+							// swap the whole svg markup if available to keep icons in sync
+							try {
+								if (window.MYD_SVG_OPEN && window.MYD_SVG_CLOSE) {
+									var isOpen = (curForce === 'ignore') ? !!payload.open : (curForce === 'open');
+									var wanted = isOpen ? window.MYD_SVG_OPEN : window.MYD_SVG_CLOSE;
+									var existingSvg = btn.querySelector('svg');
+									var container = btn.querySelector('.myd-store-status-icon');
+									if (container) {
+										console.log('[StoreStatus] swapping icon via container.innerHTML; isOpen=', isOpen);
+										container.innerHTML = wanted;
+									} else if (existingSvg) {
+										console.log('[StoreStatus] swapping icon via existingSvg.outerHTML; isOpen=', isOpen);
+										existingSvg.outerHTML = wanted;
+									} else {
+										// prepend svg if not present
+										var target = btn.querySelector('div');
+										if (target) {
+											console.log('[StoreStatus] prepending icon; isOpen=', isOpen);
+											target.insertAdjacentHTML('afterbegin', wanted);
+										}
+									}
+									// Após swap, força o fill do SVG para o status correto
+									setTimeout(function() {
+										var iconEl = btn.querySelector('.myd-store-status-icon svg');
+										if(iconEl) {
+											var paths = iconEl.querySelectorAll('path');
+											if(curForce === 'close') {
+												paths.forEach(function(p){ p.setAttribute('fill', '#f44336'); });
+											} else if(curForce === 'open') {
+												paths.forEach(function(p){ p.setAttribute('fill', '#4caf50'); });
+											} else if(curForce === 'ignore') {
+												var isOpen = false;
+												if(typeof payload !== 'undefined' && typeof payload.open !== 'undefined') {
+													isOpen = !!payload.open;
+												} else if(typeof window.MYD_STORE_OPEN !== 'undefined') {
+													isOpen = !!window.MYD_STORE_OPEN;
+												}
+												var cor = isOpen ? '#4caf50' : '#f44336';
+												paths.forEach(function(p){ p.setAttribute('fill', cor); });
+											} else {
+												paths.forEach(function(p){ p.setAttribute('fill', '#00000099'); });
+											}
+										}
+									}, 10);
+								} else {
+									// fallback: try to color circle if svg exists
+									try { var circle = btn.querySelector('svg circle'); if(circle) {
+										if(curForce === 'ignore') circle.setAttribute('fill', payload.open ? '#4caf50':'#00000099');
+										else circle.setAttribute('fill', curForce==='open' ? '#4caf50':'#f44336');
+									} } catch(_){ }
+								}
+							} catch(_){ }
+						// Pulso feedback
+						btn.classList.add('status-pulse');
+						setTimeout(function(){ btn.classList.remove('status-pulse'); }, 900);
+						console.log('[StoreStatus][DEBUG] UI updated (direct) open=', payload.open);
+					}
+				} catch(e){ console.error('[Orders Panel] store.status apply failed', e); }
+			});
+		} catch(e) { console.error('[Orders Panel] socket error', e); }
+	}
+
+	// request anonymous token (customer_id 0) from WP
+	fetch('/wp-json/myd-delivery/v1/push/auth', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ myd_customer_id: 0 }),
+		credentials: 'same-origin' // Include cookies for authentication
+	}).then(function(r){ 
+		console.log('[Orders Panel] token fetch response:', r.status, r.headers.get('content-type'));
+		return r.json(); 
+	}).then(function(data){
+		console.log('[Orders Panel] token data:', data);
+		if (data && data.token) {
+			// Decode JWT to check role
+			try {
+				var payload = data.token.split('.')[1];
+				var decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+				console.log('[Orders Panel] decoded token:', decoded);
+			} catch(e) {
+				console.error('[Orders Panel] failed to decode token:', e);
+			}
+			connectSocketWithToken(data.token);
+		} else {
+			console.error('[Orders Panel] no token in response');
+		}
+	}).catch(function(e){ 
+		console.error('[Orders Panel] token fetch error:', e); 
+	});
+});
+</script>
+
+<script>
+// Select-menu behaviour: toggle, option clicks, update WP and notify push server
+document.addEventListener('DOMContentLoaded', function(){
+	try {
+		var wrap = document.getElementById('myd-store-status-wrap');
+
+				// Poll server periodically to detect schedule-based open/close changes
+				(function(){
+					var POLL_INTERVAL = 30000; // 30s
+					function pollOnce(){
+						try{
+							if(!wrap) return;
+							fetch('/wp-json/myd-delivery/v1/store/status', { method: 'GET', cache: 'no-store', credentials: 'same-origin' })
+							.then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
+							.then(function(j){
+								if(!j || typeof j.open === 'undefined') return;
+								var serverOpen = !!j.open;
+								var prev = wrap.getAttribute('data-open') === '1';
+								if(serverOpen !== prev){
+									wrap.setAttribute('data-open', serverOpen ? '1':'0');
+									var curForce = wrap.getAttribute('data-current') || 'ignore';
+									try{ applyStatus(curForce, serverOpen); } catch(e){ console.warn('[StoreStatus] applyStatus failed on poll', e); }
+									// Notify push server about schedule-based change so other clients receive the update
+									try {
+										ensureToken(function(tdata){
+											if (!tdata || !tdata.token) return;
+											var notifyPayload = { force: curForce, open: !!serverOpen };
+											fetch(pushUrlLocal + '/notify/store', {
+												method: 'POST',
+												headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tdata.token },
+												body: JSON.stringify(notifyPayload)
+											}).then(function(r){ if (!r.ok) console.warn('Push notify/store failed (poll)'); }).catch(function(e){ console.error('[StoreStatus] push notify failed (poll)', e); });
+										});
+									} catch(e) { console.error('[StoreStatus] error notifying push on poll', e); }
+								}
+							}).catch(function(){ /* ignore */ });
+						} catch(e){}
+					}
+					setTimeout(pollOnce, 2000);
+					setInterval(pollOnce, POLL_INTERVAL);
+				})();
+		if (!wrap) return;
+		var btn = wrap.querySelector('.select-btn');
+		var opts = wrap.querySelectorAll('.option');
+		var optBox = wrap.querySelector('.options');
+
+		var movedOptionsEl = null;
+		// Close and cleanup any moved/cloned options element. Keep the original optBox display state in sync
+		function closeAll() {
+			// remove any cloned moved element
+			if (movedOptionsEl) {
+				try { movedOptionsEl.parentNode.removeChild(movedOptionsEl); } catch(_){ }
+				movedOptionsEl = null;
+			}
+			// hide all original .options instances to avoid duplicates showing behind
+			try {
+				Array.prototype.slice.call(document.querySelectorAll('.select-menu .options')).forEach(function(o){
+					try { o.style.display = 'none'; } catch(_){ }
+				});
+			} catch(_){ }
+		}
+
+		function openBox() {
+			if (!optBox) return;
+			// if already moved/open, do nothing
+			if (movedOptionsEl) return;
+			// move a clone to body to avoid stacking context issues
+			try {
+				movedOptionsEl = optBox.cloneNode(true);
+				movedOptionsEl.classList.add('myd-select-options');
+				movedOptionsEl.setAttribute('data-myd-select', '1');
+				movedOptionsEl.style.position = 'absolute';
+				movedOptionsEl.style.display = 'block';
+				movedOptionsEl.style.zIndex = '120000';
+				// position under the button
+				var rect = btn.getBoundingClientRect();
+				movedOptionsEl.style.left = (rect.left + window.scrollX) + 'px';
+				movedOptionsEl.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+				document.body.appendChild(movedOptionsEl);
+				// hide the original options element while the clone is visible
+				// this prevents the original box (positioned inside the top-bar) from showing behind the clone
+				try { optBox.style.display = 'none'; } catch(_){ }
+				// explicitly hide any other original options so they don't remain visible under the clone
+				try {
+					Array.prototype.slice.call(document.querySelectorAll('.select-menu .options')).forEach(function(o){
+						try { o.style.display = 'none'; } catch(_){ }
+					});
+				} catch(_){ }
+				// re-bind option click listeners on the moved element
+				Array.prototype.slice.call(movedOptionsEl.querySelectorAll('.option')).forEach(function(optMoved){
+					optMoved.addEventListener('click', function(e){
+						// find original option by status and trigger click on it
+						var status = optMoved.getAttribute('data-status');
+						// find matching original option and dispatch
+						var original = Array.prototype.slice.call(opts).find(function(o){ return o.getAttribute('data-status') === status; });
+						if (original) original.click();
+					});
+				});
+			} catch(e) { console.error(e); optBox.style.display = 'block'; }
+		}
+
+		btn.addEventListener('click', function(e){
+			e.stopPropagation();
+			if (!optBox) return;
+			// Use movedOptionsEl as the authoritative "open" state when cloning to body.
+			if (movedOptionsEl) closeAll(); else openBox();
+		});
+
+		// click outside closes
+		document.addEventListener('click', function(){ closeAll(); });
+
+		// SVG templates (injected from PHP)
+		var svgOpen = <?php echo json_encode( myd_get_status_icon_svg_inline(true) ); ?>;
+		var svgClose = <?php echo json_encode( myd_get_status_icon_svg_inline(false) ); ?>;
+
+		// helper to update UI and icon
+		function applyStatus(status, storeOpen){
+			btn.classList.remove('status-open','status-close','status-ignore');
+			var showOpenForIgnore = (wrap && wrap.getAttribute('data-open') === '1') || !!storeOpen;
+			if (status === 'ignore') {
+				btn.classList.remove('status-open','status-close');
+				btn.classList.add('status-ignore');
+				btn.querySelector('.sBtn-text').textContent = showOpenForIgnore ? 'Loja aberta' : 'Loja fechada';
+				var textEl = btn.querySelector('.sBtn-text');
+				var subEl = btn.querySelector('.sBtn-subtext');
+
+				// set icon according to runtime store open
+				try {
+						var container = btn.querySelector('.myd-store-status-icon');
+						if (container) {
+							container.innerHTML = showOpenForIgnore ? svgOpen : svgClose;
+							// Forçar cor do SVG para #333333
+							var iconEl = container.querySelector('svg');
+							if(iconEl) {
+								iconEl.setAttribute('fill', '#00000099');
+								iconEl.setAttribute('stroke', '#00000099');
+								var paths = iconEl.querySelectorAll('path');
+								paths.forEach(function(p){ p.setAttribute('fill', '#00000099'); p.setAttribute('stroke', '#00000099'); });
+							}
+						}
+				} catch(e) { console.error(e); }
+			} else {
+				btn.classList.add('status-' + status);
+				var textEl2 = btn.querySelector('.sBtn-text');
+				var subEl2 = btn.querySelector('.sBtn-subtext');
+				if (textEl2) {
+					textEl2.textContent = status === 'open' ? 'Loja aberta' : 'Loja fechada';
+					if (status === 'open') textEl2.style.color = '#4caf50'; else textEl2.style.color = '#f44336';
+				}
+				if (subEl2) subEl2.textContent = '';
+				try {
+						var container2 = btn.querySelector('.myd-store-status-icon');
+						if (container2) {
+							console.log('[StoreStatus][applyStatus] swap icon for forced status=', status);
+							container2.innerHTML = status === 'open' ? svgOpen : svgClose;
+						}
+				} catch(e) { console.error(e); }
+			}
+		}
+
+		var adminPushToken = null;
+		var pushUrlLocal = '<?php echo esc_js( get_option( 'myd_push_server_url', '' ) ); ?>';
+
+		function ensureToken(cb){
+			if (adminPushToken) return cb({ token: adminPushToken });
+			fetch('/wp-json/myd-delivery/v1/push/auth', {
+				method: 'POST', headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ myd_customer_id: 0 })
+			}).then(r=>r.json()).then(function(d){ adminPushToken = d && d.token ? d.token : null; cb(d); }).catch(function(e){ console.error('Token fetch error', e); cb(null); });
+		}
+
+		opts.forEach(function(opt){
+			opt.addEventListener('click', function(e){
+				e.stopPropagation();
+				var status = opt.getAttribute('data-status');
+				closeAll();
+				// submit to WP via hidden form (nonce present)
+				var form = document.getElementById('myd-store-status-form');
+				var nonceInput = form ? form.querySelector('input[name="myd_store_status_box_nonce"]') : null;
+				var nonce = nonceInput ? nonceInput.value : '';
+				var fd = new FormData(); fd.append('myd_store_status', status); fd.append('myd_store_status_box_nonce', nonce);
+				fetch(window.location.href, { method: 'POST', body: fd }).then(function(resp){
+					if (resp.ok) {
+						// on success, notify push server and let socket update the UI
+						try {
+							if (pushUrlLocal) {
+								ensureToken(function(tdata){
+									if (!tdata || !tdata.token) return;
+										// helper: try to get authoritative 'open' from server via REST endpoints (best-effort)
+										function fetchServerOpen(cb) {
+											var endpoints = [
+												'/wp-json/myd-delivery/v1/store/open',
+												'/wp-json/myd-delivery/v1/store/status',
+												'/wp-json/myd-delivery/v1/store',
+												'/wp-json/myd-delivery/v1/push/store-open'
+											];
+											var tried = 0;
+											function tryNext() {
+												if (tried >= endpoints.length) return cb(undefined);
+												var url = endpoints[tried++];
+												fetch(url, { method: 'GET', credentials: 'same-origin' }).then(function(r){
+													if (!r.ok) return tryNext();
+													return r.json().then(function(j){
+														if (j && typeof j.open !== 'undefined') return cb(!!j.open);
+														// some endpoints may return { status: 'open' } or similar
+														if (j && typeof j.status !== 'undefined') return cb(String(j.status).toLowerCase() === 'open');
+														return tryNext();
+													}).catch(function(){ tryNext(); });
+												}).catch(function(){ tryNext(); });
+											}
+											tryNext();
+										}
+
+										var runtimeOpenAttr = wrap ? wrap.getAttribute('data-open') : null;
+										var initialOpenAttr = wrap ? wrap.getAttribute('data-initial-open') : null;
+										var initialOpen = initialOpenAttr === '1';
+
+										function doNotify(openValue) {
+											var notifyPayload = { force: status };
+											if (status === 'open' || status === 'close') {
+												notifyPayload.open = (status === 'open');
+											} else {
+												if (typeof openValue !== 'undefined') notifyPayload.open = !!openValue;
+												else if (runtimeOpenAttr === '1') notifyPayload.open = true;
+												else if (runtimeOpenAttr === '0') notifyPayload.open = false;
+												else notifyPayload.open = initialOpen;
+											}
+											fetch(pushUrlLocal + '/notify/store', {
+												method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tdata.token },
+												body: JSON.stringify(notifyPayload)
+											}).then(function(r){ if (!r.ok) console.warn('Push notify/store failed'); }).catch(function(e){ console.error(e); });
+										}
+
+										if (status === 'ignore') {
+											// try to obtain authoritative server open before notifying push server
+											fetchServerOpen(function(serverOpen){
+												if (typeof serverOpen === 'undefined') {
+													// couldn't verify server state — do not change frontend (wait for socket)
+													console.warn('[StoreStatus] unable to verify server open state; UI will wait for socket update');
+													doNotify();
+												} else {
+													// Apply authoritative state to frontend now (server-verified)
+													try { applyStatus('ignore', !!serverOpen); } catch(e) { console.error(e); }
+													doNotify(serverOpen);
+												}
+											});
+										} else {
+											doNotify();
+										}
+								});
+							}
+						} catch(e){ console.error(e); }
+					} else {
+						alert('Ocorreu um erro ao salvar o status.');
+					}
+				}).catch(function(e){ console.error(e); alert('Ocorreu um erro de rede.'); });
+			});
+		});
+	} catch(e) { console.error(e); }
+});
+</script>
+
+<!-- detail card CSS consolidated into assets/css/panel-inline.css -->
+
+</div><!-- /.fdm-orders-content -->
+
+</div><!-- /.fdm-ordres-wrap -->
+
+</div><!-- /.myd-orders-shell -->
+
+<!-- Settings modal -->
+<style>
+.myd-menu-item.active { background: #e6e6e6 !important; }
+</style>
+<div id="myd-settings-modal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;z-index:130000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+	<div style="background:#fff;max-width:900px;width:94%;margin:0 auto;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3);display:flex;height:80vh;position:relative;padding-bottom:56px;">
+	<!-- Save button positioned at the bottom-right of the modal -->
+	<button id="myd-save-printer" class="myd-btn myd-btn-primary" type="button" style="position:absolute;right:20px;bottom:16px;background:#ffae00;color:#fff;border:0;padding:12px 18px;border-radius:8px;cursor:pointer;font-size:15px;min-width:110px;display:none">Salvar</button>
+        <div style="width:200px;border-right:1px solid #eee;padding:16px;background:#f9f9f9;">
+            <h4 style="margin:0 0 12px 0;font-size:14px;">Menu</h4>
+            <ul id="myd-settings-menu" style="list-style:none;padding:0;margin:0;">
+                <li class="myd-menu-item active" data-section="printer" style="padding:8px;cursor:pointer;border-radius:4px;margin-bottom:4px;">Impressão</li>
+                <li class="myd-menu-item" data-section="store" style="padding:8px;cursor:pointer;border-radius:4px;margin-bottom:4px;">Gestão de Loja</li>
+                <li class="myd-menu-item" data-section="account" style="padding:8px;cursor:pointer;border-radius:4px;margin-bottom:4px;">Minha Conta</li>
+            </ul>
+        </div>
+        <div style="flex:1;padding:16px;overflow-y:auto;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <strong style="font-size:16px" id="myd-settings-title">Impressão</strong>
+                <button id="myd-settings-close" style="background:none;border:0;font-size:18px;cursor:pointer;">✕</button>
+            </div>
+            <div id="myd-settings-content">
+                <!-- Configurar Impressora -->
+                <section id="myd-section-printer" class="myd-settings-section">
+
+                    <!-- Mensagem para usuários não-Electron -->
+                    <div id="myd-electron-message" style="display:none;background:#fff3cd;border:1px solid #ffeaa7;border-radius:4px;padding:16px;margin-bottom:16px;">
+                        <h5 style="margin:0 0 8px 0;color:#856404;">Funcionalidade exclusiva do aplicativo</h5>
+                        <p style="margin:0;color:#856404;font-size:14px;">
+                            A configuração de impressoras locais está disponível apenas quando você utiliza o aplicativo "Franguxo Gestor de Pedidos" instalado no computador.
+                        </p>
+                    </div>
+
+                    <!-- Controles de impressora (visíveis apenas no Electron) -->
+                    <div id="myd-printer-controls">
+						<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+							<span id="myd-printer-loading" style="display:none;color:#666">Buscando...</span>
+						</div>
+						<div id="myd-copies-card" style="margin-bottom:12px;padding:12px;border-radius:6px;border:1px solid #eef0f2;display:flex;align-items:center;justify-content:space-between;background:#fff">
+							<div style="flex:1;min-width:0;">
+								<label style="display:block;margin-bottom:6px;font-weight:600">Quantidade de vias</label>
+								<div style="color:#666;font-size:13px;line-height:1.2">Defina a quantidade de vias que serão impressas automaticamente</div>
+							</div>
+							<div style="margin-left:12px;">
+								<div id="myd-copies-buttons" style="display:flex;gap:8px;">
+									<button type="button" class="myd-copy-btn" data-copies="1">1</button>
+									<button type="button" class="myd-copy-btn" data-copies="2">2</button>
+									<button type="button" class="myd-copy-btn" data-copies="3">3</button>
+									<button type="button" class="myd-copy-btn" data-copies="4">4</button>
+								</div>
+							</div>
+						</div>
+						<div id="myd-printers-list" style="min-height:40px;">
+							<!-- printers will be injected here -->
+						</div>
+						<div style="margin-top:12px;">
+							<span id="myd-printer-status" style="margin-left:8px;color:green;display:none"></span>
+						</div>
+                    </div>
+                </section>
+
+                <!-- Gestão de Loja -->
+                <section id="myd-section-store" class="myd-settings-section" style="display:none;">
+                    <h4 style="margin:0 0 8px 0">Gestão de Loja</h4>
+                    <p style="margin:0 0 12px 0;color:#666">Gerencie horários de funcionamento, status da loja e outras configurações operacionais.</p>
+                    <div style="margin-bottom:12px;">
+                        <label style="display:block;margin-bottom:4px;">Horário de Funcionamento</label>
+                        <p style="color:#666;font-size:14px;">Configure os horários em Configurações > Horários de Abertura.</p>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <label style="display:block;margin-bottom:4px;">Status da Loja</label>
+                        <p style="color:#666;font-size:14px;">Use o seletor na barra superior para alterar o status (Aberto/Fechado).</p>
+                    </div>
+                    <div>
+                        <label style="display:block;margin-bottom:4px;">Outras Configurações</label>
+                        <p style="color:#666;font-size:14px;">Acesse Configurações > Geral para mais opções.</p>
+                    </div>
+                </section>
+
+                <!-- Minha Conta -->
+                <section id="myd-section-account" class="myd-settings-section" style="display:none;">
+                    <h4 style="margin:0 0 8px 0">Minha Conta</h4>
+                    <p style="margin:0 0 12px 0;color:#666">Visualize e edite suas informações pessoais.</p>
+                    <div style="margin-bottom:12px;">
+                        <label style="display:block;margin-bottom:4px;">Nome</label>
+                        <input type="text" id="myd-account-name" readonly style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <label style="display:block;margin-bottom:4px;">Email</label>
+                        <input type="email" id="myd-account-email" readonly style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+                    </div>
+                    <div>
+                        <label style="display:block;margin-bottom:4px;">Função</label>
+                        <input type="text" id="myd-account-role" readonly style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;">
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div><script>
+document.addEventListener('DOMContentLoaded', function(){
+    var settingsBtn = document.getElementById('myd-sidebar-settings');
+    var modal = document.getElementById('myd-settings-modal');
+    var closeBtn = document.getElementById('myd-settings-close');
+    var menuItems = document.querySelectorAll('#myd-settings-menu .myd-menu-item');
+    var sections = document.querySelectorAll('.myd-settings-section');
+    var titleEl = document.getElementById('myd-settings-title');
+    var printersList = document.getElementById('myd-printers-list');
+	var loadingEl = document.getElementById('myd-printer-loading');
+	var saveBtn = document.getElementById('myd-save-printer');
+	var clearBtn = document.getElementById('myd-clear-printer');
+	var statusEl = document.getElementById('myd-printer-status');
+	// pending selection (only persisted when user clicks Salvar)
+	var pendingPrinter = null;
+	// pending copies and persisted copies
+	var pendingCopies = null;
+	var currentSavedCopies = null;
+	// currently persisted selection (from localStorage) used to detect changes
+	var currentSaved = null;
+
+    if (!settingsBtn || !modal) return;
+
+	function openModal(){
+		modal.style.display = 'flex';
+		// Detecta se está rodando no Electron usando a mesma lógica aplicada no order-list
+		var isElectron = false;
+		try {
+			if (typeof window !== 'undefined') {
+				if (typeof window.isElectron !== 'undefined') {
+					isElectron = !!window.isElectron;
+				} else if (window.electronAPI && (typeof window.electronAPI.triggerPrint === 'function' || typeof window.electronAPI.printOrderReceipt === 'function')) {
+					isElectron = true;
+				} else if (
+					(typeof navigator === 'object' && navigator.userAgent && navigator.userAgent.toLowerCase().indexOf('electron') !== -1) ||
+					(window.process && window.process.type)
+				) {
+					isElectron = true;
+				}
+			}
+		} catch(_){ }
+		var printerSection = document.getElementById('myd-section-printer');
+		var electronMessage = document.getElementById('myd-electron-message');
+		var printerControls = document.getElementById('myd-printer-controls');
+
+		if (!isElectron) {
+			// Esconde controles e mostra mensagem para não-Electron
+			if (printerControls) printerControls.style.display = 'none';
+			if (electronMessage) electronMessage.style.display = 'block';
+		} else {
+			// Mostra controles e esconde mensagem para Electron
+			if (printerControls) printerControls.style.display = 'block';
+			if (electronMessage) electronMessage.style.display = 'none';
+		}
+
+		// load saved selection (no status text shown here)
+		var saved = localStorage.getItem('myd-default-printer');
+	currentSaved = saved === null ? null : saved;
+	// load saved copies
+	var savedCopies = localStorage.getItem('myd-print-copies');
+	currentSavedCopies = savedCopies === null ? null : savedCopies;
+	pendingPrinter = null;
+	pendingCopies = null;
+		// Buscar impressoras automaticamente ao abrir o modal
+		try{
+			// aciona a busca diretamente
+			setTimeout(function(){ fetchPrinters(); }, 50);
+		}catch(e){ console.warn('Auto-fetch printers failed', e); }
+        // Load account data if section is account
+        loadAccountData();
+    }
+    function closeModal(){ modal.style.display = 'none'; }
+
+    settingsBtn.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+    closeBtn.addEventListener('click', function(e){ e.preventDefault(); closeModal(); });
+    modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+
+    // Menu switching
+    menuItems.forEach(function(item){
+        item.addEventListener('click', function(){
+            var section = item.getAttribute('data-section');
+            // Update active menu item
+            menuItems.forEach(function(mi){ mi.classList.remove('active'); });
+            item.classList.add('active');
+            // Show corresponding section
+            sections.forEach(function(sec){ sec.style.display = 'none'; });
+            var targetSec = document.getElementById('myd-section-' + section);
+            if (targetSec) targetSec.style.display = 'block';
+            // Update title
+            var titles = { printer: 'Impressão', store: 'Gestão de Loja', account: 'Minha Conta' };
+            titleEl.textContent = titles[section] || 'Configurações';
+            // Load data if needed
+            if (section === 'account') loadAccountData();
+        });
+    });
+
+	// --- WhatsApp status polling (uses evolution API settings) ---
+		(function(){
+			var lastState = null;
+		// read plugin options via server-side rendered values
+		var evolutionApiUrl = <?php echo json_encode( trim( (string) get_option( 'evolution_api_url', '' ) ) ); ?>;
+		var evolutionInstance = <?php echo json_encode( trim( (string) get_option( 'evolution_instance_name', '' ) ) ); ?>;
+		var evolutionApiKey = <?php echo json_encode( trim( (string) get_option( 'evolution_api_key', '' ) ) ); ?>;
+		var statusEl = document.getElementById('myd-whatsapp-status');
+		var indicator = document.getElementById('myd-whatsapp-indicator');
+
+		function buildUrl(){
+			if (!evolutionApiUrl || !evolutionInstance) return null;
+			var base = evolutionApiUrl.replace(/\/+$/, '');
+			var inst = String(evolutionInstance).replace(/^dwp-/, '');
+			return base + '/instance/connectionState/dwp-' + encodeURIComponent(inst);
+		}
+
+		function updateUi(state){
+			try{
+				if (!statusEl || !indicator) return;
+				if (!state) {
+					statusEl.textContent = 'Desconectado';
+					indicator.style.background = '#c0392b';
+					return;
+				}
+				if (String(state).toLowerCase() === 'open'){
+					statusEl.textContent = 'Conectado';
+					indicator.style.background = '#2ecc71';
+				} else {
+					statusEl.textContent = 'Desconectado';
+					indicator.style.background = '#c0392b';
+				}
+			}catch(e){ /* noop */ }
+		}
+
+		function fetchStatusOnce(){
+			// Prefer server-side proxy to avoid CORS/auth issues
+			var restUrl = (window.location && window.location.origin ? window.location.origin : '') + '/wp-json/myd-delivery/v1/evolution/whatsapp_status';
+			fetch(restUrl, { method: 'GET', credentials: 'same-origin' }).then(function(r){
+				if (!r.ok) throw new Error('status_fetch_failed');
+				return r.json();
+			}).then(function(j){
+				var st = null;
+				try {
+					// server returns { status_code, body, raw }
+					if (j && j.body && j.body.instance && j.body.instance.state) st = j.body.instance.state;
+					// fallback: direct shape
+					else if (j && j.instance && j.instance.state) st = j.instance.state;
+				} catch(_) { st = null; }
+				if (st !== lastState) { lastState = st; updateUi(st); }
+			}).catch(function(){
+				// fallback: try direct external URL if configured (may still fail due to CORS)
+				try {
+					var url = buildUrl();
+					if (!url) { lastState = null; updateUi(null); return; }
+					fetch(url, { method: 'GET' }).then(function(r){ if(!r.ok) throw new Error('status_fetch_failed'); return r.json(); }).then(function(j){ var st = (j && j.instance && j.instance.state) ? j.instance.state : null; lastState = st; updateUi(st); }).catch(function(){ lastState = null; updateUi(null); });
+				} catch(_) { lastState = null; updateUi(null); }
+			});
+		}
+			// Instead of polling, perform a single fetch when the store section is opened.
+			function fetchSavedState(){
+				try {
+					var ajaxUrl = (window.location && window.location.origin ? window.location.origin : '') + '/wp-admin/admin-ajax.php?action=myd_get_whatsapp_status';
+					fetch(ajaxUrl, { method: 'GET', credentials: 'same-origin' }).then(function(r){ if(!r.ok) throw new Error('ajax_failed'); return r.json(); }).then(function(j){ if (j && j.state) updateUi(j.state); else if (j && typeof j.state !== 'undefined') updateUi(j.state); }).catch(function(){ /* noop */ });
+				} catch(e) { /* noop */ }
+			}
+
+			function startPolling(){
+				fetchStatusOnce();
+				fetchSavedState();
+				// No polling needed - SSE handles real-time updates
+			}
+			function stopPolling(){
+				// No interval to clear
+			}
+
+		// Start polling when settings modal opens and 'store' section is active
+		var originalMenuHandler = function(){ };
+		// listen for menu clicks: when user opens 'store', fetch status once
+		document.querySelectorAll('#myd-settings-menu .myd-menu-item').forEach(function(mi){
+			mi.addEventListener('click', function(){
+				var sec = mi.getAttribute('data-section');
+				if (sec === 'store') { startPolling(); }
+			});
+		});
+
+		// If the modal is opened with the store section already visible, fetch once.
+		var seenStoreFetch = false;
+		var obs = new MutationObserver(function(){
+			try{
+				var storeSec = document.getElementById('myd-section-store');
+				if (!seenStoreFetch && storeSec && storeSec.style && storeSec.style.display !== 'none') {
+					seenStoreFetch = true;
+					fetchStatusOnce();
+					try{ obs.disconnect(); } catch(e){}
+				}
+			}catch(_){}
+		});
+		try{ obs.observe(document.getElementById('myd-settings-content') || document.body, { childList:true, subtree:true, attributes:false }); } catch(e){}
+
+		// Stop polling when modal closes or user switches away from store section
+		document.addEventListener('click', function(e){
+			if (e.target.closest('#myd-settings-modal .myd-modal-close') || e.target.closest('#myd-settings-menu .myd-menu-item:not([data-section="store"])')) {
+				stopPolling();
+			}
+		});
+	})();
+
+	// SSE for real-time WhatsApp status updates (integrates with access monitor stream)
+	(function(){
+		var statusEl = document.getElementById('myd-whatsapp-status');
+		var indicator = document.getElementById('myd-whatsapp-indicator');
+		function updateUi(state){
+			try{
+				if (!statusEl || !indicator) return;
+				if (!state) {
+					statusEl.textContent = 'Desconectado';
+					indicator.style.background = '#c0392b';
+					return;
+				}
+				if (String(state).toLowerCase() === 'open'){
+					statusEl.textContent = 'Conectado';
+					indicator.style.background = '#2ecc71';
+				} else {
+					statusEl.textContent = 'Desconectado';
+					indicator.style.background = '#c0392b';
+				}
+			}catch(e){ /* noop */ }
+		}
+		try{
+			var nonce = '<?php echo wp_create_nonce("wp_rest"); ?>';
+			var es = new EventSource('<?php echo esc_url_raw( rest_url("myd-delivery/v1/access-stream") ); ?>?_wpnonce=' + encodeURIComponent(nonce));
+			es.addEventListener('whatsapp-status', function(e){
+				try{
+					var data = JSON.parse(e.data);
+					updateUi(data.state);
+					// Se a conexão abriu, feche o modal de QR caso esteja aberto (widget modal e modal de settings)
+					try{
+						var st = (data && data.state) ? String(data.state).toLowerCase() : '';
+						if (st === 'open'){
+							var m = document.getElementById('myd-whatsapp-modal');
+							if (m) m.style.display = 'none';
+							var evoModal = document.getElementById('evolution_qr_modal');
+							if (evoModal) evoModal.remove();
+						}
+					} catch(__){}
+				}catch(err){}
+			});
+			// Listen for access log entries (webhook logs). When modal is open and
+			// a `qrcode.updated` webhook arrives update the QR image in the modal.
+			es.addEventListener('access', function(e){
+				try{
+					var row = JSON.parse(e.data);
+					var modal = document.getElementById('myd-whatsapp-modal');
+					if (!modal) return;
+					var visible = (modal.style.display && modal.style.display !== 'none') || (window.getComputedStyle && window.getComputedStyle(modal).display !== 'none');
+					if (!visible) return;
+					// Quick debug to console for diagnosis (will be silent when console closed)
+					try{ console.debug && console.debug('[MYD] access event', row && row.event ? row.event : (row && row.body && row.body.event ? row.body.event : '(no-event)'), row); } catch(__){}
+					var evt = (row && row.event) ? row.event : (row && row.body && row.body.event ? row.body.event : '');
+					if (!evt || String(evt).toLowerCase() !== 'qrcode.updated') return;
+					// Extract base64 image from multiple possible locations
+					var b64 = null;
+					try{
+						// 1) direct structured body (log_rest_request normalized body)
+						if (row.body && row.body.data && row.body.data.qrcode && row.body.data.qrcode.base64) b64 = row.body.data.qrcode.base64;
+						// 2) some logs may store under row.data
+						if (!b64 && row.data && row.data.qrcode && row.data.qrcode.base64) b64 = row.data.qrcode.base64;
+						// 3) raw preview string possibly containing data:image...;base64,...
+						if (!b64) {
+							var srcStr = '';
+							if (typeof row.body_raw_preview === 'string' && row.body_raw_preview.length) srcStr = row.body_raw_preview;
+							else if (typeof row.body === 'string' && row.body.length) srcStr = row.body;
+							else if (typeof row.body === 'object') srcStr = JSON.stringify(row.body);
+							if (srcStr) {
+								var m = /data:image\/[a-z]+;base64,([A-Za-z0-9+/=\-_]+\=?\d*)/.exec(srcStr);
+								if (m && m[0]) b64 = m[0];
+								// fallback: raw base64 chunk (without data: prefix)
+								if (!b64) {
+									var m2 = /([A-Za-z0-9+/=\-_]{200,})/.exec(srcStr);
+									if (m2 && m2[1]) b64 = 'data:image/png;base64,' + m2[1].replace(/[^A-Za-z0-9+/=\-_]/g,'');
+								}
+							}
+						}
+					} catch(__){}
+					if (!b64) return;
+					var qrArea = document.getElementById('myd-whatsapp-qr-area');
+					if (!qrArea) return;
+					qrArea.innerHTML = '<img src="' + b64 + '" alt="QR Code para conexão" style="max-width:320px;max-height:320px;display:block;margin:6px auto;" />';
+					var loading = document.getElementById('myd-whatsapp-qr-loading'); if (loading) loading.style.display = 'none';
+				}catch(_){ /* silent */ }
+			});
+			// Optional: handle connection status if needed
+			es.addEventListener('error', function(){ /* silent */ });
+		}catch(e){ /* silent */ }
+	})();
+
+	// Polling for WhatsApp status every 30 seconds (in addition to webhook/SSE)
+	(function(){
+		var lastState = null;
+		var evolutionApiUrl = <?php echo json_encode( trim( (string) get_option( 'evolution_api_url', '' ) ) ); ?>;
+		var evolutionInstance = <?php echo json_encode( trim( (string) get_option( 'evolution_instance_name', '' ) ) ); ?>;
+		var evolutionApiKey = <?php echo json_encode( trim( (string) get_option( 'evolution_api_key', '' ) ) ); ?>;
+		var statusEl = document.getElementById('myd-whatsapp-status');
+		var indicator = document.getElementById('myd-whatsapp-indicator');
+
+		function buildUrl(){
+			if (!evolutionApiUrl || !evolutionInstance) return null;
+			var base = evolutionApiUrl.replace(/\/+$/, '');
+			var inst = String(evolutionInstance).replace(/^dwp-/, '');
+			return base + '/instance/connectionState/dwp-' + encodeURIComponent(inst);
+		}
+
+		function updateUi(state){
+			try{
+				if (!statusEl || !indicator) return;
+				if (!state) {
+					statusEl.textContent = 'Desconectado';
+					indicator.style.background = '#c0392b';
+					return;
+				}
+				if (String(state).toLowerCase() === 'open'){
+					statusEl.textContent = 'Conectado';
+					indicator.style.background = '#2ecc71';
+				} else {
+					statusEl.textContent = 'Desconectado';
+					indicator.style.background = '#c0392b';
+				}
+			}catch(e){ /* noop */ }
+		}
+
+		function fetchStatusOnce(){
+			// Prefer server-side proxy to avoid CORS/auth issues
+			var restUrl = (window.location && window.location.origin ? window.location.origin : '') + '/wp-json/myd-delivery/v1/evolution/whatsapp_status';
+			fetch(restUrl, { method: 'GET', credentials: 'same-origin' }).then(function(r){
+				if (!r.ok) throw new Error('status_fetch_failed');
+				return r.json();
+			}).then(function(j){
+				var st = null;
+				try {
+					// server returns { status_code, body, raw }
+					if (j && j.body && j.body.instance && j.body.instance.state) st = j.body.instance.state;
+					// fallback: direct shape
+					else if (j && j.instance && j.instance.state) st = j.instance.state;
+				} catch(_) { st = null; }
+				if (st !== lastState) { lastState = st; updateUi(st); }
+			}).catch(function(){
+				// fallback: try direct external URL if configured (may still fail due to CORS)
+				try {
+					var url = buildUrl();
+					if (!url) { lastState = null; updateUi(null); return; }
+					fetch(url, { method: 'GET' }).then(function(r){ if(!r.ok) throw new Error('status_fetch_failed'); return r.json(); }).then(function(j){ var st = (j && j.instance && j.instance.state) ? j.instance.state : null; lastState = st; updateUi(st); }).catch(function(){ lastState = null; updateUi(null); });
+				} catch(_) { lastState = null; updateUi(null); }
+			});
+		}
+
+		// Start polling every 30 seconds
+		setInterval(fetchStatusOnce, 30000);
+		// Also fetch immediately on load
+		fetchStatusOnce();
+	})();
+
+	// Click-to-open modal when status is Disconnected
+	(function(){
+		var widget = document.getElementById('myd-whatsapp-widget');
+		var statusEl = document.getElementById('myd-whatsapp-status');
+		if (!widget) return;
+
+		function isDisconnected(){
+			try{ return statusEl && statusEl.textContent && statusEl.textContent.toLowerCase().indexOf('desconect') !== -1; }catch(e){return false;}
+		}
+
+		function ensureModal(){
+			var existing = document.getElementById('myd-whatsapp-modal');
+			if (existing) return existing;
+			var modal = document.createElement('div');
+			modal.id = 'myd-whatsapp-modal';
+			modal.style.cssText = 'display:none;position:fixed;z-index:100000;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;';
+			var inner = document.createElement('div');
+			inner.style.cssText = 'background:#fff;padding:18px;border-radius:10px;max-width:520px;width:92%;box-shadow:0 10px 30px rgba(0,0,0,0.2);font-family:Arial, sans-serif;';
+			inner.innerHTML = '<h3 style="margin-top:0;font-size:18px;">Robô WhatsApp desconectado</h3>' +
+				'<p style="color:#444;">O robô do WhatsApp está desconectado. Você pode verificar as configurações da integração, revalidar o webhook ou consultar os logs para diagnosticar o problema.</p>' +
+				'<div id="myd-whatsapp-qr-area" style="margin-top:12px;text-align:center;min-height:120px;">' +
+					'<div id="myd-whatsapp-qr-loading" style="color:#666">Carregando QR Code...</div>' +
+				'</div>' +
+				'<div style="margin-top:16px;text-align:right;"><button id="myd-whatsapp-modal-close" style="margin-right:8px;padding:8px 12px;border-radius:6px;border:1px solid #ddd;background:#f5f5f5;">Fechar</button></div>';
+			modal.appendChild(inner);
+			modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+			document.body.appendChild(modal);
+
+			document.getElementById('myd-whatsapp-modal-close').addEventListener('click', closeModal);
+
+			// Quando o modal for criado, tente obter o QR da Evolution (reaproveita lógica do settings)
+			(function(){
+				var apiUrl = <?php echo json_encode( trim( (string) get_option( 'evolution_api_url', '' ) ) ); ?>;
+				var instanceName = <?php echo json_encode( trim( (string) get_option( 'evolution_instance_name', '' ) ) ); ?>;
+				var apiKey = <?php echo json_encode( trim( (string) get_option( 'evolution_api_key', '' ) ) ); ?>;
+				var qrArea = document.getElementById('myd-whatsapp-qr-area');
+				var qrLoading = document.getElementById('myd-whatsapp-qr-loading');
+				if (!qrArea) return;
+
+				function instanceFull(){ return 'dwp-' + (String(instanceName || '').replace(/^dwp-/, '')); }
+
+				function showMessage(msg){ if (qrLoading) qrLoading.textContent = msg; }
+
+				function renderImg(base64){
+					if (!base64) return;
+					qrArea.innerHTML = '<img src="' + base64 + '" alt="QR Code para conexão" style="max-width:320px;max-height:320px;display:block;margin:6px auto;" />';
+				}
+
+				function fetchConnect(){
+					if (!apiUrl || !instanceName) { showMessage('Configuração Evolution ausente. Verifique as opções.'); return; }
+					var base = apiUrl.replace(/\/+$/, '');
+					var inst = instanceFull();
+					showMessage('Solicitando QR Code...');
+					fetch(base + '/instance/connect/' + encodeURIComponent(inst), { method: 'GET', headers: { 'apikey': apiKey } }).then(function(resp){
+						if (resp.status === 200) {
+							resp.json().then(function(connectData){
+								if (connectData && connectData.base64) {
+									renderImg(connectData.base64);
+									showMessage('Escaneie o QR Code para conectar.');
+								} else {
+									showMessage('Conectando, mas QR Code não disponível. Aguarde webhooks.');
+								}
+							}).catch(function(){ showMessage('Erro ao processar resposta do servidor Evolution.'); });
+						} else if (resp.status === 404) {
+							// Tentar criar instância e reconectar
+							showMessage('Instância não encontrada. Criando instância...');
+							fetch(base + '/instance/create', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json', 'apikey': apiKey },
+								body: JSON.stringify({ instanceName: inst, qrcode: true, integration: 'WHATSAPP-BAILEYS' })
+							}).then(function(createResp){
+								if (createResp.status === 200 || createResp.status === 201) {
+									showMessage('Instância criada. Gerando QR Code...');
+									// tentar conectar novamente
+									setTimeout(fetchConnect, 1200);
+								} else {
+									showMessage('Erro ao criar instância: ' + createResp.status);
+								}
+							}).catch(function(){ showMessage('Erro ao criar instância.'); });
+						} else {
+							showMessage('Erro ao solicitar QR Code: ' + resp.status);
+						}
+					}).catch(function(){ showMessage('Erro de conexão com Evolution.'); });
+				}
+
+				// Expor uma função para recarregar quando o modal for aberto
+				qrArea.reloadQr = fetchConnect;
+				// iniciar tentativa imediata
+				fetchConnect();
+			})();
+
+			function closeModal(){ modal.style.display = 'none'; }
+			return modal;
+		}
+
+		function openModal(){
+			var m = ensureModal();
+			m.style.display = 'flex';
+			try{
+				var qrArea = document.getElementById('myd-whatsapp-qr-area');
+				if (qrArea && typeof qrArea.reloadQr === 'function') qrArea.reloadQr();
+			}catch(e){/* noop */}
+		}
+
+		widget.addEventListener('click', function(){ if (isDisconnected()) openModal(); });
+		widget.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && isDisconnected()) { e.preventDefault(); openModal(); } });
+
+		// update cursor when status changes
+		function refreshCursor(){ try{ if (isDisconnected()) widget.style.cursor = 'pointer'; else widget.style.cursor = 'default'; } catch(e){} }
+		refreshCursor();
+		if (statusEl){
+			var mo = new MutationObserver(refreshCursor);
+			mo.observe(statusEl, { childList:true, subtree:true, characterData:true });
+		}
+	})();
+
+    function loadAccountData(){
+        // Fetch user data via WP AJAX or assume it's available
+        // For simplicity, use a placeholder or fetch from a REST endpoint
+        fetch('/wp-json/wp/v2/users/me', { credentials: 'same-origin' }).then(function(r){
+            if (!r.ok) return;
+            return r.json();
+        }).then(function(user){
+            if (user) {
+                document.getElementById('myd-account-name').value = user.name || '';
+                document.getElementById('myd-account-email').value = user.email || '';
+                document.getElementById('myd-account-role').value = user.roles ? user.roles.join(', ') : '';
+            }
+        }).catch(function(){ /* ignore */ });
+    }
+
+
+	// Alterado: exibir lista com switches (um por impressora), semelhante à imagem de referência
+	printersList.innerHTML = '';
+
+	// Inserir estilo para switch (apenas se ainda não existir)
+	if (!document.getElementById('myd-printer-switch-style')){
+		var style = document.createElement('style');
+		style.id = 'myd-printer-switch-style';
+			style.innerHTML = '\n.myprinter-list{list-style:none;padding:0;margin:0}\n.myprinter-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #f0f0f0}\n.myprinter-name{font-size:15px;color:#222}\n.switch{position:relative;display:inline-block;width:44px;height:24px}\n.switch input{opacity:0;width:0;height:0}\n.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.2s;border-radius:24px}\n.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;top:3px;background:white;transition:.2s;border-radius:50%}\n.switch input:checked + .slider{background:#ffae00}\n.switch input:checked + .slider:before{transform:translateX(20px)}\n.myd-copy-btn{padding:4px 8px;border-radius:4px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:13px;min-width:34px;text-align:center;color:#ccc}\n.myd-copy-btn:not(.active):hover{background:#f1f1f1; color: #ccc}\n.myd-copy-btn.active{background:#ffae00;color:#fff;}\n';
+		document.head.appendChild(style);
+	}
+
+	function renderPrinters(printers){
+		printersList.innerHTML = '';
+		var ul = document.createElement('ul'); ul.className = 'myprinter-list';
+		var saved = localStorage.getItem('myd-default-printer');
+		printers.forEach(function(p){
+			var name = p && p.name ? p.name : (typeof p === 'string' ? p : JSON.stringify(p));
+			var li = document.createElement('li'); li.className = 'myprinter-item';
+			var span = document.createElement('span'); span.className = 'myprinter-name'; span.textContent = name;
+			var label = document.createElement('label'); label.className = 'switch';
+			var input = document.createElement('input'); input.type = 'checkbox'; input.className = 'printer-toggle'; input.setAttribute('data-printer', name);
+			var slider = document.createElement('span'); slider.className = 'slider';
+			label.appendChild(input); label.appendChild(slider);
+			li.appendChild(span); li.appendChild(label);
+			ul.appendChild(li);
+
+			// set initial state
+			try{ if (saved && saved === name) input.checked = true; }catch(e){}
+
+			input.addEventListener('change', function(){
+				if (input.checked){
+					// uncheck others
+					Array.prototype.slice.call(document.querySelectorAll('.printer-toggle')).forEach(function(other){ if(other!==input) other.checked=false; });
+					// mark as pending selection; do NOT persist until user clicks Salvar
+					pendingPrinter = name;
+					// update Save button visibility
+					updateSaveButtonVisibility();
+				} else {
+					// if user unchecked the selection, clear pending if it was this
+					if (pendingPrinter === name) pendingPrinter = null;
+					// update Save button visibility
+					updateSaveButtonVisibility();
+				}
+			});
+		});
+		printersList.appendChild(ul);
+		// update save button visibility after rendering
+		updateSaveButtonVisibility();
+		// initialize copies UI according to saved value
+		initCopiesUI();
+	}
+
+	function fetchPrinters(){
+		loadingEl.style.display = 'inline';
+		fetch('http://localhost:3420/printers', { method: 'GET' }).then(function(r){
+			loadingEl.style.display = 'none';
+			if (!r.ok) throw new Error('Não foi possível obter lista de impressoras');
+			return r.json();
+		}).then(function(j){
+			if (!j || !j.printers) { printersList.textContent = 'Nenhuma impressora encontrada'; return; }
+			renderPrinters(j.printers);
+		}).catch(function(err){
+			loadingEl.style.display = 'none';
+			printersList.textContent = 'Erro: ' + (err && err.message ? err.message : 'falha na requisição');
+		});
+	}
+
+	function updateSaveButtonVisibility(){
+		if (!saveBtn) return;
+		// determine current selection in DOM
+		var checked = document.querySelector('.printer-toggle:checked');
+		var sel = checked ? checked.getAttribute('data-printer') : null;
+		// if selection differs from persisted value, show save
+		var copiesSelected = null;
+		var copyBtn = document.querySelector('.myd-copy-btn.active');
+		if (copyBtn) copiesSelected = copyBtn.getAttribute('data-copies');
+		// show save if either printer differs or copies differs
+		if (sel !== currentSaved || (copiesSelected !== currentSavedCopies)) {
+			saveBtn.style.display = 'inline-block';
+		} else {
+			saveBtn.style.display = 'none';
+		}
+	}
+
+	function initCopiesUI(){
+		var saved = currentSavedCopies;
+		var buttons = document.querySelectorAll('.myd-copy-btn');
+		buttons.forEach(function(b){ b.classList.remove('active'); });
+		if (saved) {
+			var btn = document.querySelector('.myd-copy-btn[data-copies="' + saved + '"]');
+			if (btn) btn.classList.add('active');
+		}
+		// attach click handlers
+		buttons.forEach(function(b){
+			b.addEventListener('click', function(){
+				buttons.forEach(function(x){ x.classList.remove('active'); });
+				b.classList.add('active');
+				pendingCopies = b.getAttribute('data-copies');
+				updateSaveButtonVisibility();
+			});
+		});
+	}
+
+	// cria o popup de confirmação de salvamento
+	function createSavePopup(){
+		if (document.getElementById('myd-save-popup')) return;
+		var wrap = document.createElement('div');
+		wrap.id = 'myd-save-popup';
+		wrap.style.cssText = 'display:none;position:fixed;left:0;top:0;right:0;bottom:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:150000;';
+		var box = document.createElement('div');
+		box.className = 'myd-save-popup-box';
+		// position relative so we can place the button at the bottom-right inside the box
+		box.style.cssText = 'position:relative;background:#fff;padding:20px 24px 54px;border-radius:8px;min-width:280px;max-width:90%;text-align:left;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateY(12px);opacity:0;transition:transform .25s ease, opacity .2s ease;';
+		var title = document.createElement('div'); title.textContent = 'Configurações salvas!'; title.style.cssText = 'font-weight:600;margin-bottom:8px;font-size:16px;color:#222';
+		var btn = document.createElement('button'); btn.textContent = 'Entendi'; btn.style.cssText = 'position:absolute;right:16px;bottom:12px;background:#ffae00;color:#fff;border:0;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:14px';
+		btn.addEventListener('click', function(e){ e.stopPropagation(); closeSavePopup(); });
+		box.appendChild(title); box.appendChild(btn); wrap.appendChild(box);
+		wrap.addEventListener('click', function(e){ if (e.target === wrap) closeSavePopup(); });
+		document.body.appendChild(wrap);
+	}
+
+	function showSavePopup(){
+		var el = document.getElementById('myd-save-popup');
+		if (!el){ createSavePopup(); el = document.getElementById('myd-save-popup'); }
+		el.style.display = 'flex';
+		// force a reflow then animate box into place
+		var box = el.querySelector('.myd-save-popup-box');
+		if (box){
+			requestAnimationFrame(function(){
+				box.style.transform = 'translateY(0)';
+				box.style.opacity = '1';
+			});
+		}
+	}
+
+
+	function closeSavePopup(){
+		var el = document.getElementById('myd-save-popup');
+		if (!el) return;
+		var box = el.querySelector('.myd-save-popup-box');
+		if (box){
+			box.style.transform = 'translateY(12px)';
+			box.style.opacity = '0';
+		}
+		// hide after transition
+		setTimeout(function(){ if (el) el.style.display = 'none'; }, 260);
+	}
+
+	saveBtn.addEventListener('click', function(){
+		// allow saving even when there is no printer selected
+		var checked = document.querySelector('.printer-toggle:checked');
+		var sel = null;
+		if (pendingPrinter) sel = pendingPrinter;
+		else if (checked) sel = checked.getAttribute('data-printer');
+		try{
+			if (sel) {
+				localStorage.setItem('myd-default-printer', sel);
+			} else {
+				// explicit save of empty selection: remove stored value
+				localStorage.removeItem('myd-default-printer');
+			}
+			// also persist copies
+			var copiesToSave = pendingCopies !== null ? pendingCopies : currentSavedCopies;
+			if (copiesToSave) {
+				localStorage.setItem('myd-print-copies', copiesToSave);
+			} else {
+				localStorage.removeItem('myd-print-copies');
+			}
+			pendingPrinter = null;
+			pendingCopies = null;
+			// update persisted state and hide save button
+			currentSaved = sel === null ? null : sel;
+			currentSavedCopies = copiesToSave === null ? null : copiesToSave;
+			updateSaveButtonVisibility();
+			// mostrar popup de confirmação
+			// Persistir também no config do Electron, se disponível
+			if (window.electronAPI && typeof window.electronAPI.savePrinter === 'function') {
+				try { window.electronAPI.savePrinter({ printer: sel || null, copies: copiesToSave || null }); } catch(e) { console.warn('electronAPI.savePrinter failed', e); }
+			}
+			showSavePopup();
+		}catch(e){ alert('Erro ao salvar: '+(e&&e.message?e.message:e)); }
+	});
+
+	clearBtn.addEventListener('click', function(){
+		try{ 
+			localStorage.removeItem('myd-default-printer'); 
+			localStorage.removeItem('myd-print-copies');
+			Array.prototype.slice.call(document.querySelectorAll('.printer-toggle')).forEach(function(ch){ ch.checked=false; }); 
+			Array.prototype.slice.call(document.querySelectorAll('.myd-copy-btn')).forEach(function(b){ b.classList.remove('active'); });
+			pendingPrinter = null; currentSaved = null; pendingCopies = null; currentSavedCopies = null; updateSaveButtonVisibility(); 
+			// Also clear Electron config if available
+			if (window.electronAPI && typeof window.electronAPI.savePrinter === 'function') {
+				try { window.electronAPI.savePrinter({ printer: null, copies: null }); } catch(e){ console.warn('electronAPI.savePrinter failed', e); }
+			}
+		}catch(e){ console.warn('Erro ao limpar impressora:', e); }
+	});
+});
+</script>

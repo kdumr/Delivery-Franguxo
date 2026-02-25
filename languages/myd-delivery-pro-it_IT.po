@@ -1,0 +1,2276 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MyDelivery WordPress\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-24 18:48+0000\n"
+"PO-Revision-Date: 2024-05-29 20:52+0000\n"
+"Last-Translator: \n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.7; wp-6.5.3"
+
+#: templates/admin/settings-tabs/order/tab-order.php:134
+#, php-format
+msgid ""
+"\"Template to List the Order Products\" is related to token %s so this token "
+"is required in the Order Message and will list the products based on what "
+"you are defined in the previous step."
+msgstr ""
+"\"Modello per elencare i prodotti dell'ordine\" è correlato al token %s, "
+"quindi questo token è richiesto nel messaggio dell'ordine ed elencherà i "
+"prodotti in base a quanto definito nel passaggio precedente."
+
+#: includes/class-plugin.php:149
+#, php-format
+msgid "%1$s requires MyDelivery WordPress (our old version) to be deactivated."
+msgstr ""
+"%1$s richiede che MyDelivery WordPress (la nostra vecchia versione) sia "
+"disattivato."
+
+#: myd-delivery-pro.php:62
+#, php-format
+msgid "%1$s requires PHP version %2$s or greater."
+msgstr "%1$s richiede la versione PHP %2$s o superiore."
+
+#: myd-delivery-pro.php:81
+#, php-format
+msgid "%1$s requires WordPress version %2$s or greater."
+msgstr "%1$s richiede WordPress versione %2$s o superiore."
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:60
+#| msgid ""
+#| "<b>If you dont use Elementor don't worry</b>, will be still improve "
+#| "layout configurations here."
+msgid ""
+"<b><i>If you dont use Elementor don't worry</b>, will be still improve "
+"layout configurations here.</i>"
+msgstr ""
+"<b>non preoccuparti se non usi Elementor</b>, stiamo migliorando il layout "
+"anche qui."
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:59
+msgid "Accept payment in cash?"
+msgstr "Accetti pagamento in contanti?"
+
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:35
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:28
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:29
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:112
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:36
+msgid "Action"
+msgstr "Azione"
+
+#: templates/admin/dashboard.php:56
+msgid "Activate"
+msgstr "Attiva"
+
+#: includes/admin/class-custom-posts.php:131
+#: includes/admin/class-custom-posts.php:132
+msgid "Add coupon"
+msgstr "Aggiungi coupon"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:153
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:249
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:345
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:441
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:482
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:520
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:558
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:66
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:65
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:72
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:223
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:73
+#| msgid "Add Store"
+msgid "Add more"
+msgstr "Aggiungi Store"
+
+#: includes/custom-fields/class-custom-fields.php:557
+msgid "Add option"
+msgstr "Aggiungi opzione"
+
+#: includes/admin/class-custom-posts.php:89
+#: includes/admin/class-custom-posts.php:90
+msgid "Add order"
+msgstr "Aggiungi ordine"
+
+#: includes/admin/class-custom-posts.php:47
+#: includes/admin/class-custom-posts.php:48
+msgid "Add product"
+msgstr "Aggiungi Prodotto"
+
+#: includes/custom-fields/class-custom-fields.php:493
+msgid "Add product extra"
+msgstr "Aggiungi prodotto extra"
+
+#: templates/products/loop-products.php:107
+#: templates/products/loop-products.php:110
+#, fuzzy
+#| msgid "Add to cart"
+msgid "Add to bag"
+msgstr "Aggiungi al carrello"
+
+#: templates/admin/addons.php:9
+msgid "Add-Ons"
+msgstr "Componenti Aggiuntivi"
+
+#: includes/admin/class-admin-page.php:107
+msgid "Add-ons"
+msgstr "Componenti aggiuntivi"
+
+#: includes/fdm-products-list.php:272
+msgid "Added to cart"
+msgstr "Aggiunto al carrello"
+
+#: includes/custom-fields/class-register-custom-fields.php:366
+msgid "Address"
+msgstr "Indirizzo"
+
+#: templates/cart/cart-checkout.php:136 templates/cart/cart-checkout.php:214
+msgid "Address Number"
+msgstr "Numero civico"
+
+#: templates/admin/settings.php:21
+msgid "Advanced"
+msgstr "Avanzate"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:35
+msgid "Advanced Settings"
+msgstr "Impostazioni Avanzate"
+
+#: includes/class-currency.php:44
+msgid "Afghan Afghani"
+msgstr "Afgano afghano"
+
+#: includes/class-currency.php:48
+msgid "Albanian Lek"
+msgstr "Lek - Albania"
+
+#: includes/class-currency.php:52
+msgid "Algerian Dinar"
+msgstr "Dinaro - Algeria"
+
+#: includes/custom-fields/class-register-custom-fields.php:72
+msgid "Amount discount ($)"
+msgstr "Sconto ($)"
+
+#: includes/class-currency.php:56
+msgid "Angolan Kwanza"
+msgstr "Kwanza - Angola"
+
+#: templates/products/loop-products.php:89
+msgid "any special requests?"
+msgstr "qualche richiesta speciale?"
+
+#: includes/custom-fields/class-register-custom-fields.php:382
+#: templates/cart/cart-checkout.php:150 templates/cart/cart-checkout.php:218
+msgid "Apartment, suite, etc."
+msgstr "Appartamento, suite, ecc."
+
+#: includes/class-currency.php:60
+msgid "Argentine Peso"
+msgstr "Peso argentino"
+
+#: includes/class-currency.php:64
+msgid "Armenian Dram"
+msgstr "Dram"
+
+#: includes/class-currency.php:68
+msgid "Aruban Florin"
+msgstr "Fiorino di Aruba"
+
+#: includes/class-currency.php:72
+msgid "Australian Dollar"
+msgstr "Dollaro australiano"
+
+#: includes/custom-fields/class-register-custom-fields.php:128
+#: includes/custom-fields/class-register-custom-fields.php:198
+#: includes/custom-fields/class-register-custom-fields.php:253
+msgid "Available?"
+msgstr "Disponibile?"
+
+#: templates/admin/settings-tabs/order/tab-order.php:95
+#: templates/admin/settings-tabs/order/tab-order.php:168
+msgid "Avaliable tokens:"
+msgstr "Tokens disponibili:"
+
+#: templates/admin/reports.php:100
+msgid "Average amount sales per day"
+msgstr "Importo medio delle vendite al giorno "
+
+#: includes/class-currency.php:76
+msgid "Azerbaijani Manat"
+msgstr "Azerbaigian Manat"
+
+#: templates/order/panel.php:29
+msgid "Back to order list"
+msgstr "Torna all ordini"
+
+#: templates/template.php:93
+msgid "Bag"
+msgstr "Carrello"
+
+#: includes/class-currency.php:80
+msgid "Bahamian Dollar"
+msgstr "Dollaro - Bahamas"
+
+#: includes/class-currency.php:84
+msgid "BahamiBahraini Dinar"
+msgstr "BahamiDinaro del Bahrain"
+
+#: includes/class-currency.php:88
+msgid "Bangladeshi Taka"
+msgstr "Bangladeshi Taka"
+
+#: includes/class-currency.php:92
+msgid "Barbadian Dollar"
+msgstr "Dollaro - Barbados"
+
+#: includes/class-currency.php:96
+msgid "Belarusian Ruble"
+msgstr "Rublo bielorusso"
+
+#: includes/class-currency.php:100
+msgid "Belgian Franc"
+msgstr "Franco - Belgio"
+
+#: includes/class-currency.php:104
+msgid "Belize Dollar"
+msgstr "Dollaro del Belize"
+
+#: includes/class-currency.php:108
+msgid "Bermudan Dollar"
+msgstr "Dollaro - Bermuda"
+
+#: includes/class-currency.php:112
+msgid "Bhutanese Ngultrum"
+msgstr "Bhutanese Ngultrum"
+
+#: includes/class-currency.php:116
+msgid "Bitcoin"
+msgstr "Bitcoin"
+
+#: includes/class-currency.php:120
+msgid "Bolivian Boliviano"
+msgstr "Boliviano - Bolivia"
+
+#: includes/class-currency.php:124
+msgid "Bosnia-Herzegovina Convertible Mark"
+msgstr "Marco Convertibile - Bosnia-Herzegovina"
+
+#: includes/class-currency.php:128
+msgid "Botswanan Pula"
+msgstr "Pula - Botswana"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:47
+msgid "Box shadow"
+msgstr "Ombra"
+
+#: includes/class-currency.php:132
+msgid "Brazilian Real"
+msgstr "Real brasiliano"
+
+#: includes/class-currency.php:136
+msgid "British Pound Sterling"
+msgstr "Sterlina britannica"
+
+#: templates/order/panel.php:35
+msgid "Browser do not support notifications"
+msgstr "Il browser non supporta le notifiche"
+
+#: includes/class-currency.php:140
+msgid "Brunei Dollar"
+msgstr "Dollaro - Brunei"
+
+#: includes/class-currency.php:144
+msgid "Bulgarian Lev"
+msgstr "Lev bulgaro"
+
+#: includes/class-currency.php:148
+msgid "Burundian Franc"
+msgstr "Franco - Burundi"
+
+#: templates/products/loop-products.php:45
+msgid "By Consult"
+msgstr "Da Consultare"
+
+#: includes/class-currency.php:152
+msgid "Cambodian Riel"
+msgstr "Riel - Cambogia"
+
+#: includes/class-currency.php:156
+msgid "Canadian Dollar"
+msgstr "Dollaro canadese"
+
+#: templates/order/panel.php:110
+msgid "Cancel"
+msgstr "Annulla"
+
+#: includes/fdm-track-order.php:145 includes/fdm-track-order.php:307
+#: includes/custom-fields/class-register-custom-fields.php:321
+msgid "Canceled"
+msgstr "Cancellato"
+
+#: includes/class-currency.php:160
+msgid "Cape Verdean Escudo"
+msgstr "Escudo - Capo Verde"
+
+#: includes/fdm-products-list.php:271
+msgid "Cart empty"
+msgstr "Il carrello è vuoto"
+
+#: templates/cart/cart-empty.php:12
+msgid "Cart empty. Add products for create your order."
+msgstr "Il carrello è vuoto. Aggiungi prodotti per iniziare il tuo ordine."
+
+#: templates/cart/cart-payment.php:44 templates/cart/cart-payment.php:48
+msgid "Cash"
+msgstr "Contanti"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:90
+#| msgid "Credit card, Debit card..."
+msgid "Cash, Credit Card, Debit Card..."
+msgstr "Carta di credito, Carta di debito..."
+
+#: includes/myd-manage-cpt-columns.php:63
+#: includes/custom-fields/class-register-custom-fields.php:142
+#| msgid "Categoria"
+msgid "Category"
+msgstr "Categoria"
+
+#: includes/class-currency.php:164
+msgid "Cayman Islands Dollar"
+msgstr "Dollaro delle Cayman"
+
+#: includes/class-currency.php:168
+msgid "CFA Franc BCEAO"
+msgstr "Franco CFA BCEAO"
+
+#: includes/class-currency.php:172
+msgid "CFA Franc BEAC"
+msgstr "Franco CFA BEAC"
+
+#: includes/class-currency.php:176
+msgid "CFP Franc"
+msgstr "Franco - CFP"
+
+#: includes/admin/class-settings.php:296 includes/admin/class-settings.php:319
+msgid "Change"
+msgstr "Cambia"
+
+#: includes/fdm-track-order.php:103
+#: includes/custom-fields/class-register-custom-fields.php:479
+#: templates/order/print.php:67 templates/order/order-content.php:80
+#: templates/cart/cart-payment.php:78
+msgid "Change for"
+msgstr "Resto per"
+
+#: templates/admin/dashboard.php:107
+msgid "Check all your orders and manage it"
+msgstr "Controlla tutti i tuoi ordini e gestiscili"
+
+#: templates/admin/dashboard.php:134
+msgid "Check many info about your store, orders and more"
+msgstr "Controlla molte informazioni sul tuo negozio, ordini e altro"
+
+#: templates/admin/dashboard.php:68
+msgid ""
+"Check the status of your license plan, manage your payments, renew or "
+"upgrade your plan."
+msgstr ""
+"Controlla lo stato del tuo piano di licenza, gestisci i tuoi pagamenti, "
+"rinnova o aggiorna il tuo piano."
+
+#: templates/order/panel.php:41
+msgid "Checking notification support..."
+msgstr "Verifica del supporto per le notifiche..."
+
+#: templates/template.php:97
+msgid "Checkout"
+msgstr "Checkout"
+
+#: includes/class-currency.php:180
+msgid "Chilean Peso"
+msgstr "Peso cileno"
+
+#: includes/class-currency.php:184
+msgid "Chilean Unit of Account"
+msgstr "Unità di conto cilena"
+
+#: includes/class-currency.php:188
+msgid "Chinese Yuan"
+msgstr "Chinese Yuan"
+
+#: includes/custom-fields/class-custom-fields.php:382
+msgid "Choose"
+msgstr "Scegli"
+
+#: includes/class-currency.php:192
+msgid "Colombian Peso"
+msgstr "Peso colombiano"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:39
+msgid "column"
+msgstr "colonna"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:40
+msgid "columns"
+msgstr "colonne"
+
+#: templates/admin/customers.php:11
+#: templates/admin/settings-tabs/print/tab-print.php:48
+msgid "Coming soon!"
+msgstr "Presto disponibile!"
+
+#: includes/class-currency.php:196
+msgid "Comorian Franc"
+msgstr "Franco - Comore"
+
+#: templates/admin/settings.php:14
+msgid "Company"
+msgstr "Azienza"
+
+#: templates/admin/settings-tabs/company/tab-company.php:30
+msgid "Company Name"
+msgstr "Nome Azienda"
+
+#: templates/admin/settings-tabs/company/tab-company.php:20
+msgid "Company Settings"
+msgstr "Impostazioni Azienda"
+
+#: templates/order/panel.php:59
+msgid "Confirm"
+msgstr "Conferma"
+
+#: includes/fdm-track-order.php:133 includes/fdm-track-order.php:298
+#: includes/custom-fields/class-register-custom-fields.php:316
+#: templates/order/order-list.php:24
+msgid "Confirmed"
+msgstr "Confermato"
+
+#: includes/class-currency.php:200
+msgid "Congolese Franc"
+msgstr "Franco - Congo"
+
+#: includes/class-currency.php:204
+msgid "Costa Rican Colón"
+msgstr "Colón - Costa Rica"
+
+#: templates/admin/settings-tabs/company/tab-company.php:70
+msgid "Country"
+msgstr "Paese"
+
+#: templates/cart/cart-pricing-summary.php:34
+#: templates/cart/cart-checkout.php:247
+msgid "Coupon"
+msgstr "Coupon"
+
+#: includes/fdm-track-order.php:81
+#: includes/custom-fields/class-register-custom-fields.php:455
+#: templates/order/print.php:49 templates/order/order-content.php:58
+msgid "Coupon code"
+msgstr "Codice coupon"
+
+#: includes/custom-fields/class-register-custom-fields.php:88
+msgid "Coupon Description"
+msgstr "Descrizione Coupon"
+
+#: includes/admin/class-custom-posts.php:127
+#: includes/admin/class-custom-posts.php:128
+#: includes/admin/class-custom-posts.php:129
+#: includes/admin/class-custom-posts.php:130 templates/admin/dashboard.php:124
+msgid "Coupons"
+msgstr "Coupons"
+
+#: includes/custom-fields/class-register-custom-fields.php:49
+msgid "Coupons info"
+msgstr "Coupons Info"
+
+#: templates/admin/settings-tabs/order/tab-order.php:86
+msgid ""
+"Create the full custom message in \"Template to Order Message\" to be used "
+"when customer is redirected to WhatsApp after order sucessfull."
+msgstr ""
+"Crea il messaggio personalizzato completo in \"Template to Order Message\" "
+"da utilizzare quando il cliente viene reindirizzato a WhatsApp dopo che "
+"l'ordine è andato a buon fine."
+
+#: templates/admin/dashboard.php:98
+msgid "Create, edit and manage your products"
+msgstr "Crea, modifica e gestisci i tuoi prodotti"
+
+#: includes/class-currency.php:208
+msgid "Croatian Kuna"
+msgstr "Kuna croata"
+
+#: includes/class-currency.php:212
+msgid "Cuban Convertible Peso"
+msgstr "Peso cubano convertibile"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:21
+msgid "Currency"
+msgstr "Valuta"
+
+#: templates/admin/settings-tabs/order/tab-order.php:69
+msgid "Custom Order Message"
+msgstr "Messaggio d'ordine personalizzato"
+
+#: includes/myd-manage-cpt-columns.php:17 includes/admin/class-settings.php:297
+#: includes/admin/class-settings.php:320 includes/admin/class-settings.php:338
+#: includes/custom-fields/class-register-custom-fields.php:345
+msgid "Customer"
+msgstr "Cliente"
+
+#: templates/admin/settings-tabs/order/tab-order.php:212
+msgid "Customer Address"
+msgstr "Indirizzo Cliente"
+
+#: templates/admin/settings-tabs/order/tab-order.php:218
+msgid "Customer Address Complement (Apartment, suite, etc.)"
+msgstr "Complemento dell'indirizzo del cliente (appartamento, suite, ecc.)"
+
+#: templates/admin/settings-tabs/order/tab-order.php:221
+msgid "Customer Address Neighborhood"
+msgstr "Quartiere dell'indirizzo del cliente"
+
+#: templates/admin/settings-tabs/order/tab-order.php:215
+msgid "Customer Address Number"
+msgstr "Numero di indirizzo del cliente"
+
+#: templates/admin/settings-tabs/order/tab-order.php:224
+msgid "Customer Address Zipcode"
+msgstr "Codice postale dell'indirizzo del cliente"
+
+#: templates/cart/cart-checkout.php:94
+msgid "Customer Info"
+msgstr "Informazioni Cliente"
+
+#: templates/admin/settings-tabs/order/tab-order.php:206
+msgid "Customer Name"
+msgstr "Nome Cliente"
+
+#: templates/admin/settings-tabs/order/tab-order.php:209
+msgid "Customer Phone"
+msgstr "Telefono del cliente"
+
+#: includes/admin/class-admin-page.php:77 templates/admin/dashboard.php:115
+#: templates/admin/customers.php:9
+msgid "Customers"
+msgstr "Clienti"
+
+#: includes/class-currency.php:216
+msgid "Czech Republic Koruna"
+msgstr "Koruna - Repubblica Ceca"
+
+#: includes/class-currency.php:220
+msgid "Danish Krone"
+msgstr "Corone danesi"
+
+#: includes/admin/class-admin-page.php:67 templates/admin/dashboard.php:24
+msgid "Dashboard"
+msgstr "Pannello di controllo"
+
+#: includes/custom-fields/class-register-custom-fields.php:326
+msgid "Date"
+msgstr "Data"
+
+#: templates/admin/dashboard.php:59
+msgid "Deactivate"
+msgstr "Disattiva"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:49
+msgid "Decimal separator"
+msgstr "Separatore decimali"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:20
+msgid "Define delivery price by Neighborhoods."
+msgstr "Definisci il prezzo di consegna per Quartieri."
+
+#: templates/admin/settings-tabs/order/tab-order.php:78
+msgid ""
+"Define the template to list the order products in \"Template to List the "
+"Order Products\". This will be used to list the products on all types of "
+"your order message that's you will create in the next steps."
+msgstr ""
+"Definisci il modello per elencare i prodotti dell'ordine in \"Modello per "
+"elencare i prodotti dell'ordine\". Questo verrà utilizzato per elencare i "
+"prodotti in tutti i tipi di messaggio dell'ordine che creerai nei passaggi "
+"successivi."
+
+#: includes/fdm-track-order.php:75 includes/admin/class-settings.php:293
+#: templates/order/print.php:44 templates/order/order-content.php:52
+#: templates/admin/settings.php:15 templates/cart/cart-checkout.php:69
+#: templates/admin/settings-tabs/order/tab-order.php:153
+#: templates/admin/settings-tabs/company/tab-company.php:326
+msgid "Delivery"
+msgstr "Consegna"
+
+#: includes/custom-fields/class-register-custom-fields.php:61
+msgid "Delivery discount"
+msgstr "Discount su consegna"
+
+#: templates/cart/cart-pricing-summary.php:23
+msgid "Delivery Fee"
+msgstr "Spese di trasporto:"
+
+#: templates/cart/cart-checkout.php:113
+msgid "Delivery Info"
+msgstr "Delivery info"
+
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:18
+msgid "Delivery Page"
+msgstr "Pagina delivery"
+
+#: includes/custom-fields/class-register-custom-fields.php:447
+msgid "Delivery Price"
+msgstr "Prezzo di consegna"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:69
+msgid "Delivery price mode"
+msgstr "Prezzo modalità consegna"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:49
+msgid "Delivery Settings"
+msgstr "Impostazioni di consegna"
+
+#: templates/cart/cart-finished-order.php:18
+msgid "Delivery time:"
+msgstr "Tempo di consegna:"
+
+#: includes/custom-fields/class-register-custom-fields.php:173
+msgid "Description"
+msgstr "Descrizione"
+
+#: templates/admin/settings-tabs/order/tab-order.php:159
+#: templates/admin/settings-tabs/company/tab-company.php:332
+msgid "Digital Menu"
+msgstr "Menù digitale"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:69
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:75
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:81
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:87
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:93
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:99
+msgid "digitis"
+msgstr "digitis"
+
+#: includes/custom-fields/class-register-custom-fields.php:66
+msgid "Discount format"
+msgstr "Formato sconto"
+
+#: includes/custom-fields/class-register-custom-fields.php:78
+msgid "Discount value"
+msgstr "Valore di sconto"
+
+#: includes/class-currency.php:224
+msgid "Djiboutian Franc"
+msgstr "Franco - Djibouti"
+
+#: templates/admin/dashboard.php:81
+msgid "Do you need support?"
+msgstr "Hai bisogno di supporto?"
+
+#: templates/admin/dashboard.php:125
+msgid "Do you want give a discount? Use your cupons for it"
+msgstr "Vuoi fare uno sconto? Usa i tuoi cupons per questo"
+
+#: templates/admin/dashboard.php:66
+msgid "Do you want manage your license plan?"
+msgstr "Vuoi gestire il tuo piano di licenza?"
+
+#: includes/class-currency.php:228
+msgid "Dominican Peso"
+msgstr "Peso domenicano"
+
+#: includes/fdm-track-order.php:149 includes/fdm-track-order.php:310
+#: includes/custom-fields/class-register-custom-fields.php:317
+#: templates/order/order-list.php:32 templates/order/panel.php:69
+msgid "Done"
+msgstr "Fatto"
+
+#: includes/class-currency.php:232
+msgid "East Caribbean Dollar"
+msgstr "Dollaro - Caraibi Orientali"
+
+#: includes/admin/class-custom-posts.php:133
+msgid "Edit coupon"
+msgstr "Modifica coupon"
+
+#: includes/admin/class-custom-posts.php:91
+msgid "Edit order"
+msgstr "Modifica ordine"
+
+#: includes/admin/class-custom-posts.php:49
+msgid "Edit product"
+msgstr "Modifica prodotto"
+
+#. Author of the plugin
+msgid "EduardoVillao.me"
+msgstr "EduardoVillao.me"
+
+#: includes/class-currency.php:236
+msgid "Egyptian Pound"
+msgstr "Libbra egiziana"
+
+#: templates/admin/settings-tabs/company/tab-company.php:60
+msgid "Email"
+msgstr "E-mail"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:91
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:128
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:187
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:224
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:283
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:320
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:379
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:416
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:462
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:474
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:500
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:512
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:538
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:550
+msgid "End"
+msgstr "Fine"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:86
+msgid "Enter an Address with Number"
+msgstr "Inserisci un indirizzo con un numero"
+
+#: templates/cart/cart-checkout.php:121
+msgid "Enter your address with number"
+msgstr "Inserisci il tuo indirizzo con il numero"
+
+#: includes/class-currency.php:240
+msgid "Eritrean Nakfa"
+msgstr "Nakfa eritrea"
+
+#: includes/class-plugin.php:342
+msgid "Error to deactive, contato MyD Delivery support."
+msgstr "Errore di disattivazione, contato MyD Delivery supporto."
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:59
+msgid "Estimate Delivery time"
+msgstr "Stima orario consegna"
+
+#: includes/class-currency.php:244
+msgid "Estonian Kroon"
+msgstr "Corona - Estonia"
+
+#: includes/class-currency.php:248
+msgid "Ethiopian Birr"
+msgstr "Birr"
+
+#: includes/class-currency.php:252
+msgid "Euro"
+msgstr "Euro"
+
+#: includes/custom-fields/class-register-custom-fields.php:284
+msgid "Extra Description"
+msgstr "Descrizione extra"
+
+#: includes/custom-fields/class-register-custom-fields.php:268
+msgid "Extra name"
+msgstr "Nome extra"
+
+#: includes/custom-fields/class-register-custom-fields.php:276
+msgid "Extra Price"
+msgstr "Prezzo extra"
+
+#: includes/custom-fields/class-register-custom-fields.php:190
+msgid "Extras"
+msgstr "Extra"
+
+#: includes/custom-fields/class-register-custom-fields.php:422
+msgid "Failed"
+msgstr "Fallito"
+
+#: includes/class-currency.php:256
+msgid "Falkland Islands Pound"
+msgstr "Libbra di Gibilterra"
+
+#: includes/class-currency.php:260
+msgid "Fijian Dollar"
+msgstr "Dollaro - Figi"
+
+#: templates/admin/reports.php:78
+msgid "Filter"
+msgstr "Filtro"
+
+#: templates/order/panel.php:19
+msgid "Filter by name, order number, status or phone"
+msgstr "Filtra per nome, numero d'ordine, stato o telefono"
+
+#: includes/fdm-track-order.php:141 includes/fdm-track-order.php:304
+#: includes/custom-fields/class-register-custom-fields.php:320
+#: templates/order/panel.php:100
+msgid "Finished"
+msgstr "Finito"
+
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:15
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:87
+msgid "Fixed price (Limit by Neighborhood)"
+msgstr "Prezzo fisso (limite per quartiere)"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:81
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:15
+msgid "Fixed price (Limit by Zipcode range)"
+msgstr "Prezzo fisso (limite per intervallo di codice postale)"
+
+#: templates/admin/settings-tabs/print/tab-print.php:31
+msgid "Font size"
+msgstr "Dimensioni font"
+
+#: includes/fdm-products-list.php:170
+msgid ""
+"For show correct produts, create categories on plugin settings and add in "
+"produtcs."
+msgstr ""
+"Per mostrare i prodotti corretti, creare categorie nelle impostazioni del "
+"plugin e aggiungere i prodotti."
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:32
+msgid "Force Open/Close Store"
+msgstr "Forzare l'apertura/chiusura del negozio"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:56
+msgid "Force store closed"
+msgstr "Forzare la chiusura del negozio"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:50
+msgid "Force store open"
+msgstr "Forzare l'apertura dell'archivio"
+
+#: templates/admin/addons.php:14
+msgid "Free"
+msgstr "Free"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:450
+msgid "Friday"
+msgstr "Venerdì"
+
+#: templates/products/loop-products.php:41
+msgid "From"
+msgstr "Dal"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:103
+msgid "From (km)"
+msgstr "A partire da (km)"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:26
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:34
+msgid "From Zipcode"
+msgstr "Da codice postale"
+
+#: includes/custom-fields/class-register-custom-fields.php:350
+msgid "Full name"
+msgstr "Nome e cognome"
+
+#: includes/class-currency.php:264
+msgid "Gambian Dalasi"
+msgstr "Dalasi - Gambia"
+
+#: includes/class-currency.php:268
+msgid "Georgian Lari"
+msgstr "Lari - Georgia"
+
+#: includes/class-currency.php:272
+msgid "German Mark"
+msgstr "Marco - Germania"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:67
+msgid "Get/create your API key here:"
+msgstr "Ottieni/crea la tua chiave API qui:"
+
+#: includes/class-currency.php:276
+msgid "Ghanaian Cedi"
+msgstr "Ghanaian Cedi"
+
+#: includes/class-currency.php:280
+msgid "Gibraltar Pound"
+msgstr "Libbra di Gibilterra"
+
+#: templates/admin/dashboard.php:127
+msgid "Go to Coupons"
+msgstr "Vai a Coupon"
+
+#: templates/admin/dashboard.php:118
+msgid "Go to Customers"
+msgstr "Vai a Clienti"
+
+#: templates/admin/dashboard.php:109
+msgid "Go to Orders"
+msgstr "Vai a Ordini"
+
+#: templates/admin/dashboard.php:100
+msgid "Go to Products"
+msgstr "Vai a Prodotti"
+
+#: templates/admin/dashboard.php:136
+msgid "Go to Reports"
+msgstr "Vai a Rapporti"
+
+#: templates/admin/dashboard.php:145
+msgid "Go to Settings"
+msgstr "Vai alle impostazioni"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:37
+msgid "Google API Key"
+msgstr "Google API Key"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:69
+msgid "Google Maps API"
+msgstr "Google Maps API"
+
+#: includes/class-currency.php:284
+msgid "Greek Drachma"
+msgstr "Dracma - Grecia"
+
+#: includes/class-currency.php:288
+msgid "Guatemalan Quetzal"
+msgstr "Quetzal - Guatemala"
+
+#: includes/class-currency.php:292
+msgid "Guinean Franc"
+msgstr "Franco - Guinea"
+
+#: includes/class-currency.php:296
+msgid "Guyanaese Dollar"
+msgstr "Dollaro - Guyana"
+
+#: includes/class-currency.php:300
+msgid "Haitian Gourde"
+msgstr "Gourde - Haiti"
+
+#: templates/order/panel.php:39
+msgid "Hey, you got a new order. Check now!"
+msgstr "Ehi, hai ricevuto un nuovo ordine. Controlla ora!"
+
+#: includes/custom-fields/class-register-custom-fields.php:166
+msgid "Hide the price"
+msgstr "Nascondi il prezzo"
+
+#: includes/class-currency.php:304
+msgid "Honduran Lempira"
+msgstr "Lempiri - Honduras"
+
+#: includes/class-currency.php:308
+msgid "Hong Kong Dollar"
+msgstr "Hong Kong Dollar"
+
+#: templates/admin/settings-tabs/order/tab-order.php:74
+msgid "How to use?"
+msgstr "Come si usa?"
+
+#. Author URI of the plugin
+msgid "https://eduardovillao.me/"
+msgstr "https://eduardovillao.me/"
+
+#. URI of the plugin
+msgid "https://myddelivery.com/"
+msgstr "https://myddelivery.com/"
+
+#: includes/class-currency.php:312
+msgid "Hungarian Forint"
+msgstr "Fiorini ungheresi"
+
+#: includes/class-currency.php:316
+msgid "Icelandic Króna"
+msgstr "Corona - Islanda"
+
+#: templates/admin/settings-tabs/order/tab-order.php:61
+msgid ""
+"If you don't select it, the plugin will be show the button to send order on "
+"WhatsApp."
+msgstr ""
+"Se non lo selezioni, il plugin mostrerà il pulsante per inviare l'ordine su "
+"WhatsApp."
+
+#: templates/admin/settings-tabs/order/tab-order.php:35
+msgid ""
+"If you don't want to set a minimum price for orders, just leave this input "
+"blank."
+msgstr ""
+"Se non vuoi impostare un prezzo minimo per gli ordini, lascia vuoto questo "
+"input."
+
+#: templates/cart/cart-checkout.php:249
+msgid "If you have a discount coupon, add it here."
+msgstr "Se hai un codice coupon, inseriscilo qui."
+
+#: includes/custom-fields/class-register-custom-fields.php:120
+msgid "Image"
+msgstr "Immagine"
+
+#: templates/admin/settings-tabs/print/tab-print.php:40
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:49
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:21
+msgid "Important"
+msgstr "Importante"
+
+#: includes/class-plugin.php:366
+#: templates/admin/settings-tabs/order/tab-order.php:128
+msgid "Important:"
+msgstr "Importante:"
+
+#: includes/fdm-track-order.php:137 includes/fdm-track-order.php:301
+#: includes/custom-fields/class-register-custom-fields.php:319
+#: templates/order/order-list.php:28 templates/order/panel.php:89
+msgid "In Delivery"
+msgstr "In Consegna"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:52
+msgid "In this section you can configure all delivery settings."
+msgstr ""
+"In questa sezione è possibile configurare tutte le impostazioni di consegna."
+
+#: templates/admin/settings-tabs/company/tab-company.php:23
+msgid "In this section you can configure all the company settings."
+msgstr ""
+"In questa sezione è possibile configurare tutte le impostazioni dell'azienda."
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:38
+msgid "In this section you can configure some advanced settings."
+msgstr ""
+"In questa sezione è possibile configurare alcune impostazioni avanzate."
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:10
+msgid "In this section you can configure some layout options."
+msgstr "In questa sezione è possibile configurare alcune opzioni di layout."
+
+#: templates/admin/settings-tabs/order/tab-order.php:13
+msgid ""
+"In this section you can configure the order message used when the customer "
+"is redirected to WhatsApp."
+msgstr ""
+"In questa sezione è possibile configurare il messaggio d'ordine utilizzato "
+"quando il cliente viene reindirizzato a WhatsApp."
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:15
+msgid ""
+"In this section you can configure the payment methods and others settings."
+msgstr ""
+"In questa sezione è possibile configurare i metodi di pagamento e altre "
+"impostazioni."
+
+#: templates/admin/settings-tabs/print/tab-print.php:11
+msgid "In this section you can configure the print options."
+msgstr "In questa sezione è possibile configurare le opzioni di stampa."
+
+#: templates/admin/settings-tabs/print/tab-print.php:45
+msgid "In this section you can customize your print message."
+msgstr "In questa sezione è possibile personalizzare il messaggio stampato."
+
+#: includes/class-currency.php:320
+msgid "Indian Rupee"
+msgstr "Rupia indiana"
+
+#: includes/class-currency.php:324
+msgid "Indonesian Rupiah"
+msgstr "Rupia - Indonesia"
+
+#: templates/admin/addons.php:16
+#: templates/admin/settings-tabs/layout/tab-layout.php:59
+msgid "Install MyD Delivery Widgets"
+msgstr "Installa i widget di consegna di MyD"
+
+#: includes/fdm-products-list.php:274
+msgid "Invalid coupon"
+msgstr "Coupon non valido"
+
+#: includes/api/order/class-get-order.php:82
+msgid "Invalid or not allowed parameter"
+msgstr "Parametro non valido o non consentito"
+
+#: includes/class-currency.php:328
+msgid "Iranian Rial"
+msgstr "Riyal iraniano"
+
+#: includes/class-currency.php:332
+msgid "Iraqi Dinar"
+msgstr "Dinaro - Iraq"
+
+#: includes/class-currency.php:336
+msgid "Israeli New Sheqel"
+msgstr "Aggiungi un nuovo campo"
+
+#: includes/class-currency.php:340
+msgid "Italian Lira"
+msgstr "Lira - Italia"
+
+#: includes/custom-fields/class-register-custom-fields.php:563
+msgid "Item note"
+msgstr "Note"
+
+#: templates/template.php:63
+msgid "items"
+msgstr ""
+
+#: includes/class-currency.php:344
+msgid "Jamaican Dollar"
+msgstr "Dollaro - Giamaica"
+
+#: includes/class-currency.php:348
+msgid "Japanese Yen"
+msgstr "Yen Giapponese"
+
+#: includes/class-currency.php:352
+msgid "Jordanian Dinar"
+msgstr "Dinaro Giordano"
+
+#: includes/class-currency.php:356
+msgid "Kazakhstani Tenge"
+msgstr "Tenge - Kazakhstan"
+
+#: templates/admin/reports.php:69
+msgid "Latest 30 days"
+msgstr "Ultimi 30 giorni"
+
+#: templates/admin/reports.php:67
+msgid "Latest 7 days"
+msgstr "Ultimi 7 giorni"
+
+#: templates/admin/settings.php:20
+msgid "Layout"
+msgstr "Disposizione"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:9
+msgid "Layout Settings"
+msgstr "Layout Impostazioni"
+
+#: templates/admin/dashboard.php:46
+msgid "License Key"
+msgstr "Chiave di licenza"
+
+#: templates/admin/dashboard.php:30
+msgid "License Status"
+msgstr "Stato della licenza"
+
+#: includes/custom-fields/class-register-custom-fields.php:228
+msgid "Limit max."
+msgstr "Limite max."
+
+#: includes/custom-fields/class-register-custom-fields.php:220
+msgid "Limit min."
+msgstr "Limite min."
+
+#: templates/admin/settings-tabs/order/tab-order.php:191
+msgid "Link to order track page"
+msgstr "Link alla pagina di tracciamento dell'ordine"
+
+#: templates/admin/settings-tabs/company/tab-company.php:342
+msgid ""
+"List all menu categories separated by comma (,). Like: cat1,cat2,cat3,cat4."
+msgstr ""
+"Elenca tutte le categorie di menu separate da virgola (,). Come: cat1, cat2, "
+"cat3, cat4."
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:102
+#| msgid ""
+#| "List all payment methods separated by comma (,). Like: Credit card,Debit "
+#| "Card,Voucher."
+msgid ""
+"List all payment methods separated by comma (,). Like: Credit card, Debit "
+"Card, Voucher(...)."
+msgstr ""
+"Elenca tutti i metodi di pagamento separati da virgola (,). Come: carta di "
+"credito, carta di debito, voucher."
+
+#: includes/fdm-track-order.php:56
+msgid "Live updates"
+msgstr "Aggiornamenti in tempo reale"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:16
+msgid "Main color"
+msgstr "Colore principale"
+
+#: templates/admin/dashboard.php:116
+msgid "Manage all your customers"
+msgstr "Gestisci tutti i tuoi clienti"
+
+#: templates/admin/dashboard.php:72
+msgid "Manage my license plan"
+msgstr "Gestire il piano di licenza"
+
+#: templates/admin/dashboard.php:143
+msgid "Manage your Store settings here"
+msgstr "Gestisci le impostazioni del tuo Negozio qui"
+
+#: templates/admin/settings-tabs/company/tab-company.php:338
+msgid "Menu Categories"
+msgstr "Categorie Menu"
+
+#: templates/admin/settings-tabs/order/tab-order.php:146
+msgid "Message Type"
+msgstr "Tipo di messaggio"
+
+#: includes/custom-fields/class-register-custom-fields.php:439
+msgid "Method"
+msgstr "Metodo"
+
+#: templates/admin/settings-tabs/order/tab-order.php:21
+msgid "Minimum price"
+msgstr "Prezzo minimo"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:67
+msgid "Monday"
+msgstr "Lunedi"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:57
+msgid "More flexibility with MyD Delivery Widgets"
+msgstr "Maggiore flessibilità con i widget di consegna MyD"
+
+#. Description of the plugin
+msgid ""
+"MyD Delivery create a complete system to delivery with products, orders, "
+"clients, support to send order on WhatsApp and more."
+msgstr ""
+"MyD Delivery crea un sistema completo per la consegna con prodotti, ordini, "
+"clienti, supporto per inviare ordini su WhatsApp e altro ancora."
+
+#. Name of the plugin
+msgid "MyD Delivery Pro"
+msgstr "MyD Delivery Pro"
+
+#: includes/admin/class-custom-posts.php:125
+msgid "MyDelivery Coupons"
+msgstr "MyDelivery Coupons"
+
+#: includes/admin/class-custom-posts.php:83
+msgid "MyDelivery Orders"
+msgstr "MyDelivery Ordini"
+
+#: includes/admin/class-custom-posts.php:41
+msgid "MyDelivery Products"
+msgstr "MyDelivery Prodotti"
+
+#: templates/cart/cart-checkout.php:96
+msgid "Name"
+msgstr "Nome"
+
+#: includes/custom-fields/class-register-custom-fields.php:390
+#: templates/cart/cart-checkout.php:222 templates/cart/cart-checkout.php:227
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:34
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:26
+msgid "Neighborhood"
+msgstr "Quartiere"
+
+#: includes/fdm-track-order.php:129 includes/fdm-track-order.php:295
+#: includes/custom-fields/class-register-custom-fields.php:315
+#: templates/order/order-list.php:20
+msgid "New"
+msgstr "Nuovo"
+
+#: includes/admin/class-custom-posts.php:134
+msgid "New coupon"
+msgstr "Nuovo coupon"
+
+#: includes/admin/class-custom-posts.php:92
+msgid "New order"
+msgstr "Nuovo ordine"
+
+#: templates/order/panel.php:38
+msgid "New Order!"
+msgstr "Nuovo Ordine!"
+
+#: includes/admin/class-custom-posts.php:50
+msgid "New product"
+msgstr "Nuovo prodotto"
+
+#: templates/template.php:117 templates/template.php:119
+msgid "Next"
+msgstr "Prossimo"
+
+#: includes/custom-fields/class-register-custom-fields.php:136
+msgid "No, hide the product"
+msgstr "No, nascondi il prodotto"
+
+#: includes/custom-fields/class-register-custom-fields.php:207
+msgid "No, hide the product extra"
+msgstr "No, nascondi il prodotto extra"
+
+#: includes/custom-fields/class-register-custom-fields.php:262
+msgid "No, hide the product extra option"
+msgstr "No, nascondi l'opzione extra del prodotto"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:77
+msgid "No, my store does not accept cash payments on delivery"
+msgstr "No, il mio negozio non accetta pagamenti in contrassegno"
+
+#: templates/products/loop-products.php:27
+#: templates/products/product-extra.php:27
+#: templates/products/product-extra.php:69
+msgid "Not available"
+msgstr "Non disponibile"
+
+#: includes/fdm-track-order.php:247 includes/class-orders-front-panel.php:207
+#: includes/class-orders-front-panel.php:241
+#: includes/admin/class-settings.php:283
+#| msgid "Note:"
+msgid "Note"
+msgstr "Note"
+
+#: templates/admin/dashboard.php:76
+msgid "Note: You need a admin permissions to mange license."
+msgstr ""
+"Nota: per gestire la licenza è necessaria un'autorizzazione di "
+"amministratore."
+
+#: includes/custom-fields/class-register-custom-fields.php:506
+#: includes/custom-fields/class-register-custom-fields.php:511
+msgid "Notes"
+msgstr "Note"
+
+#: templates/order/panel.php:36
+msgid "Notifications disabled"
+msgstr "Notifiche disabilitate"
+
+#: templates/order/panel.php:37
+msgid "Notifications enabled"
+msgstr "Notifiche abilitate"
+
+#: includes/custom-fields/class-register-custom-fields.php:374
+msgid "Number"
+msgstr "Numero"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:40
+msgid "Number of decimals"
+msgstr "Numero di decimali"
+
+#: templates/admin/settings-tabs/order/tab-order.php:188
+msgid "Number of the table"
+msgstr "Numero della tabella"
+
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:11
+msgid "On this page you will find the shortcodes for use in your pages."
+msgstr ""
+"In questa pagina troverai gli shortcode da utilizzare nelle tue pagine."
+
+#: templates/admin/settings.php:16
+msgid "Opening Hours"
+msgstr "Orari di Apertura"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:24
+msgid "Opening Hours Settings"
+msgstr "Impostazioni degli orari di apertura"
+
+#: templates/admin/settings-tabs/company/tab-company.php:322
+msgid "Operation mode"
+msgstr "Modalità di funzionamento"
+
+#: includes/custom-fields/class-register-custom-fields.php:244
+msgid "Options"
+msgstr "Opzioni"
+
+#: includes/fdm-track-order.php:62 includes/admin/class-custom-posts.php:86
+#: includes/admin/class-settings.php:290 includes/admin/class-settings.php:314
+#: includes/admin/class-settings.php:333 templates/order/order-list.php:43
+#: templates/order/order-content.php:32 templates/admin/settings.php:17
+msgid "Order"
+msgstr "Ordine"
+
+#: templates/admin/settings-tabs/order/tab-order.php:179
+msgid "Order Coupon Code"
+msgstr "Ordina il codice coupon"
+
+#: includes/custom-fields/class-register-custom-fields.php:304
+#| msgid "Order Total"
+msgid "Order Data"
+msgstr "Totale ordine"
+
+#: includes/myd-manage-cpt-columns.php:19
+msgid "Order Date"
+msgstr "Data dell’ordine"
+
+#: templates/admin/settings-tabs/order/tab-order.php:176
+msgid "Order Date and Time"
+msgstr "Data e ora dell'ordine"
+
+#: includes/custom-fields/class-register-custom-fields.php:525
+msgid "Order Details"
+msgstr "Dettagli ordine"
+
+#: includes/custom-fields/class-register-custom-fields.php:490
+#: templates/cart/cart-checkout.php:85
+msgid "Order in Store"
+msgstr "Consumo al tavolo"
+
+#: includes/custom-fields/class-register-custom-fields.php:531
+msgid "Order Items"
+msgstr "Dettagli ordine"
+
+#: templates/admin/settings-tabs/order/tab-order.php:173
+msgid "Order Number"
+msgstr "Numero Ordine"
+
+#: templates/admin/settings-tabs/order/tab-order.php:185
+msgid ""
+"Order Products. This token is the result of the configuration above, don't "
+"forget to add it"
+msgstr ""
+"Ordina i prodotti. Questo token è il risultato della configurazione "
+"precedente, non dimenticare di aggiungerlo"
+
+#: templates/admin/settings-tabs/order/tab-order.php:10
+msgid "Order settings"
+msgstr "Impostazioni ordine"
+
+#: includes/class-create-draft-order.php:208
+#| msgid "Order status changed to: %s"
+msgid "Order status changed to: started"
+msgstr "Lo stato dell'ordine è stato modificato in: %s"
+
+#: includes/admin/class-settings.php:294 includes/admin/class-settings.php:317
+#: includes/admin/class-settings.php:336
+#: templates/admin/settings-tabs/order/tab-order.php:182
+msgid "Order Total"
+msgstr "Totale Ordine"
+
+#: templates/cart/cart-checkout.php:62
+msgid "Order Type"
+msgstr "Tipo di ordine"
+
+#: includes/admin/class-custom-posts.php:85
+#: includes/admin/class-custom-posts.php:87
+#: includes/admin/class-custom-posts.php:88 templates/admin/dashboard.php:106
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:28
+msgid "Orders"
+msgstr "Ordini"
+
+#: includes/custom-fields/class-register-custom-fields.php:421
+msgid "Paid"
+msgstr "Pagato"
+
+#: templates/cart/cart-payment.php:22
+msgid "Pay now"
+msgstr "Paga ora"
+
+#: templates/cart/cart-payment.php:34
+msgid "Pay upon delivery"
+msgstr "Paga alla consegna"
+
+#: templates/template.php:100
+#: includes/custom-fields/class-register-custom-fields.php:409
+#: templates/admin/settings.php:18 templates/cart/cart-payment.php:14
+msgid "Payment"
+msgstr "Pagamento"
+
+#: templates/admin/settings-tabs/order/tab-order.php:203
+msgid "Payment Change (applied for cash payments)"
+msgstr "Modifica del pagamento (applicata per i pagamenti in contanti)"
+
+#: includes/custom-fields/class-register-custom-fields.php:434
+msgid "Payment Integration"
+msgstr "Integrazione dei pagamenti"
+
+#: includes/fdm-track-order.php:97 includes/admin/class-settings.php:295
+#: includes/admin/class-settings.php:318 includes/admin/class-settings.php:337
+#: templates/order/print.php:62 templates/order/order-content.php:74
+#: templates/admin/settings-tabs/order/tab-order.php:200
+msgid "Payment Method"
+msgstr "Metodo di pagamento"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:14
+msgid "Payment Settings"
+msgstr "Impostazioni pagamento"
+
+#: templates/admin/settings-tabs/order/tab-order.php:197
+msgid "Payment Status"
+msgstr "Stato Pagamento"
+
+#: includes/fdm-track-order.php:92 templates/order/print.php:58
+#: templates/order/order-content.php:69
+#: templates/admin/settings-tabs/order/tab-order.php:194
+msgid "Payment Type"
+msgstr "Tipo di Pagamento"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:85
+msgid "Payment upon delivery"
+msgstr "Pagamento alla consegna"
+
+#: includes/custom-fields/class-register-custom-fields.php:73
+msgid "Percent discount (%)"
+msgstr "Sconto percentuale (%)"
+
+#: includes/myd-manage-cpt-columns.php:18
+#: includes/custom-fields/class-register-custom-fields.php:358
+#: templates/cart/cart-checkout.php:99
+msgid "Phone"
+msgstr "Telefono"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:58
+msgid "Phone Mask"
+msgstr "Maschera per telefono"
+
+#: includes/myd-manage-cpt-columns.php:62
+#: includes/custom-fields/class-register-custom-fields.php:151
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:22
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:27
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:28
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:109
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:22
+msgid "Price"
+msgstr "Prezzo"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:96
+msgid "Price by distance range"
+msgstr "Prezzo per fascia di distanza"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:25
+msgid "Price color"
+msgstr "Colore del prezzo"
+
+#: includes/custom-fields/class-register-custom-fields.php:159
+msgid "Price label"
+msgstr "Etichetta del prezzo"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:30
+msgid "Price per Distance"
+msgstr "Prezzo per Distanza"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:105
+#| msgid "Price per Distance (Soon)"
+msgid "Price per Distance (Beta)"
+msgstr "Prezzo per distanza (a breve)"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:17
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:99
+msgid "Price per Neighborhood"
+msgstr "Prezzo per quartiere"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:93
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:17
+msgid "Price per Zipcode range"
+msgstr "Prezzo per intervallo di codici postali"
+
+#: templates/admin/settings.php:19
+msgid "Print"
+msgstr "Stampa"
+
+#: templates/admin/settings-tabs/print/tab-print.php:44
+msgid "Print message"
+msgstr "Stampa messaggio"
+
+#: templates/order/panel.php:44
+msgid "Print Order"
+msgstr "Stampa ordine"
+
+#: templates/admin/settings-tabs/print/tab-print.php:10
+msgid "Print Settings"
+msgstr "Impostazioni stampa"
+
+#: templates/admin/settings-tabs/print/tab-print.php:17
+msgid "Print size"
+msgstr "Dimensione di stampa"
+
+#: includes/myd-manage-cpt-columns.php:64
+msgid "Product Description"
+msgstr "Descrizione prodotto"
+
+#: includes/custom-fields/class-register-custom-fields.php:184
+#: templates/admin/settings-tabs/order/tab-order.php:109
+msgid "Product Extras"
+msgstr "Extras"
+
+#: includes/custom-fields/class-register-custom-fields.php:547
+msgid "Product extras"
+msgstr "Extra del prodotto"
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:34
+msgid "Product grid columns"
+msgstr "Colonne della griglia dei prodotti"
+
+#: includes/custom-fields/class-register-custom-fields.php:115
+msgid "Product Info"
+msgstr "Informazioni sul prodotto"
+
+#: includes/custom-fields/class-register-custom-fields.php:539
+#: templates/admin/settings-tabs/order/tab-order.php:103
+msgid "Product Name"
+msgstr "Nome Prodotto"
+
+#: templates/admin/settings-tabs/order/tab-order.php:112
+msgid "Product Note"
+msgstr "Nota prodotto"
+
+#: includes/custom-fields/class-register-custom-fields.php:555
+msgid "Product price"
+msgstr "Prezzo prodotto"
+
+#: templates/admin/settings-tabs/order/tab-order.php:106
+msgid "Product Price with currency symbol"
+msgstr "Prezzo del prodotto con il simbolo della valuta"
+
+#: templates/admin/settings-tabs/order/tab-order.php:100
+msgid "Product Quantity"
+msgstr "Quantità Prodotto"
+
+#: includes/admin/class-custom-posts.php:43
+#: includes/admin/class-custom-posts.php:44
+#: includes/admin/class-custom-posts.php:45
+#: includes/admin/class-custom-posts.php:46 templates/admin/dashboard.php:97
+msgid "Products"
+msgstr "Prodotti"
+
+#: templates/admin/reports.php:95
+msgid "Quantity of products sold"
+msgstr "Quantità di prodotti venduti"
+
+#: templates/admin/settings-tabs/order/tab-order.php:43
+msgid "Redirect to WhatsApp?"
+msgstr "Reindirizza su WhatsApp?"
+
+#: includes/custom-fields/class-custom-fields.php:383
+msgid "Remove"
+msgstr "Rimuovere"
+
+#: includes/custom-fields/class-custom-fields.php:532
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:104
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:142
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:201
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:238
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:297
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:334
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:393
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:430
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:465
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:477
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:503
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:515
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:541
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:553
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:47
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:59
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:43
+#: templates/admin/settings-tabs/delivery/delivery-per-neighborhood.php:58
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:47
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:65
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:161
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:210
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:51
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:66
+msgid "remove"
+msgstr "rimuovi"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:121
+msgid "Remove Address Number"
+msgstr "Rimuovi numero indirizzo"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:126
+msgid "Remove input and verification from address number field."
+msgstr "Rimuovere l'input e la verifica dal campo del numero di indirizzo."
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:115
+msgid "Remove input and verification from Zipcode field."
+msgstr "Rimuovi l'input e la verifica dal campo CAP."
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:110
+msgid "Remove Zipcode"
+msgstr "Rimuovi codice postale"
+
+#: includes/fdm-products-list.php:275
+msgid "Removed from cart"
+msgstr "Tolto dal carrello"
+
+#: includes/admin/class-admin-page.php:87 templates/admin/dashboard.php:133
+#: templates/admin/reports.php:61
+msgid "Reports"
+msgstr "Rapporti"
+
+#: includes/class-myd-product-extra.php:73
+msgid "Required"
+msgstr "Necessario"
+
+#: includes/fdm-products-list.php:278
+msgid "Required inputs empty"
+msgstr "Compila tutti i capi per proseguire"
+
+#: includes/custom-fields/class-register-custom-fields.php:236
+msgid "Required?"
+msgstr "Necessario?"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:44
+msgid "Respect the hours configured below"
+msgstr "Rispetta gli orari configurati di seguito"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:489
+msgid "Saturday"
+msgstr "Sabato"
+
+#: includes/admin/class-custom-posts.php:137
+msgid "Search coupons"
+msgstr "Cerca coupon"
+
+#: includes/admin/class-custom-posts.php:95
+msgid "Search orders"
+msgstr "Cerca ordini"
+
+#: includes/admin/class-custom-posts.php:53
+msgid "Search products"
+msgstr "Cerca prodotti"
+
+#: includes/custom-fields/class-custom-fields.php:594
+#: templates/cart/cart-checkout.php:229
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:49
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:63
+#: templates/admin/settings-tabs/payment/tab-payment.php:25
+#: templates/admin/settings-tabs/payment/tab-payment.php:65
+#: templates/admin/settings-tabs/layout/tab-layout.php:38
+#: templates/admin/settings-tabs/print/tab-print.php:21
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:75
+#: templates/admin/settings-tabs/company/tab-company.php:74
+msgid "Select"
+msgstr "Seleziona"
+
+#: includes/fdm-products-list.php:276
+msgid "Select required extra"
+msgstr "Seleziona un extra"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:110
+msgid "Select the delivery mode to see more options."
+msgstr "Seleziona la modalità di consegna per visualizzare altre opzioni."
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:103
+msgid "Select the mask for forms on plugin."
+msgstr "Seleziona la maschera per i moduli sul plug-in."
+
+#: includes/fdm-products-list.php:277
+msgid "Select the minimum required for the extra"
+msgstr "Seleziona il minimo richiesto per l'extra"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:52
+msgid ""
+"Select the page for show order track for customers. After that, get the "
+"shortcode and paste in selected page."
+msgstr ""
+"Seleziona la pagina per mostrare la traccia dell'ordine per i clienti. "
+"Successivamente, ottieni lo shortcode e incollalo nella pagina selezionata."
+
+#: templates/admin/settings-tabs/print/tab-print.php:26
+msgid "Select the printing page size."
+msgstr "Selezionare il formato pagina di stampa."
+
+#: templates/admin/settings-tabs/order/tab-order.php:82
+msgid ""
+"Select the type of message you will customize. By default you can customize "
+"different messages for each type of order (Delivery, Take-away and Digital "
+"Menu)."
+msgstr ""
+"Seleziona il tipo di messaggio che vuoi personalizzare. Per impostazione "
+"predefinita è possibile personalizzare messaggi diversi per ogni tipo di "
+"ordine (Consegna, Take-away e Menu digitale)."
+
+#: templates/cart/cart-finished-order.php:29
+msgid "Send order on WhatsApp"
+msgstr "Invia ordine su WhatsApp"
+
+#: includes/admin/class-admin-page.php:97 templates/admin/dashboard.php:142
+#: templates/admin/settings.php:9
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: templates/admin/settings-tabs/order/tab-order.php:227
+msgid "Shipping Price"
+msgstr "Prezzo"
+
+#: templates/admin/settings.php:22
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:10
+msgid "Shortcodes"
+msgstr "Shortcodes"
+
+#: includes/custom-fields/class-register-custom-fields.php:168
+msgid "Show as \"By Consult\""
+msgstr "Mostra come \"Da consultare\""
+
+#: includes/custom-fields/class-register-custom-fields.php:167
+msgid "Show as \"From {{product price}}\""
+msgstr "Mostra come \"A partire da {{prezzo del prodotto}}\""
+
+#: includes/custom-fields/class-register-custom-fields.php:137
+#: includes/custom-fields/class-register-custom-fields.php:208
+#: includes/custom-fields/class-register-custom-fields.php:263
+msgid "Show as not available"
+msgstr "Mostra come non disponibile"
+
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:22
+msgid "Show delivery system with produtcs, menu, card and more."
+msgstr ""
+"Mostra il sistema di consegna con prodotti, menu, scheda e altro ancora."
+
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:32
+msgid "Show page to manage orders in progress."
+msgstr "Mostra la pagina per gestire gli ordini in corso."
+
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:42
+msgid "Show the page for customers check your order data"
+msgstr "Mostra la pagina per i clienti controlla i dati del tuo ordine"
+
+#: includes/custom-fields/class-register-custom-fields.php:165
+msgid "Show the price"
+msgstr "Mostra il prezzo"
+
+#: includes/class-plugin.php:103 includes/class-plugin.php:114
+msgid "Something went wrong."
+msgstr "Qualcosa è andato storto."
+
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-neighborhood.php:16
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:20
+msgid ""
+"Soon we will have this option to calculate shipping using the Google Maps "
+"API."
+msgstr ""
+"Presto avremo questa opzione per calcolare la spedizione utilizzando l'API "
+"di Google Maps."
+
+#: templates/admin/settings-tabs/print/tab-print.php:49
+msgid "Soon you will can customize all text/message in your printing file."
+msgstr ""
+"Presto sarà possibile personalizzare tutto il testo/messaggio nel file di "
+"stampa."
+
+#: includes/api.php:114
+msgid "Sorry this parameter its not valid or empty"
+msgstr "Ci dispiace ma questo parametro non è valido o è vuoto"
+
+#: includes/fdm-products-list.php:273
+msgid "Sorry, delivery area is not supported"
+msgstr "Ci dispiace ma non possiamo consegnare nella tua zona"
+
+#: includes/fdm-products-list.php:282
+msgid "Sorry, error on request to calculate delivery distance"
+msgstr "Spiacenti, errore su richiesta per calcolare la distanza di consegna"
+
+#: includes/fdm-track-order.php:29
+msgid "Sorry, you don't have orders to show."
+msgstr "Mi dispiace, non ci sono ordini da mostrare."
+
+#: includes/class-orders-front-panel.php:102
+msgid "Sorry, you dont have access to this page."
+msgstr "Spiacenti, non hai accesso a questa pagina."
+
+#: includes/fdm-products-list.php:283
+msgid "Sorry, your address is out of our delivery area"
+msgstr ""
+"Siamo spiacenti, il tuo indirizzo è fuori dalla nostra area di consegna"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:80
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:117
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:176
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:213
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:272
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:309
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:368
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:405
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:459
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:471
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:497
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:509
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:535
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:547
+msgid "Start at"
+msgstr "Iniziare a"
+
+#: includes/custom-fields/class-register-custom-fields.php:309
+#: includes/custom-fields/class-register-custom-fields.php:414
+msgid "Status"
+msgstr "Stato"
+
+#: templates/cart/cart-checkout.php:241
+msgid "Store Info"
+msgstr "Info Negozio"
+
+#: templates/cart/cart-checkout.php:210
+msgid "Street Name"
+msgstr "Indirizzo"
+
+#: includes/custom-fields/class-register-custom-fields.php:463
+#: templates/cart/cart-pricing-summary.php:13
+msgid "Subtotal"
+msgstr "Subtotale"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:527
+msgid "Sunday"
+msgstr "Domenica"
+
+#: includes/fdm-track-order.php:179 includes/class-orders-front-panel.php:168
+#: includes/class-orders-front-panel.php:267
+#: includes/admin/class-settings.php:340
+#: includes/custom-fields/class-register-custom-fields.php:495
+msgid "Table"
+msgstr "Tavolo"
+
+#: templates/cart/cart-checkout.php:242
+msgid "Table number"
+msgstr "Numero del tavolo"
+
+#: templates/cart/cart-checkout.php:77
+#: templates/admin/settings-tabs/company/tab-company.php:329
+msgid "Take Away"
+msgstr "Asporto"
+
+#: templates/admin/settings-tabs/order/tab-order.php:156
+msgid "Take-away"
+msgstr "Da asporto"
+
+#: templates/admin/dashboard.php:87
+msgid "Talk with support"
+msgstr "Parla con l'assistenza"
+
+#: templates/admin/settings-tabs/order/tab-order.php:91
+msgid "Template to List the Order Products"
+msgstr "Modello per elencare i prodotti dell'ordine"
+
+#: templates/admin/settings-tabs/order/tab-order.php:123
+msgid "Template to Order Message"
+msgstr "Messaggio da modello a ordinazione"
+
+#: templates/cart/cart-finished-order.php:23
+msgid "Thanks! Your order has been finished. Now just wait."
+msgstr "Grazie! Il tuo ordine è completato."
+
+#: templates/admin/settings-tabs/company/tab-company.php:34
+msgid ""
+"The company name can be used in custom message or others parts of "
+"template/site."
+msgstr ""
+"Il nome dell'azienda può essere utilizzato nel messaggio personalizzato o in "
+"altre parti del modello/sito."
+
+#: includes/api.php:100
+msgid "The filter parameter is used to filter number"
+msgstr "Il parametro filter viene utilizzato per filtrare il numero"
+
+#: includes/fdm-products-list.php:279
+msgid "The minimum order is"
+msgstr "L'ordine minimo è"
+
+#: includes/api/order/class-get-order.php:56
+msgid "The order fields to retrive"
+msgstr "I campi dell'ordine da recuperare"
+
+#: includes/api/order/class-get-order.php:63
+#: includes/api/sse/class-order-status-tracking.php:96
+msgid "The order hash"
+msgstr "L'hash dell'ordine"
+
+#: templates/admin/settings-tabs/print/tab-print.php:41
+msgid ""
+"The print order is executaded direct on you web browser, its not a software "
+"installed in you computer. This plugin will be generate the the file and "
+"visualization like configured above, but same times you need set some "
+"configurations direct in your printer."
+msgstr ""
+"L'ordine di stampa viene eseguito direttamente sul tuo browser web, non è un "
+"software installato nel tuo computer. Questo plugin genererà il file e la "
+"visualizzazione come configurato sopra, ma allo stesso tempo è necessario "
+"impostare alcune configurazioni direttamente nella stampante."
+
+#: includes/fdm-products-list.php:270
+msgid "The store is closed"
+msgstr "Ci spiace ma il negozio ora è chiuso"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:98
+msgid ""
+"These are payment options to be used directly upon delivery and not while "
+"placing the order in the system."
+msgstr ""
+"Si tratta di opzioni di pagamento da utilizzare direttamente al momento "
+"della consegna e non durante l'inserimento dell'ordine nel sistema."
+
+#: templates/admin/settings-tabs/company/tab-company.php:64
+msgid ""
+"This email can be used in custom message or other parts of template/site."
+msgstr ""
+"Questa e-mail può essere utilizzata in un messaggio personalizzato o in "
+"altre parti del modello/sito."
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:24
+msgid ""
+"This feature depends on Google Maps API and costs can be applied by Google. "
+"The Google offer a limit of free requests and after this limit costs will be "
+"applied. You can check more details here: www.googlemaps.com.br/pricing"
+msgstr ""
+"Questa funzione dipende dall'API di Google Maps e i costi possono essere "
+"applicati da Google. L'offerta di Google è limitata alle richieste gratuite "
+"e dopo questo limite verranno applicati dei costi. Puoi controllare maggiori "
+"dettagli qui: www.googlemaps.com.br/pricing"
+
+#: templates/admin/settings-tabs/delivery/tab-delivery.php:63
+msgid "This option is showing in order page."
+msgstr "Questa opzione viene visualizzata nella pagina dell'ordine."
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:60
+msgid ""
+"This option will force store to be opened or closed. The settings below will "
+"be ignored if you use this."
+msgstr ""
+"Questa opzione forzerà l'apertura o la chiusura del negozio. Le impostazioni "
+"seguenti verranno ignorate se si utilizza questa opzione."
+
+#: templates/admin/settings-tabs/company/tab-company.php:53
+msgid ""
+"This phone can be used in custom message or other parts of template/site."
+msgstr ""
+"Questo telefono può essere utilizzato in messaggi personalizzati o in altre "
+"parti del modello/sito."
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:53
+msgid "This sets the decimal separator of displayed prices "
+msgstr ""
+"In questo modo viene impostato il separatore decimale dei prezzi "
+"visualizzati "
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:44
+msgid "This sets the number of decimal points show in displayed price."
+msgstr ""
+"In questo modo viene impostato il numero di punti decimali visualizzati nel "
+"prezzo visualizzato."
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:354
+msgid "Thursday"
+msgstr "Giovedì"
+
+#: includes/custom-fields/class-register-custom-fields.php:213
+msgid "Title"
+msgstr "Titolo"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:106
+msgid "To (km)"
+msgstr "A (km)"
+
+#: templates/admin/settings-tabs/delivery/delivery-per-cep-range.php:27
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:35
+msgid "To Zipcode"
+msgstr "Al codice postale"
+
+#: templates/admin/reports.php:65
+msgid "Today"
+msgstr "In data odierna"
+
+#: templates/admin/reports.php:106
+msgid "Top 3 products"
+msgstr "Top 3 prodotti"
+
+#: includes/fdm-track-order.php:87
+#: includes/custom-fields/class-register-custom-fields.php:471
+#: templates/order/print.php:54 templates/order/order-content.php:64
+#: templates/cart/cart-pricing-summary.php:44
+msgid "Total"
+msgstr "Totale"
+
+#: includes/custom-fields/class-register-custom-fields.php:60
+msgid "Total discount"
+msgstr "Sconto totale"
+
+#: templates/admin/reports.php:90
+msgid "Total orders in this period"
+msgstr "Totale ordini in questo periodo"
+
+#: templates/admin/reports.php:85
+msgid "Total sales in this period"
+msgstr "Vendite totali in questo periodo"
+
+#: includes/admin/class-settings.php:305 includes/admin/class-settings.php:324
+#: includes/admin/class-settings.php:342
+#: templates/cart/cart-finished-order.php:34
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:38
+msgid "Track Order"
+msgstr "Traccia Ordine"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:45
+msgid "Track Order Page"
+msgstr "Pagina Tracking"
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:162
+msgid "Tuesday"
+msgstr "Martedì"
+
+#: includes/custom-fields/class-register-custom-fields.php:334
+#: includes/custom-fields/class-register-custom-fields.php:427
+msgid "Type"
+msgstr "Tipo"
+
+#: templates/template.php:43
+msgid "Type to search"
+msgstr "Cerca"
+
+#: includes/class-plugin.php:367
+msgid "Update is not available because your license is invalid"
+msgstr "L'aggiornamento non è disponibile perché la licenza non è valida"
+
+#: includes/fdm-track-order.php:45
+#: includes/custom-fields/class-register-custom-fields.php:433
+#: templates/order/print.php:20 templates/order/order-content.php:21
+msgid "Upon Delivery"
+msgstr "Al momento della consegna"
+
+#: includes/class-currency.php:684
+msgid "US Dollar"
+msgstr "Dollaro USA"
+
+#: templates/template.php:68
+msgid "View Bag"
+msgstr ""
+
+#: includes/admin/class-custom-posts.php:135
+msgid "View coupon"
+msgstr "Apri coupon"
+
+#: includes/admin/class-custom-posts.php:136
+msgid "View coupons"
+msgstr "Apri coupon"
+
+#: includes/admin/class-custom-posts.php:93
+msgid "View order"
+msgstr "Apri ordine"
+
+#: includes/admin/class-custom-posts.php:94
+msgid "View orders"
+msgstr "Apri ordini"
+
+#: includes/admin/class-custom-posts.php:51
+msgid "View product"
+msgstr "Apri prodotto"
+
+#: includes/admin/class-custom-posts.php:52
+msgid "View products"
+msgstr "Apri prodotti"
+
+#: includes/fdm-track-order.php:153 includes/fdm-track-order.php:313
+#: includes/custom-fields/class-register-custom-fields.php:318
+#: includes/custom-fields/class-register-custom-fields.php:420
+#: templates/order/order-list.php:36 templates/order/panel.php:79
+msgid "Waiting"
+msgstr "Attendi"
+
+#: templates/admin/addons.php:10
+msgid ""
+"We are developing some Add-Ons to improve your experiencia and expand "
+"features."
+msgstr ""
+"Stiamo sviluppando alcuni componenti aggiuntivi per migliorare la tua "
+"esperienza ed espandere le funzionalità."
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:58
+msgid ""
+"We have a <b>free plugin with widgets for Elementor</b> where you can "
+"customize the layout in many other ways. Get on WordPress directory."
+msgstr ""
+"Abbiamo un <b>plug-in gratuito con widget per Elementor</b> in cui puoi "
+"personalizzare il layout in molti altri modi. Entra nella directory di "
+"WordPress."
+
+#: templates/admin/customers.php:12
+msgid ""
+"We're doing the latest tweaks and tests to release this feature for you."
+msgstr ""
+"Stiamo apportando le ultime modifiche e test per rilasciare questa funzione "
+"per te."
+
+#: templates/admin/settings-tabs/opening-hours/tab-opening-hours.php:258
+msgid "Wednesday"
+msgstr "Mercoledì"
+
+#: includes/custom-fields/class-register-custom-fields.php:54
+msgid "What the coupon type?"
+msgstr "Che tipo di coupon?"
+
+#: templates/admin/settings-tabs/company/tab-company.php:40
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: templates/admin/dashboard.php:83
+msgid ""
+"When you purchased the plugin you received the license key to activate it. "
+"If you dont have or forgot the license key"
+msgstr ""
+"Al momento dell'acquisto del plugin hai ricevuto la chiave di licenza per "
+"attivarlo. Se non si dispone o si è dimenticata la chiave di licenza"
+
+#: templates/admin/addons.php:15
+msgid ""
+"Widget to improve your store layout with a lot options to customization. "
+"Manage product columns, colors and any more options to create beautiful "
+"layouts."
+msgstr ""
+"Widget per migliorare il layout del tuo negozio con molte opzioni di "
+"personalizzazione. Gestisci le colonne dei prodotti, i colori e qualsiasi "
+"altra opzione per creare bellissimi layout."
+
+#: templates/admin/settings-tabs/delivery/delivery-fixed-per-cep.php:16
+msgid ""
+"With this method you can define a fixed price for delivery and limit area by "
+"Zipcode range."
+msgstr ""
+"Con questo metodo è possibile definire un prezzo fisso per la consegna e "
+"limitare l'area in base all'intervallo di codici postali."
+
+#: templates/admin/settings-tabs/layout/tab-layout.php:51
+#| msgid "Add box shadow on product card."
+msgid "Yes, add box shadow on products card"
+msgstr "Aggiungi ombra ai prodotti nel carrello"
+
+#: templates/admin/settings-tabs/payment/tab-payment.php:71
+msgid "Yes, my store accept cash payments on delivery"
+msgstr "Sì, il mio negozio accetta pagamenti in contanti alla consegna"
+
+#: templates/admin/settings-tabs/order/tab-order.php:57
+msgid "Yes, redirect the customer to WhatsApp after checkout"
+msgstr "Sì, reindirizza il cliente a WhatsApp dopo il checkout"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:125
+msgid "Yes, remove Address Number input"
+msgstr "Sì, rimuovere l'input del numero di indirizzo"
+
+#: templates/admin/settings-tabs/advanced/tab-advanced.php:114
+msgid "Yes, remove Zipcode input"
+msgstr "Sì, rimuovi l'input del codice postale"
+
+#: includes/custom-fields/class-register-custom-fields.php:135
+msgid "Yes, show the product"
+msgstr "Sì, mostra il prodotto"
+
+#: includes/custom-fields/class-register-custom-fields.php:206
+msgid "Yes, show the product extra"
+msgstr "Sì, mostra il prodotto extra"
+
+#: includes/custom-fields/class-register-custom-fields.php:261
+msgid "Yes, show the product extra option"
+msgstr "Sì, mostra l'opzione extra del prodotto"
+
+#: includes/api.php:87
+msgid "You can not permission for acess that."
+msgstr "Non è possibile autorizzare l'accesso a quello."
+
+#: templates/admin/settings-tabs/shortcodes/tab-shortcodes.php:50
+msgid ""
+"You must use these shortcodes in your pages for the system works. If you use "
+"our plugin with Widgets for Elementor it is not necessary to use the "
+"shortcodes."
+msgstr ""
+"Devi utilizzare questi shortcode nelle tue pagine affinché il sistema "
+"funzioni. Se utilizzi il nostro plugin con Widgets for Elementor non è "
+"necessario utilizzare gli shortcode."
+
+#: templates/cart/cart-finished-order.php:13
+msgid "Your order number is: "
+msgstr "Il tuo numero ordine è: "
+
+#: templates/admin/settings-tabs/delivery/delivery-per-distance.php:78
+msgid "Your Store address"
+msgstr "L'indirizzo del tuo Negozio"
+
+#: includes/custom-fields/class-register-custom-fields.php:411
+msgid "Reference Point"
+msgstr "Punto di riferimento"
+
+#: includes/custom-fields/class-register-custom-fields.php:398
+#: templates/cart/cart-checkout.php:197
+msgid "Zipcode"
+msgstr "CAP"

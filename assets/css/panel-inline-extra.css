@@ -1,0 +1,73 @@
+/* Styles moved from templates/template.php - loyalty bar and modal */
+.myd-loyalty-bar { padding: 10px 16px; background:#fff7e6; border:1px solid #f0d9b8; border-radius:6px; font-size:14px; color:#333; cursor:pointer; }
+.myd-loyalty-progress { background:#eee; height:14px; border-radius:8px; overflow:hidden; margin-top:8px }
+.myd-loyalty-progress__fill { height:100%; background:linear-gradient(90deg,#27ae60,#2ecc71); width:0%; transition:width .4s ease }
+
+/* mensagem explicativa abaixo da barra de fidelidade */
+.myd-loyalty-desc { margin-top:8px; color:#444; font-size:14px; line-height:1.4; }
+.myd-loyalty-desc strong { color:#222; }
+.myd-loyalty-desc small { color:#666; }
+@media (max-width:420px){ .myd-loyalty-desc{ font-size:12px; } }
+
+/* slots para loyalty_quantity */
+.myd-loyalty-slots { display:flex; gap:6px; }
+.myd-loyalty-slot { flex:1; height:10px; background:#eee; border-radius:6px; box-shadow:inset 0 -1px 0 rgba(0,0,0,0.02); }
+.myd-loyalty-slot--filled { background: linear-gradient(90deg,#27ae60,#2ecc71); }
+.myd-loyalty-quantity-wrapper { margin-top:6px; display:flex; align-items:center; }
+.myd-loyalty-count { font-weight:600; }
+.myd-loyalty-gift { width:34px; height:34px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:#eee; border:1px solid #f0d9b8; font-size:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+.myd-loyalty-gift--filled { background: linear-gradient(90deg,#27ae60,#2ecc71); color:#fff; border:none; }
+.myd-loyalty-gift-wrap { display:flex; align-items:center; }
+
+/* Modal styles */
+.myd-loyalty-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999}
+.myd-loyalty-modal__overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45)}
+.myd-loyalty-modal__content{position:relative;z-index:10000;background:#fff;border-radius:8px;max-width:600px;width:92%;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+.myd-loyalty-modal__close{border:0;background:transparent;font-size:22px;line-height:1;cursor:pointer;}
+@media (max-width:420px){.myd-loyalty-modal__content{padding:14px;width:96%}}
+
+/* Modal header/title adjustments moved from template */
+.myd-loyalty-modal__header { position: relative; display: flex; align-items: center; justify-content: center; }
+.myd-loyalty-modal__title { margin: 0; text-align: center; flex: 1; display: block; font-size: 18px; font-weight: 500; }
+.myd-loyalty-modal__close { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width:36px; height:36px; border-radius:999px; background:#f3f4f6; display:flex;align-items:center;justify-content:center;font-size:18px; border: none; color:#333; padding:0; }
+.myd-loyalty-modal__close svg { width:16px; height:16px; display:block; }
+.myd-loyalty-modal__close:hover { background:#5e5e5e; }
+
+/* Profile bar styles moved from template */
+body { padding-bottom: 56px; /* espaço para a barra fixa */ }
+.myd-profile-bar {
+	width: 100vw;
+	max-width: 100%;
+	position: fixed;
+	left: 0;
+	z-index: 999;
+	bottom: 0;
+	display: flex;
+	flex-direction: row; /* buttons side-by-side */
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 8px 0 4px 0;
+	box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+}
+.myd-profile-bar svg { display: block; margin: 0 auto; }
+.myd-profile-bar span { display: block; color: #fff; font-size: 13px; margin-top: 2px; text-align: center; letter-spacing: 1px; }
+.myd-profile-bar__button { position: relative; }
+.myd-profile-badge { position: absolute; top: 3px; right: 4px; background: #d32f2f; color: #fff; width: 16px; height: 16px; line-height: 16px; border-radius: 999px; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); padding: 0; }
+.myd-profile-badge.myd-profile-badge--wide { width: auto; min-width: 20px; padding: 0 6px; border-radius: 999px; }
+
+.myd-loyalty-rules {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #5C5E61;
+    line-height: 1.4;
+    padding-left: 20px !important;
+}
+
+.label-large-medium {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.014px;
+}

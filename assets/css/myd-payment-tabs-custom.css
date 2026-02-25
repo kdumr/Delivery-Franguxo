@@ -1,0 +1,12 @@
+.myd-payment-tab-content .switch {
+  margin-left: auto;
+}
+.myd-payment-tab-content .payment-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.myd-payment-tab-content .payment-row > .switch {
+  margin-left: auto;
+}

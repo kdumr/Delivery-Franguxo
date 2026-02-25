@@ -1,0 +1,372 @@
+/* myd-login.css */
+body.login {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    background-color: #fff !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    color: #333;
+}
+
+/* Left Panel */
+.myd-login-left-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100vh;
+    background-color: #1b1b1b;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Background image layer with blur */
+.myd-login-left-panel::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-image: inherit;
+    /* Picks up the inline background-image from PHP */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(8px);
+    z-index: 0;
+}
+
+/* Gradient overlay for text readability */
+.myd-login-left-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(249, 115, 22, 0.6) 100%);
+    z-index: 1;
+}
+
+/* Floating Chickens */
+.myd-floating-frango {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.6;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.myd-frango-1 {
+    top: -50px;
+    left: -50px;
+    width: 350px;
+    animation: float1 12s ease-in-out infinite;
+}
+
+@keyframes float1 {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-15deg);
+    }
+
+    50% {
+        transform: translateY(-30px) rotate(-5deg);
+    }
+}
+
+.myd-frango-2 {
+    bottom: -80px;
+    right: -20px;
+    width: 450px;
+    animation: float2 15s ease-in-out infinite;
+}
+
+@keyframes float2 {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(25deg);
+    }
+
+    50% {
+        transform: translateY(30px) rotate(15deg);
+    }
+}
+
+.myd-frango-3 {
+    top: 15%;
+    right: -80px;
+    width: 250px;
+    animation: float3 14s ease-in-out infinite;
+}
+
+@keyframes float3 {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(60deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(70deg);
+    }
+}
+
+.myd-frango-4 {
+    bottom: 25%;
+    left: 10%;
+    width: 200px;
+    animation: float4 13s ease-in-out infinite;
+}
+
+@keyframes float4 {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-40deg);
+    }
+
+    50% {
+        transform: translateY(25px) rotate(-50deg);
+    }
+}
+
+.myd-login-left-content {
+    position: relative;
+    z-index: 3;
+    color: #fff;
+    max-width: 500px;
+}
+
+.myd-login-letter-img {
+    max-width: 250px;
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Right Panel wrapper (The WP Login Container) */
+#login {
+    position: relative;
+    z-index: 2;
+    width: 40%;
+    min-width: 450px;
+    height: 100vh;
+    margin: 0 0 0 auto !important;
+    /* Push to right */
+    padding: 0 4rem !important;
+    /* Reset WP padding */
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: -15px 0 40px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+}
+
+/* Hide WP logo and back-to-blog */
+#login h1 a,
+#backtoblog {
+    display: none !important;
+}
+
+#login_error,
+.message {
+    border-left: 4px solid #f97316 !important;
+    padding: 12px !important;
+    margin-left: 0 !important;
+    box-shadow: none !important;
+    background: #fffafa !important;
+    margin-bottom: 20px !important;
+}
+
+/* Custom header within form */
+.myd-login-form-header {
+    text-align: left;
+    margin-bottom: 30px;
+    padding-top: 10px;
+}
+
+.myd-login-form-header h2 {
+    font-size: 1.7rem;
+    color: #111;
+    font-weight: 700;
+}
+
+.myd-login-form-header p {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Form Styling */
+.login form {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+
+
+.login form .forgetmenot {
+    display: none;
+    /* Hide remember me checkbox if present, as per design */
+}
+
+/* Inputs */
+.login form .input,
+.login input[type="text"],
+.login input[type="password"] {
+    width: 100%;
+    padding-right: 0 !important;
+    padding: 15px !important;
+    font-size: 16px;
+    border: 1px solid #d2d6dd !important;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: none;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+    color: #111 !important;
+}
+
+
+.login form .input:focus {
+    border-color: #f97316;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1);
+}
+
+/* Show Password Toggle Button alignment */
+.login .wp-pwd {
+    position: relative;
+}
+
+.show-password-button {
+    position: absolute !important;
+    right: 15px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    line-height: 1 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #f97316 !important;
+}
+
+.login label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Move standard WP #nav below the inputs but before submit if we use JS */
+#nav {
+    margin: 0 0 24px !important;
+    padding: 0 !important;
+    text-align: right;
+}
+
+#nav a {
+    color: #f97316 !important;
+    text-decoration: underline !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#nav a:hover {
+    color: #ea580c !important;
+}
+
+/* Submit Button */
+.login form .wp-submit,
+.login form input[type="submit"] {
+    width: 100%;
+    background: #ffbb00 !important;
+    /* Yellow color */
+    /* Dark text for contrast on yellow */
+    border: none !important;
+    border-radius: 0 0 6px 6px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    height: auto !important;
+    transition: background 0.2s;
+    float: none !important;
+}
+
+.login form .wp-submit:hover,
+.login form input[type="submit"]:hover {
+    background: #e5a800 !important;
+}
+
+/* Language Switcher wp */
+.language-switcher {
+    display: none !important;
+}
+
+.myd-login-extra-help {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-top: 30px;
+    font-size: 14px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.myd-login-extra-help a {
+    display: inline-block;
+    color: #f97316;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.myd-login-extra-help a:hover {
+    text-decoration: underline;
+}
+
+.myd-desktop-link {
+    color: #f97316 !important;
+    font-weight: 400 !important;
+}
+
+@media screen and (max-width: 900px) {
+    .myd-login-left-panel {
+        display: none !important;
+    }
+
+    #login {
+        width: 100% !important;
+        margin: 0 auto !important;
+        box-shadow: none !important;
+        padding: 2rem !important;
+        min-width: 0 !important;
+    }
+}

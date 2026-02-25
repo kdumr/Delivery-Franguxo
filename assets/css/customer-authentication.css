@@ -1,0 +1,907 @@
+/**
+ * Sistema de Autenticação de Clientes - MyD Delivery Pro
+ * Estilos para login, registro e perfil do cliente
+ */
+
+/* ==========================================================================
+   Variáveis CSS
+   ========================================================================== */
+:root {
+    --myd-primary: #2c5aa0;
+    --myd-primary-dark: #1e3f73;
+    --myd-secondary: #6c757d;
+    --myd-success: #28a745;
+    --myd-warning: #ffc107;
+    --myd-danger: #dc3545;
+    --myd-info: #17a2b8;
+    --myd-light: #f8f9fa;
+    --myd-dark: #343a40;
+    --myd-border: #dee2e6;
+    --myd-border-radius: 6px;
+    --myd-box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --myd-transition: all 0.3s ease;
+}
+
+/* ==========================================================================
+   Painel de Autenticação Principal
+   ========================================================================== */
+.myd-customer-auth {
+    margin-bottom: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.myd-auth-panel {
+    background: linear-gradient(135deg, var(--myd-primary), var(--myd-primary-dark));
+    border-radius: var(--myd-border-radius);
+    padding: 20px;
+    box-shadow: var(--myd-box-shadow);
+    color: white;
+}
+
+.myd-auth-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Guest Actions */
+.myd-guest-actions {
+    width: 100%;
+}
+
+.myd-auth-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.myd-auth-message i {
+    font-size: 16px;
+}
+
+.myd-auth-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Logged Actions */
+.myd-logged-actions {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.myd-customer-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.myd-customer-avatar {
+    font-size: 32px;
+    opacity: 0.9;
+}
+
+.myd-customer-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.myd-customer-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.myd-customer-orders-count {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.myd-customer-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Botões
+   ========================================================================== */
+.myd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: var(--myd-border-radius);
+    cursor: pointer;
+    transition: var(--myd-transition);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.myd-btn:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.myd-btn:active {
+    transform: translateY(0);
+}
+
+.myd-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Tamanhos */
+.myd-btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.myd-btn-lg {
+    padding: 12px 20px;
+    font-size: 16px;
+}
+
+.myd-btn-block {
+    width: 100%;
+}
+
+/* Variantes */
+.myd-btn-primary {
+    background: white;
+    color: var(--myd-primary);
+    border: 2px solid white;
+}
+
+.myd-btn-primary:hover {
+    background: var(--myd-light);
+    color: var(--myd-primary-dark);
+}
+
+.myd-btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
+.myd-btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.5);
+    color: white;
+}
+
+.myd-btn-sm.myd-btn-secondary,
+.myd-btn-sm.myd-btn-primary {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.myd-btn-sm.myd-btn-secondary:hover,
+.myd-btn-sm.myd-btn-primary:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.5);
+}
+
+/* ==========================================================================
+   Modais
+   ========================================================================== */
+.myd-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.myd-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
+}
+
+.myd-modal-content {
+    position: relative;
+    background: white;
+    border-radius: var(--myd-border-radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease;
+}
+
+.myd-modal-large .myd-modal-content {
+    max-width: 800px;
+}
+
+/* Modal específico do checkout - REMOVIDO */
+/*
+.myd-checkout-modal .myd-modal-content {
+    max-width: 600px;
+}
+*/
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.myd-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid var(--myd-border);
+    background: var(--myd-light);
+}
+
+.myd-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--myd-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.myd-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--myd-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--myd-transition);
+}
+
+.myd-modal-close:hover {
+    background: var(--myd-border);
+    color: var(--myd-dark);
+}
+
+.myd-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* ==========================================================================
+   Formulários
+   ========================================================================== */
+.myd-form-group {
+    margin-bottom: 16px;
+}
+
+.myd-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.myd-form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--myd-dark);
+    font-size: 14px;
+}
+
+.myd-form-group input,
+.myd-form-group select,
+.myd-form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--myd-border);
+    border-radius: var(--myd-border-radius);
+    font-size: 14px;
+    transition: var(--myd-transition);
+    box-sizing: border-box;
+}
+
+.myd-form-group input:focus,
+.myd-form-group select:focus,
+.myd-form-group textarea:focus {
+    outline: none;
+    border-color: var(--myd-primary);
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+.myd-form-group input:disabled {
+    background: var(--myd-light);
+    color: var(--myd-secondary);
+    cursor: not-allowed;
+}
+
+.myd-form-group small {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--myd-secondary);
+}
+
+/* Checkbox */
+.myd-form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.myd-form-checkbox label {
+    margin-bottom: 0;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.myd-form-checkbox input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+/* Seções do formulário */
+.myd-form-section {
+    border-top: 1px solid var(--myd-border);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.myd-form-section h4 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--myd-dark);
+}
+
+/* Grid do formulário */
+.myd-form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.myd-form-col-4 { flex: 0 0 33.333%; }
+.myd-form-col-6 { flex: 0 0 50%; }
+.myd-form-col-8 { flex: 0 0 66.667%; }
+
+/* Footer do formulário */
+.myd-form-footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--myd-border);
+    margin-top: 20px;
+}
+
+.myd-form-footer p {
+    margin: 0;
+    color: var(--myd-secondary);
+    font-size: 14px;
+}
+
+.myd-form-footer a {
+    color: var(--myd-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.myd-form-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   Lista de Pedidos
+   ========================================================================== */
+
+/* ==========================================================================
+   Modal de Checkout
+   ========================================================================== */
+.myd-checkout-auth-message {
+    margin-bottom: 24px;
+}
+
+.myd-auth-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #e3f2fd, #f0f9ff);
+    border-radius: var(--myd-border-radius);
+    border-left: 4px solid var(--myd-primary);
+}
+
+.myd-auth-info i {
+    color: var(--myd-primary);
+    font-size: 20px;
+    margin-top: 2px;
+}
+
+.myd-auth-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--myd-dark);
+}
+
+.myd-auth-info p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--myd-secondary);
+    line-height: 1.4;
+}
+
+.myd-checkout-auth-options {
+    margin-bottom: 24px;
+}
+
+.myd-auth-tabs {
+    display: flex;
+    border-radius: var(--myd-border-radius);
+    overflow: hidden;
+    margin-bottom: 20px;
+    background: var(--myd-light);
+}
+
+.myd-tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    color: var(--myd-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--myd-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.myd-tab-btn:hover {
+    background: rgba(44, 90, 160, 0.1);
+    color: var(--myd-primary);
+}
+
+.myd-tab-btn.active {
+    background: var(--myd-primary);
+    color: white;
+}
+
+.myd-tab-content {
+    position: relative;
+}
+
+.myd-tab {
+    display: none;
+}
+
+.myd-tab.active {
+    display: block;
+}
+
+.myd-checkout-auth-benefits {
+    background: var(--myd-light);
+    padding: 16px;
+    border-radius: var(--myd-border-radius);
+    margin-top: 20px;
+}
+
+.myd-checkout-auth-benefits h5 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--myd-dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.myd-checkout-auth-benefits h5 i {
+    color: #ffc107;
+}
+
+.myd-checkout-auth-benefits ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.myd-checkout-auth-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    color: var(--myd-secondary);
+}
+
+.myd-checkout-auth-benefits li i {
+    color: var(--myd-success);
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   Lista de Pedidos
+   ========================================================================== */
+.myd-orders-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--myd-secondary);
+}
+
+.myd-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.myd-loading i {
+    font-size: 16px;
+}
+
+.myd-no-orders {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--myd-secondary);
+}
+
+.myd-no-orders i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+    display: block;
+}
+
+.myd-no-orders p {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+}
+
+.myd-orders {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.myd-order-item {
+    border: 1px solid var(--myd-border);
+    border-radius: var(--myd-border-radius);
+    overflow: hidden;
+    transition: var(--myd-transition);
+}
+
+.myd-order-item:hover {
+    box-shadow: var(--myd-box-shadow);
+    border-color: var(--myd-primary);
+}
+
+.myd-order-header {
+    background: var(--myd-light);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--myd-border);
+}
+
+.myd-order-id strong {
+    font-size: 16px;
+    color: var(--myd-dark);
+    display: block;
+}
+
+.myd-order-date {
+    font-size: 12px;
+    color: var(--myd-secondary);
+}
+
+.myd-order-details {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.myd-order-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.myd-order-items {
+    color: var(--myd-secondary);
+    font-size: 14px;
+}
+
+.myd-order-total {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--myd-dark);
+}
+
+.myd-order-actions {
+    padding: 12px 16px;
+    background: var(--myd-light);
+    border-top: 1px solid var(--myd-border);
+    text-align: right;
+}
+
+/* Status badges */
+.myd-status, .myd-payment-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Status do pedido */
+.myd-status-pending { background: #fff3cd; color: #856404; }
+.myd-status-confirmed { background: #d4edda; color: #155724; }
+.myd-status-preparing { background: #cce7ff; color: #0056b3; }
+.myd-status-ready { background: #e2e3e5; color: #383d41; }
+.myd-status-out_for_delivery { background: #d1ecf1; color: #0c5460; }
+.myd-status-delivered { background: #d4edda; color: #155724; }
+.myd-status-cancelled { background: #f8d7da; color: #721c24; }
+
+/* Status do pagamento */
+.myd-payment-pending { background: #fff3cd; color: #856404; }
+.myd-payment-paid { background: #d4edda; color: #155724; }
+.myd-payment-failed { background: #f8d7da; color: #721c24; }
+.myd-payment-cancelled { background: #e2e3e5; color: #383d41; }
+
+/* ==========================================================================
+   Mensagens
+   ========================================================================== */
+.myd-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100000;
+    max-width: 400px;
+    border-radius: var(--myd-border-radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    animation: messageSlideIn 0.3s ease;
+    display: none;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.myd-message-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.myd-message-success {
+    background: var(--myd-success);
+    color: white;
+}
+
+.myd-message-error {
+    background: var(--myd-danger);
+    color: white;
+}
+
+.myd-message-info {
+    background: var(--myd-info);
+    color: white;
+}
+
+.myd-message-warning {
+    background: var(--myd-warning);
+    color: #212529;
+}
+
+/* ==========================================================================
+   Responsividade
+   ========================================================================== */
+@media (max-width: 768px) {
+    .myd-modal {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+    
+    .myd-modal-content {
+        max-height: calc(100vh - 80px);
+    }
+    
+    .myd-auth-status {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .myd-logged-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .myd-customer-actions {
+        justify-content: center;
+    }
+    
+    .myd-form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .myd-form-col-4,
+    .myd-form-col-6,
+    .myd-form-col-8 {
+        flex: none;
+    }
+    
+    .myd-order-header,
+    .myd-order-details {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .myd-order-info {
+        justify-content: center;
+    }
+    
+    .myd-message {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .myd-auth-buttons {
+        flex-direction: column;
+    }
+    
+    .myd-customer-actions {
+        flex-direction: column;
+    }
+    
+    .myd-btn {
+        justify-content: center;
+    }
+}
+
+/* ==========================================================================
+   Integrações com temas existentes
+   ========================================================================== */
+/* Compatibilidade com themes WordPress comuns */
+.myd-customer-auth * {
+    box-sizing: border-box;
+}
+
+/* Reset de estilos que podem conflitar */
+.myd-customer-auth .myd-btn,
+.myd-customer-auth input,
+.myd-customer-auth label {
+    font-family: inherit;
+}
+
+.myd-customer-auth .myd-btn {
+    background-image: none;
+    text-shadow: none;
+    border-image: none;
+}
+
+/* Assegura que ícones do Font Awesome funcionem */
+.myd-customer-auth .fas,
+.myd-customer-auth .far,
+.myd-customer-auth .fab {
+    font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands", "FontAwesome";
+    font-weight: 900;
+}
+
+/* ==========================================================================
+   Estados de loading
+   ========================================================================== */
+.myd-btn .fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Modo escuro (opcional)
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+    .myd-modal-content {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .myd-modal-header {
+        background: #4a5568;
+        border-color: #4a5568;
+    }
+    
+    .myd-modal-header h3 {
+        color: #e2e8f0;
+    }
+    
+    .myd-form-group label {
+        color: #e2e8f0;
+    }
+    
+    .myd-form-group input,
+    .myd-form-group select,
+    .myd-form-group textarea {
+        background: #4a5568;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .myd-form-group input:focus,
+    .myd-form-group select:focus,
+    .myd-form-group textarea:focus {
+        border-color: var(--myd-primary);
+        background: #2d3748;
+    }
+}

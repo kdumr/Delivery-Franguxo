@@ -1,0 +1,17 @@
+{
+  "name": "Sistema delivery Franguxo",
+  "slug": "myd-delivery-pro-edit",
+  "version": "3.0.0",
+  "tested": "6.8",
+  "requires": "5.8",
+  "requires_php": "7.4",
+  "last_updated": "2025-11-25",
+  "author": "KDUMR",
+  "author_profile": "https://github.com/kdumr",
+  "download_url": "https://github.com/kdumr/gestordepedidos/releases/download/v3.5.0/myd-delivery-pro-3.5.0.zip",
+  "sections": {
+    "description": "<p>Atualização simulada hospedada no GitHub.</p>",
+    "changelog": "<h4>3.5.0</h4><ul><li>Exemplo de changelog hospedado no GitHub.</li></ul>"
+  },
+  "license_status": "valid"
+}

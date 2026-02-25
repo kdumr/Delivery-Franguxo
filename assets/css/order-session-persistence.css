@@ -1,0 +1,282 @@
+/**
+ * Estilos para Sistema de Persistência de Sessão de Pedidos
+ * MyD Delivery Pro
+ */
+
+/* Diálogo de Recuperação de Sessão */
+.myd-session-recovery-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.myd-session-recovery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.myd-session-recovery-modal {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: myd-modal-appear 0.3s ease-out;
+}
+
+@keyframes myd-modal-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.myd-session-recovery-header {
+    padding: 24px 24px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.myd-session-recovery-header h3 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.myd-session-recovery-content {
+    padding: 24px;
+}
+
+.myd-session-recovery-content p {
+    margin: 0 0 16px 0;
+    color: #4b5563;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.myd-session-recovery-details {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #374151;
+}
+
+.myd-session-recovery-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #92400e;
+}
+
+.myd-session-recovery-warning strong {
+    color: #78350f;
+}
+
+.myd-session-recovery-actions {
+    padding: 0 24px 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.myd-session-recovery-actions button {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.myd-btn-primary {
+    background: #059669;
+    color: white;
+}
+
+.myd-btn-primary:hover {
+    background: #047857;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+}
+
+.myd-btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.myd-btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+}
+
+/* Botão de Recuperação na Header */
+.myd-recovery-button {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+    animation: myd-pulse-orange 2s infinite;
+}
+
+.myd-recovery-button:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+@keyframes myd-pulse-orange {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+    }
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+    .myd-session-recovery-overlay {
+        padding: 16px;
+    }
+    
+    .myd-session-recovery-modal {
+        max-height: 95vh;
+    }
+    
+    .myd-session-recovery-header,
+    .myd-session-recovery-content {
+        padding: 20px;
+    }
+    
+    .myd-session-recovery-actions {
+        padding: 0 20px 20px;
+        flex-direction: column;
+    }
+    
+    .myd-session-recovery-actions button {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .myd-recovery-button {
+        padding: 6px 12px;
+        font-size: 12px;
+        margin-left: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .myd-session-recovery-overlay {
+        padding: 12px;
+    }
+    
+    .myd-session-recovery-header h3 {
+        font-size: 18px;
+    }
+    
+    .myd-session-recovery-content p {
+        font-size: 14px;
+    }
+    
+    .myd-session-recovery-details,
+    .myd-session-recovery-warning {
+        font-size: 13px;
+        padding: 12px;
+    }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    .myd-session-recovery-modal {
+        animation: none;
+    }
+    
+    .myd-recovery-button {
+        animation: none;
+    }
+    
+    @keyframes myd-pulse-orange {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+        }
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .myd-session-recovery-modal {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+    
+    .myd-session-recovery-header {
+        border-bottom-color: #374151;
+    }
+    
+    .myd-session-recovery-header h3 {
+        color: #f9fafb;
+    }
+    
+    .myd-session-recovery-content p {
+        color: #d1d5db;
+    }
+    
+    .myd-session-recovery-details {
+        background: #374151;
+        border-color: #4b5563;
+        color: #e5e7eb;
+    }
+    
+    .myd-session-recovery-warning {
+        background: #451a03;
+        border-color: #92400e;
+        color: #fbbf24;
+    }
+}

@@ -1,0 +1,80 @@
+/* Estilos para a notificação de reembolso */
+#myd-toast-container{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:100050;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.myd-toast{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#def1e1;
+    border: none;
+    border-left: 3px solid #1dad00;
+    padding:12px 14px;
+    border-radius:4px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    min-width:240px;
+    max-width:360px;
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .28s ease, transform .28s ease;
+}
+.myd-toast.show{
+    opacity:1;
+    transform:translateY(0)
+}
+.myd-toast-icon{
+    width:30px;
+    height:30px;
+    flex:0 0 30px;
+    display:flex;
+    align-items:center;
+    justify-content:center
+}
+.myd-toast-body{
+    flex:1;
+    display:flex;
+    flex-direction:column
+}
+.myd-toast-title{
+    font-weight:700;
+    color:#111;
+
+}
+.myd-toast-text{
+    color:#444;
+    font-size:15px;
+    font-weight:400;
+}
+#myd-simulate-btn{
+    margin-left:8px;
+    padding:8px 10px;
+    border-radius:6px;
+    border:1px solid #ddd;
+    background:#def1e1;
+    cursor:pointer;
+}
+
+/* negative simulate button */
+#myd-simulate-negative-btn{
+    margin-left:8px;
+    padding:8px 10px;
+    border-radius:6px;
+    border:1px solid #ddd;
+    background:#fbe9e9;
+    cursor:pointer;
+}
+
+/* negative toast style */
+.myd-toast.negative{
+    background:#fde6e6;
+    border-left-color:#d32f2f;
+}
+.myd-toast.negative .myd-toast-icon svg path{
+    fill:#d32f2f;
+}

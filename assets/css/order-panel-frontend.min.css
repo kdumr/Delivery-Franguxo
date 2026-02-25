@@ -1,0 +1,3048 @@
+/* --- Skeleton para status-card-button --- */
+.status-card-button.skeleton {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: myd-skeleton-pulse 1.5s ease-in-out infinite;
+  color: transparent !important;
+  user-select: none;
+  pointer-events: none;
+}
+
+.status-card-button.skeleton .status-text {
+  color: #888888 !important;
+}
+
+.status-card-button.skeleton .status-ellipse {
+  background: #e0e0e0 !important;
+  box-shadow: none !important;
+}
+
+@keyframes myd-skeleton-pulse {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* --- Status Card Button States --- */
+.status-card-button.status-open {
+  background: #def1e1;
+  border: 1px solid #b6e6c7;
+}
+
+.status-card-button.status-open .status-text {
+  color: #2ecc40;
+}
+
+.status-card-button.status-close {
+  background: #ffeaea;
+  border: 1px solid #f5b6b6;
+}
+
+.status-card-button.status-close .status-text {
+  color: #e74c3c;
+}
+
+.status-card-button.status-ignore-open {
+  background: #def1e1;
+  border: 1px solid #b6e6c7;
+}
+
+.status-card-button.status-ignore-open .status-text {
+  color: #2ecc40;
+}
+
+.status-card-button.status-ignore-close {
+  background: #f2f2f2;
+  border: 1px solid #dcdcdc;
+}
+
+.status-card-button.status-ignore-close .status-text {
+  color: #888;
+}
+
+/* --- Status Card Button --- */
+.status-card-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #def1e1;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  width: 200px;
+  height: 50px;
+  min-width: 200px;
+  min-height: 50px;
+  max-width: 200px;
+  max-height: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.status-card-content {
+  padding: 8px 16px;
+}
+
+.status-card-button .status-ellipse {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2ecc40;
+  margin-right: 8px;
+  box-shadow: 0 0 6px #2ecc40aa;
+  animation: pulse 1.2s infinite;
+}
+
+.status-card-button .status-text {
+  font-size: 14px;
+  color: #4caf50;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 6px #2ecc40aa;
+  }
+
+  50% {
+    transform: scale(1.25);
+    box-shadow: 0 0 18px #2ecc4088;
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px #2ecc40aa;
+  }
+}
+
+/* --- Scrollbar interna sobreposta customizada --- */
+.scroll-overlay {
+  position: relative;
+  overflow: auto;
+  overflow: overlay;
+  max-height: 100%;
+}
+
+.scroll-overlay::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.scroll-overlay.scrollbar-visible::-webkit-scrollbar {
+  opacity: 1;
+}
+
+.scroll-overlay::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.scroll-overlay:hover::-webkit-scrollbar-thumb,
+.scroll-overlay:focus-within::-webkit-scrollbar-thumb,
+.scroll-overlay.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.scroll-overlay::-webkit-scrollbar-thumb:window-inactive {
+  background: transparent;
+}
+
+/* Firefox */
+.scroll-overlay {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+.scroll-overlay:hover,
+.scroll-overlay:focus-within,
+.scroll-overlay.scrollbar-visible {
+  scrollbar-color: rgba(0, 0, 0, 0.6) transparent;
+}
+
+@media (max-width: 600px) {
+  .scroll-overlay {
+    max-height: 60vh;
+  }
+}
+
+/* Make orders list take full horizontal width on small screens */
+@media (max-width: 600px) {
+  .fdm-orders-content {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .fdm-orders-list {
+    width: 100% !important;
+    height: calc(100vh - 76px);
+    max-height: calc(100vh - 76px);
+    overflow: auto;
+  }
+
+  .fdm-orders-loop {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  .fdm-orders-list .fdm-orders-list-action-full,
+  .fdm-orders-list .fdm-orders-list-action-up {
+    position: sticky;
+    width: 100%;
+    left: 0;
+  }
+
+  .fdm-orders-full-details .fdm-orders-full {
+    width: 100%;
+  }
+}
+
+/* --- Fim Scrollbar customizada --- */
+.myd-select-btn.status-ignore.open-bg {
+  background: #def1e1 !important;
+}
+
+.top-bar .select-menu .options,
+.myd-select-options {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  padding: 6px 0;
+  min-width: 220px;
+  animation: myd-dropdown-down 0.22s cubic-bezier(.4, 1.4, .6, 1) both;
+  transform-origin: top center;
+}
+
+@keyframes myd-dropdown-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) scaleY(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* Barra lateral vertical esquerda */
+.myd-orders-shell {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.status-arrow {
+  padding: 0 5px 0 0;
+}
+
+.myd-orders-shell #myd-delivery-orders-full-screen {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.myd-sidebar-left {
+  background: #efeff0;
+  width: 70px;
+  flex-shrink: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Ensure text inside order panels starts at 14px by default */
+.fdm-orders-full-items,
+.fdm-orders-full-items p,
+.fdm-orders-full-items span,
+.fdm-orders-full-items label,
+.fdm-orders-full-items a {
+  font-size: 14px;
+}
+
+
+
+
+.myd-sidebar-header {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.myd-sidebar-logo {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.myd-sidebar-nav {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.myd-sidebar-item {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  border: none;
+  background: transparent;
+  outline: none;
+  z-index: 2;
+}
+
+.myd-sidebar-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.myd-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.myd-sidebar-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-left: 3px solid #4CAF50;
+}
+
+.myd-sidebar-item svg {
+  width: 28px;
+  height: 28px;
+}
+
+.myd-sidebar-badge {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: #f44336;
+  color: #fff;
+  border-radius: 12px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+  z-index: 3;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.myd-sidebar-footer {
+  width: 100%;
+  padding: 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .myd-orders-shell {
+    flex-direction: column;
+  }
+
+  .myd-sidebar-left {
+    height: auto;
+    width: 100%;
+    position: relative;
+  }
+
+  .myd-orders-shell #myd-delivery-orders-full-screen {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Mobile: transformar sidebar esquerda em barra horizontal fixa inferior */
+@media (max-width: 600px) {
+  .myd-orders-shell {
+    flex-direction: column-reverse;
+  }
+
+  .myd-sidebar-left {
+    width: 100%;
+    height: 60px;
+    flex-shrink: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 999999;
+  }
+
+  .myd-sidebar-left .myd-sidebar-header,
+  .myd-sidebar-left .myd-sidebar-footer {
+    display: none;
+  }
+
+  .myd-sidebar-left .myd-sidebar-nav {
+    flex-direction: row;
+    gap: 8px;
+    padding: 0 8px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .myd-sidebar-item {
+    width: auto;
+    height: 100%;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-left: none;
+    border-right: none;
+  }
+
+  .myd-sidebar-item svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* evitar que o conteúdo principal fique coberto pela barra inferior */
+  .myd-orders-shell #myd-delivery-orders-full-screen {
+    padding-bottom: 76px !important;
+    /* um pouco maior que a altura da barra */
+  }
+
+  /* badges posicionados corretamente dentro da barra */
+  .myd-sidebar-badge {
+    top: 6px;
+    right: 6px;
+  }
+}
+
+
+.fdm-orders-content {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 900px;
+}
+
+.fdm-orders-list {
+  background: #f2f2f2;
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.fdm-orders-list-action {
+  align-items: center;
+  display: flex;
+  height: 60px;
+  padding: 0 10px;
+  gap: 10px;
+}
+
+.fdm-orders-list-action input[type="text"] {
+  margin: 0;
+  flex: 1;
+}
+
+
+
+.fdm-orders-list-action-full,
+.fdm-orders-list-action-up {
+  background: #fff;
+  display: flex;
+  flex-wrap: nowrap;
+  height: 60px;
+  position: absolute;
+  width: 100%;
+}
+
+.fdm-btn-order-action svg {
+  fill: #383838;
+  height: 14pt;
+  width: 14pt;
+}
+
+.fdm-btn-order-action:hover svg {
+  fill: #fff;
+}
+
+.fdm-orders-list-action-full {
+  border-top: 1px solid #eaeaea;
+  bottom: 0;
+}
+
+.fdm-orders-list-action-up {
+  border-bottom: 1px solid #eaeaea;
+  justify-content: flex-end;
+  top: 0;
+}
+
+#fdm-back:hover {
+  background: #ededed;
+}
+
+#fdm-confirm-order:hover {
+  background: #208e2a;
+}
+
+#fdm-cancel-order:hover {
+  background: #bb1e1e;
+}
+
+#fdm-indelivery-order:hover {
+  background: #d8800d;
+}
+
+#myd-done-order:hover {
+  background: #037d91;
+}
+
+#myd-waiting-order:hover {
+  background: #4e6585;
+}
+
+#fdm-finished-order:hover {
+  background: #007bbf;
+}
+
+#fdm-print-order:hover {
+  background: #007bbf;
+  color: #fff;
+}
+
+#fdm-print-order {
+  border-left: 1px solid #eaeaea;
+}
+
+.fdm-btn-order-action,
+.fdm-btn-order-action-back {
+  align-items: center;
+  background: #f9f9f9;
+  border: 1px solid #eaeaea;
+  color: #383838;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 16px;
+  gap: 5px;
+  justify-content: center;
+  padding: 10px 5px;
+  width: 33%;
+}
+
+#hide-prints {
+  display: none;
+}
+
+.fdm-btn-order-action:hover {
+  background: #444;
+  color: #fff;
+}
+
+.fdm-orders-full-details {
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.fdm-orders-full-details.myd-detail-open {
+  display: flex;
+}
+
+.fdm-orders-full-details .fdm-orders-full {
+  background: #fff;
+  width: 560px;
+  max-width: 900px;
+  height: calc(100vh - 80px);
+  max-height: calc(100vh - 80px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  animation: myd-popup-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes myd-popup-in {
+  from {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.fdm-order-list-items-date,
+.fdm-order-list-items-order-number,
+.fdm-order-list-items-type {
+  align-items: center;
+  display: flex;
+  font-size: 16px;
+  line-height: 1.4;
+  margin-right: 10px;
+  width: auto;
+}
+
+.fdm-order-list-items-customer,
+.fdm-order-list-items-customer-name,
+.fdm-order-list-items-product,
+.fdm-order-list-items-product-extra {
+  align-items: center;
+  display: flex;
+  line-height: 1.4;
+  width: 100%;
+}
+
+.fdm-order-list-items-customer,
+.fdm-order-list-items-product-extra {
+  color: #565656;
+  font-weight: 400;
+}
+
+.fdm-order-list-items-product-extra {
+  white-space: pre;
+}
+
+.fdm-order-list-items-product {
+  font-weight: 700;
+}
+
+.fdm-products-order-loop {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.fdm-order-list-items-type {
+  background: #46b450;
+  border-radius: 8px;
+  color: #fff;
+  padding: 0 15px;
+}
+
+.fdm-order-list-items-customer-name,
+.fdm-order-list-items-order-number {
+  color: #383838;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.fdm-order-list-items-date {
+  color: #565656;
+  font-weight: 400;
+  margin: 0;
+}
+
+.fdm-order-list-items-store {
+  color: #666;
+  font-size: 16px;
+  width: auto;
+}
+
+.fdm-orders-loop {
+  background: #ffffff;
+  overflow: hidden;
+  padding: 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.fdm-not-logged {
+  font-size: 16px;
+  padding: 60px;
+  text-align: center;
+}
+
+.fdm-orders-full {
+  align-items: stretch;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  width: 100%;
+}
+
+.fdm-orders-full {
+  position: relative
+}
+
+.fdm-orders-full-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  z-index: 10010
+}
+
+.fdm-orders-full-close svg {
+  width: 18px;
+  height: 18px;
+  display: block
+}
+
+.fdm-orders-full-close:hover {
+  background: #fafafa;
+  transform: translateY(-1px)
+}
+
+.fdm-orders-items {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  margin-bottom: 8px;
+  padding: 12px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.fdm-order-list-items-status {
+  align-items: center;
+  border-radius: 5px;
+  color: #fff;
+  display: flex;
+  font-size: 16px;
+  line-height: 1.2;
+  padding: 5px 10px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.fdm-orders-items.fdm-active {
+  border: 2px solid #3e3e3e;
+}
+
+.fdm-orders-items:hover {
+  border: 2px solid #717171;
+}
+
+.fdm-orders-items.fdm-new-unclicked:not([data-order-clicked="true"]) {
+  background: #fff3cd !important;
+  border: 2px solid #ffc107 !important;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.4) !important;
+  animation: shake-subtle 3s infinite !important;
+}
+
+.fdm-orders-items.fdm-new-unclicked:not([data-order-clicked="true"]) .fdm-order-list-items-status {
+  background: #ffc107 !important;
+  color: #212529 !important;
+  font-weight: 700 !important;
+}
+
+@keyframes shake-subtle {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10% {
+    transform: translateX(-1px);
+  }
+
+  20% {
+    transform: translateX(1px);
+  }
+
+  30% {
+    transform: translateX(-1px);
+  }
+
+  40% {
+    transform: translateX(1px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
+  60% {
+    transform: translateX(0);
+  }
+
+  70% {
+    transform: translateX(0);
+  }
+
+  80% {
+    transform: translateX(0);
+  }
+
+  90% {
+    transform: translateX(0);
+  }
+}
+
+.fdm-orders-full-items {
+  background: #ffffff;
+  color: #000;
+  display: none;
+
+  width: 100%;
+}
+
+.fdm-orders-items-order,
+.fdm-orders-items-products {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.fdm-orders-items-products {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.fdm-divider {
+  background: #eaeaea;
+  margin: 20px 0 !important;
+  width: 100%;
+}
+
+.fdm-order-list-items,
+.fdm-order-list-totals {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.fdm-orders-items-left {
+  display: flex;
+  flex-wrap: wrap;
+  width: 75%;
+}
+
+.fdm-orders-items-right {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 25%;
+}
+
+#fdm-back,
+.myd-item-hide {
+  display: none;
+}
+
+.myd-orders-panel__notification-status {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  padding: 0 15px;
+}
+
+.myd-orders-panel__notification-status>p {
+  margin: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  .fdm-orders-loop {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+  }
+
+  .fdm-orders-list {
+    height: auto;
+    width: 100%;
+  }
+
+  .fdm-orders-full-details {
+    z-index: 9999;
+  }
+
+  .fdm-orders-full-items {
+    height: calc(100% - 125px);
+    margin-top: 60px;
+
+  }
+
+  .fdm-orders-list-action-up {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .fdm-orders-list-action-up .fdm-btn-order-action {
+    width: 50%;
+  }
+
+  .fdm-orders-items-left {
+    width: 70%;
+  }
+
+  .fdm-orders-items-right {
+    width: 30%;
+  }
+
+  #fdm-back {
+    display: flex;
+    width: 50%;
+  }
+
+  .fdm-order-list-items-customer-name,
+  .fdm-order-list-items-order-number {
+    font-size: 16px;
+  }
+
+  .fdm-order-list-items-status {
+    font-size: 14px;
+  }
+
+  .fdm-orders-full {
+    align-items: start;
+  }
+
+  .fdm-orders-list-action-full {
+    height: 65px;
+  }
+}
+
+/* --- Appended from panel-inline.css on 2025-09-28 --- */
+/* panel-inline.css
+    Consolidated CSS migrated from templates/order/panel.php
+*/
+
+/* Keep print content hidden */
+#hide-prints {
+  display: none;
+}
+
+/* Top bar / header */
+.top-bar>div {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.top-bar {
+  background-color: white;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  width: 100%;
+  font-weight: bold;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.fdm-ordres-wrap,
+.fdm-orders-wrap {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.top-bar .select-menu .select-btn {
+  height: 60px;
+  min-width: 160px;
+  max-width: 220px;
+  padding: 8px 10px !important;
+  box-sizing: border-box;
+  overflow: visible !important;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+  font-weight: 400 !important;
+  position: relative;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.top-bar .select-menu .select-btn>div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-bar .select-menu .select-btn>div>div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.top-bar .select-menu .select-btn.status-open {
+  background: #def1e1 !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.top-bar .select-menu .select-btn.status-ignore {
+  background: #dcdcdc;
+  border-color: #dcdcdc;
+  color: #00000099 !important;
+  box-shadow: none !important;
+}
+
+/* When wrapper indicates closed (data-open="0") and mode is ignore, use blue background */
+#myd-store-status-wrap[data-open="0"] .select-btn.status-ignore,
+#myd-store-status-wrap[data-open="0"] .myd-select-btn.status-ignore {
+  background: #dcdcdc !important;
+  border-color: #dcdcdc !important;
+  color: #ffffff !important;
+}
+
+#myd-store-status-wrap[data-open="0"] .select-btn.status-ignore .myd-store-status-icon,
+#myd-store-status-wrap[data-open="0"] .myd-select-btn.status-ignore .myd-store-status-icon {
+  background: transparent !important;
+}
+
+.top-bar .select-menu .select-btn.status-open .sBtn-text {
+  color: #3ab05a !important;
+}
+
+.top-bar .select-menu .select-btn.status-open i.bx,
+.top-bar .select-menu .select-btn.status-open .sBtn-subtext {
+  color: #ffffff !important;
+}
+
+.top-bar .select-menu .select-btn.status-close {
+  background: #f1dede !important;
+  border-color: #f44336 !important;
+  border-style: solid !important;
+  box-shadow: none !important;
+  color: inherit;
+}
+
+.top-bar .select-menu .select-btn.status-close i.bx {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.top-bar .select-menu .select-btn.status-close .sBtn-text {
+  color: #f44336 !important;
+}
+
+.top-bar .select-menu .select-btn .sBtn-text {
+  font-weight: 400 !important;
+  display: block;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+.top-bar .select-menu .select-btn .sBtn-subtext {
+  font-weight: 400 !important;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 2px;
+  line-height: 14px;
+  display: block;
+  white-space: nowrap !important;
+  max-width: calc(100% - 72px) !important;
+  overflow: visible !important;
+  text-overflow: clip;
+}
+
+.top-bar .select-menu .select-btn svg {
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0;
+}
+
+.top-bar .select-menu .select-btn i.bx {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* myd specific select btn helpers (moved from inline) */
+.myd-select-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+  color: #fff;
+  position: relative;
+}
+
+.myd-select-btn-inner {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.myd-store-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.myd-store-status-icon svg {
+  margin: 0 !important;
+  display: block;
+}
+
+.top-bar .select-menu .options,
+.myd-select-options {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  padding: 6px 0;
+  min-width: 220px;
+}
+
+.top-bar .select-menu .options .option,
+.myd-select-options .option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #2f2f2f;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.top-bar .select-menu .options .option:hover,
+.myd-select-options .option:hover {
+  background: #DCDCDC;
+  color: #5f5f5f;
+}
+
+/* Force orders panel layout — agora é flex child do shell, não mais fixed */
+#myd-delivery-orders-full-screen {
+  background: #f0f0f1;
+  display: flex;
+  flex-direction: column;
+}
+
+#myd-delivery-orders-full-screen .fdm-orders-content {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+/* OVERRIDE CRÍTICO: orders layout */
+body .fdm-orders-content.fdm-orders-content {
+  align-items: stretch !important;
+  display: flex !important;
+}
+
+body .fdm-orders-list.fdm-orders-list,
+body .fdm-orders-full-details.fdm-orders-full-details {
+  height: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+body .fdm-orders-full.fdm-orders-full {
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+
+  align-items: stretch !important;
+}
+
+body .fdm-orders-loop.fdm-orders-loop {
+  overflow-y: auto !important;
+  padding: 10px !important;
+  width: 100% !important;
+}
+
+body .fdm-orders-list.fdm-orders-list {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  box-shadow: 6px 0 18px -10px rgba(0, 0, 0, 0.18);
+  z-index: 1;
+}
+
+body .fdm-orders-full-details.fdm-orders-full-details {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+@media only screen and (max-width: 768px) {
+  body .fdm-orders-content.fdm-orders-content {
+    height: auto !important;
+  }
+
+  body .fdm-orders-list.fdm-orders-list,
+  body .fdm-orders-full-details.fdm-orders-full-details {
+    height: auto !important;
+  }
+
+  body .fdm-orders-full-items.fdm-orders-full-items {
+    height: auto !important;
+  }
+
+  body .fdm-orders-loop.fdm-orders-loop {
+    height: auto !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+  }
+
+  body .fdm-orders-list.fdm-orders-list {
+    box-shadow: none !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+  }
+
+  body .fdm-orders-full-details.fdm-orders-full-details {
+    flex: 1 1 auto !important;
+    width: auto !important;
+  }
+}
+
+/* Mobile overrides to prevent clipping under bottom bar and neutralize desktop forced sizing */
+@media (max-width: 600px) {
+  #myd-delivery-orders-full-screen {
+    height: calc(100vh - 76px) !important;
+    max-height: calc(100vh - 76px) !important;
+    overflow: hidden !important;
+  }
+
+  body .fdm-orders-content.fdm-orders-content {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+  }
+
+  body .fdm-orders-list.fdm-orders-list {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: calc(100vh - 76px) !important;
+    max-height: calc(100vh - 76px) !important;
+    overflow: auto !important;
+    box-shadow: none !important;
+    z-index: 1 !important;
+  }
+
+  body .fdm-orders-full-details.fdm-orders-full-details {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-width: 0 !important;
+  }
+
+  body .fdm-orders-loop.fdm-orders-loop {
+    height: auto !important;
+    max-height: calc(100vh - 76px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* When WP admin bar is visible, subtract its height on small screens */
+@media (max-width: 600px) {
+  body.admin-bar #myd-delivery-orders-full-screen {
+    height: calc(100vh - 76px - 46px) !important;
+    max-height: calc(100vh - 76px - 46px) !important;
+  }
+
+  body.admin-bar .fdm-orders-list.fdm-orders-list {
+    height: calc(100vh - 76px - 46px) !important;
+    max-height: calc(100vh - 76px - 46px) !important;
+  }
+
+  body.admin-bar body .fdm-orders-loop.fdm-orders-loop {
+    max-height: calc(100vh - 76px - 46px) !important;
+  }
+}
+
+/* Welcome cover / skeletons */
+.myd-welcome-cover {
+  display: flex;
+  padding: 18px;
+  width: 100% !important;
+  box-sizing: border-box;
+  margin: 0 !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.myd-welcome-cover .myd-welcome-grid {
+  width: 100%;
+}
+
+.myd-welcome-title-row {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c2c2c;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.myd-welcome-greeting {
+  white-space: nowrap;
+}
+
+.myd-create-order-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #fff;
+  color: #f38a00;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease, box-shadow 120ms ease;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.myd-create-order-btn:hover {
+  background: #d89400;
+  box-shadow: 0 2px 8px rgba(243, 138, 0, 0.12);
+}
+
+
+.myd-create-order-btn:active,
+.myd-create-order-btn:focus,
+.myd-create-order-btn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  background: #fff !important;
+  border-color: #dcdcdc !important;
+  color: #f38a00 !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.myd-create-order-btn svg {
+  flex-shrink: 0;
+}
+
+/* Coming Soon Popup */
+.myd-coming-soon-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.myd-coming-soon-popup {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  padding: 36px 32px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  animation: mydPopupIn 0.22s ease;
+}
+
+@keyframes mydPopupIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.myd-coming-soon-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.myd-coming-soon-close:hover {
+  color: #333;
+}
+
+.myd-coming-soon-icon {
+  margin-bottom: 12px;
+}
+
+.myd-coming-soon-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c2c2c;
+  margin: 0 0 8px;
+}
+
+.myd-coming-soon-text {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.myd-welcome-grid {
+  display: grid;
+  grid-template-columns: 1fr 14px 1fr;
+  column-gap: 0;
+  row-gap: 14px;
+  align-items: stretch;
+}
+
+.myd-skel {
+  background: #efeff0;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.myd-skel-small {
+  height: 56px;
+  grid-column: span 1;
+}
+
+.myd-skel-mid {
+  height: auto;
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.myd-welcome-grid>.myd-skel.myd-skel-mid:nth-of-type(1) {
+  grid-column: 1 / 2;
+}
+
+.myd-welcome-grid>.myd-skel.myd-skel-mid:nth-of-type(2) {
+  grid-column: 3 / 4;
+}
+
+.myd-skel-wide {
+  height: 220px;
+  grid-column: 1 / -1;
+}
+
+.myd-skel-mini {
+  height: 54px;
+  grid-column: span 1;
+}
+
+.myd-skel-mini-wide {
+  height: 54px;
+  grid-column: span 2;
+}
+
+@media (max-width: 980px) {
+  .myd-welcome-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .myd-skel-mid {
+    grid-column: span 1 !important;
+  }
+
+  .myd-skel-mini-wide {
+    grid-column: span 1;
+  }
+}
+
+.myd-day-label {
+  color: #5a5a5a !important;
+  text-decoration: none !important;
+}
+
+.myd-day-label.active {
+  color: #c0392b !important;
+  font-weight: 600;
+  text-decoration: underline !important;
+}
+
+.myd-paused-card {
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.myd-paused-card .myd-paused-count {
+  font-size: 40px;
+  font-weight: 700;
+  color: #2c2c2c;
+}
+
+/* Detail and scroll behavior */
+.fdm-orders-full-items {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fdm-input-filter {
+  border-radius: 10px !important;
+  border: 1px solid #efeff0 !important;
+}
+
+.fdm-orders-full-items .myd-detail-header {
+  overflow-y: scroll;
+  position: sticky;
+  top: 0;
+  z-index: 9;
+}
+
+.fdm-orders-full-items .myd-detail-header {
+  position: relative;
+}
+
+.fdm-orders-full-items .myd-detail-header .myd-detail-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: 0;
+  background: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  padding: 6px
+}
+
+.fdm-orders-full-items .myd-detail-header .myd-detail-close-btn svg {
+  width: 16px;
+  height: 16px
+}
+
+.fdm-orders-full-items .myd-detail-header .myd-detail-close-btn:hover {
+  background: #fafafa
+}
+
+.fdm-orders-full-items .myd-detail-scroll {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.myd-quick-actions {
+  display: flex;
+  gap: 16px;
+  z-index: 999;
+  justify-content: flex-end;
+  /* Use sticky instead of fixed/absolute to stay in flex flow
+     and not overlap scrollable content */
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 12px 16px;
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Mobile override for .myd-quick-actions no longer needed —
+   sticky positioning fills width automatically */
+
+.fdm-btn-order-action.myd-preparar-btn {
+  background: #409d66 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 10px 90px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  min-width: auto;
+}
+
+.fdm-btn-order-action.myd-preparar-btn:hover {
+  background: #1b7a24 !important;
+  color: #fff !important;
+}
+
+.fdm-btn-order-action.myd-finalizar-btn {
+  background: #409d66 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 10px 90px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  min-width: auto;
+}
+
+.fdm-btn-order-action.myd-finalizar-btn:hover {
+  background: #1b7a24 !important;
+  color: #fff !important;
+}
+
+.fdm-btn-order-action.myd-cancel-btn {
+  background: #f1dede !important;
+  color: #f44336 !important;
+  border: 1px solid #f44336 !important;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto !important;
+  min-width: auto !important;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+.fdm-btn-order-action.myd-cancel-btn:hover {
+  background: #f6e6e6 !important;
+  color: #f44336 !important;
+}
+
+.fdm-btn-order-action.myd-despachar-btn {
+  background: #d8800d !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 10px 90px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto !important;
+  min-width: auto !important;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+.fdm-btn-order-action.myd-despachar-btn:hover {
+  background: #d8800dca !important;
+  color: #fff !important;
+}
+
+/* Info chips */
+.myd-info-chips {
+  margin: 10px 1% 10px 1%;
+  display: flex;
+  gap: 16px;
+}
+
+
+/* Diminuir tamanho de SVGs dentro dos chips (ícones pequenos) */
+.myd-info-chips svg,
+.myd-info-chips .myd-chip svg,
+.myd-chip svg {
+  width: 16px !important;
+  height: 16px !important;
+  display: block;
+}
+
+.myd-greeting {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c2c2c;
+  padding: 12px 16px;
+  display: block !important;
+}
+
+/* Action bar inside detail pane */
+.fdm-orders-list-action-full {
+  width: 100%;
+  background: #fff;
+}
+
+.fdm-orders-full-items>.fdm-orders-list-action-full {
+  position: sticky !important;
+  bottom: 0;
+  z-index: 120000;
+  border-top: 1px solid #eaeaea;
+}
+
+/* Cancel modal */
+.myd-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200000;
+}
+
+.myd-modal.show {
+  display: flex;
+}
+
+.myd-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.myd-modal-dialog {
+  position: relative;
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px;
+  width: 92%;
+  max-width: 420px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  z-index: 999999999;
+}
+
+.myd-modal-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #2c2c2c;
+  margin-bottom: 6px;
+}
+
+.myd-modal-text {
+  color: #444;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.myd-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.myd-btn {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.myd-btn-neutral {
+  background: #efefef;
+  color: #333;
+  border: 1px solid #e2e2e2;
+}
+
+.myd-btn-neutral:hover {
+  background: #e8e8e8;
+}
+
+.myd-btn-danger {
+  background: #f1dede;
+  color: #f44336;
+  border: 1px solid #f44336;
+}
+
+.myd-btn-danger:hover {
+  background: #f6e6e6;
+}
+
+/* Print button default margin */
+.myd-print-btn {
+  margin-right: 12px;
+}
+
+/* Detail card UI and items */
+.myd-order-card {
+  margin: 0 1% 0 1%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid #eaeaea;
+  padding: 12px;
+}
+
+.myd-status-banner {
+  border: 1px solid #bfe3cd;
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0 10px 0;
+}
+
+.myd-status-finished {
+  color: #0f7a3a !important;
+  border-color: #bfe3cd !important;
+}
+
+.myd-status-in-delivery {
+  color: #ff9000 !important;
+  border-color: #ff9000 !important;
+}
+
+.myd-status-confirmed {
+  color: #0b72c1 !important;
+  border-color: #bfc8e3 !important;
+}
+
+.myd-card-section {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+/* Remove hover effects for print icon-only button */
+.myd-print-btn:hover,
+.fdm-btn-order-action.myd-print-btn:hover,
+.myd-print-btn:active,
+.fdm-btn-order-action.myd-print-btn:active {
+  background-color: #afafaf !important;
+  color: #ffae00 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Ensure the icon color doesn't change on hover */
+.myd-print-btn svg path {
+  stroke: #ffae00;
+}
+
+.myd-print-btn:hover svg path {
+  stroke: #ffae00 !important;
+}
+
+/* Ensure base appearance matches the hover/active desired look so it doesn't change on mouseover */
+.myd-print-btn,
+.fdm-btn-order-action.myd-print-btn {
+  background: transparent !important;
+  background-color: #DCDCDC !important;
+  color: #ffae00 !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 50px !important;
+  height: 50px !important;
+  padding: 6px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+}
+
+.myd-print-btn svg,
+.fdm-btn-order-action.myd-print-btn svg {
+  width: 30px !important;
+  height: 30px !important;
+  display: block !important;
+}
+
+.myd-print-btn svg path,
+.fdm-btn-order-action.myd-print-btn svg path {
+  stroke: #ffae00 !important;
+  fill: none !important;
+}
+
+.myd-section-title {
+  font-weight: 700;
+  color: #2c2c2c;
+}
+
+.fdm-products-order-loop {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.fdm-products-order-loop:last-child {
+  border-bottom: none;
+}
+
+.myd-item-thumb {
+  width: 56px;
+  height: 56px;
+  background: #f3f3f3;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.myd-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.myd-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.myd-item-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.myd-item-price {
+  font-weight: 700;
+  color: #2c2c2c;
+  width: 140px;
+  text-align: right;
+}
+
+.myd-extra-title {
+  margin-top: 10px;
+}
+
+.myd-address-real-neighborhood-text {
+  font-size: 11px;
+  font-weight: 500;
+  background-color: #eeeded;
+  padding: 5px 12px;
+  border-radius: 30px;
+  color: #888;
+  margin-top: 2px;
+  width: fit-content;
+}
+
+.myd-extra-group {
+  color: #555;
+  margin-left: 15px;
+  white-space: pre-line;
+}
+
+.myd-extra-item {
+  color: #444;
+  margin-left: 8px;
+  margin-top: 2px;
+}
+
+.myd-note {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.fdm-orders-items-products {
+  border: none !important;
+  padding-right: 0 !important;
+}
+
+.myd-summary-list {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  row-gap: 8px;
+  column-gap: 12px;
+}
+
+.myd-summary-label {
+  color: #555;
+}
+
+.myd-summary-value {
+  color: #2c2c2c;
+  font-weight: 600;
+  text-align: right;
+}
+
+.myd-summary-total {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+  padding-top: 6px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 4px;
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.myd-card-section.myd-billing-card {
+  grid-column: 1 / -1;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-top: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: inherit;
+}
+
+.myd-billing-amount {
+  margin-left: auto;
+  font-weight: 700;
+  color: inherit;
+  text-align: right;
+  min-width: 140px;
+}
+
+.myd-customer-card {
+  margin: 1% 1% 0 1%;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  padding: 12px;
+}
+
+.myd-chip {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  white-space: nowrap;
+}
+
+.myd-chip-label {
+  display: inline-flex;
+  font-weight: 500;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.myd-chip-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2c2c2c;
+}
+
+@media (max-width: 720px) {
+  .myd-info-chips {
+    justify-content: flex-start;
+  }
+}
+
+/* Hide status badge for finished/done orders (covers initial render and real-time updates) */
+.fdm-orders-items[data-order-status="finished"] .fdm-order-list-items-status,
+.fdm-orders-items[data-order-status="done"] .fdm-order-list-items-status,
+.fdm-order-list-item[data-order-status="finished"] .fdm-order-list-items-status,
+.fdm-order-list-item[data-order-status="done"] .fdm-order-list-items-status {
+  display: none !important;
+}
+
+/* Schedule card spacing */
+.myd-schedule-card {
+  padding: 12px;
+}
+
+/* --- MOVED FROM panel-overrides.css on 2025-11-04 --- */
+/* Consolidated overrides moved from templates/order/order-content.php */
+
+/* Address section */
+.myd-section-title {
+  color: #717171;
+}
+
+.myd-address-icon-ellipse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: #dcdcdc;
+  vertical-align: middle;
+}
+
+.myd-address-icon-ellipse svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  vertical-align: middle;
+}
+
+.myd-address-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.myd-address-title-text {
+  font-weight: 400;
+  color: #565656;
+  vertical-align: middle;
+}
+
+/* Detail scroll */
+.myd-detail-scroll {
+  overflow-y: auto;
+}
+
+/* Force text color in orders panel to #717171 (avoid forcing on all descendants to prevent SVG/button color overrides) */
+.fdm-orders-full-items {
+  color: #717171 !important;
+}
+
+/* Quick actions pin (kept conservative z-index) */
+.fdm-orders-full-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.myd-detail-header {
+  flex: 0 0 auto;
+}
+
+.myd-detail-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* height: 100% removed — flex sizing handles this correctly */
+}
+
+/* keep quick-actions positioned inside the orders full container */
+.fdm-orders-full {
+  position: relative;
+}
+
+.myd-quick-actions {
+  /* Consolidated: sticky positioning keeps actions visible at bottom
+     while participating in flex layout (no content overlap) */
+  position: sticky;
+  bottom: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  z-index: 999;
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+/* Utility / chips / cards */
+.myd-title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.myd-title-with-icon svg {
+  width: 24px !important;
+  height: 24px !important;
+  display: block;
+}
+
+
+/* Ensure .myd-detail-scroll uses smooth scrolling on touch devices */
+.myd-detail-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Small layout fixes for billing cards pinned color */
+.myd-card-section.myd-billing-card {
+  color: #000;
+  margin-top: 10px;
+}
+
+/* Preserve original specificity where authors used !important elsewhere in main CSS */
+
+/* Extra group pre-line */
+.myd-extra-group {
+  white-space: pre-line;
+}
+
+/* Coupon discount color */
+.myd-summary-value--coupon {
+  color: #27824c !important;
+}
+
+/* Icon slot for billing / small icons */
+.myd-icon-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  color: inherit;
+}
+
+.myd-billing-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  flex: 0 0 24px;
+  color: inherit;
+}
+
+/* Strong inline text helper */
+.myd-strong {
+  font-weight: 600;
+  color: inherit;
+}
+
+/* Quick actions row layout */
+.myd-quick-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.myd-quick-actions-group {
+  display: flex;
+  gap: 8px;
+}
+
+.myd-detail-scroll {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* height: 57% removed — was truncating the scrollable area;
+     flex: 1 1 auto + min-height: 0 fills remaining space correctly */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #a1a1a1;
+
+}
+
+/* New status banner color */
+.myd-status-new {
+  color: #F3AC2E !important;
+  border-color: #F3AC2E !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* --- Migrated from templates/order/order-list.php on 2026-01-23 --- */
+/* Section titles and order status highlights (in-delivery / confirmed / finished) */
+.myd-orders-section-title {
+  font-weight: 700;
+  padding: 8px 10px;
+  color: #333;
+  background: transparent;
+}
+
+.myd-orders-section {
+  margin-bottom: 8px;
+}
+
+/* Highlight items that are new */
+.fdm-orders-items[data-order-status="new"] {
+  background: #fff1cc !important;
+  border: 1px solid #F3AC2E !important;
+
+}
+
+/* Highlight items that are confirmed */
+.fdm-orders-items[data-order-status="confirmed"] {
+  background: #bfd0e3 !important;
+  border: 1px solid #0b72c1 !important;
+
+}
+
+/* Highlight items that are in delivery */
+.fdm-orders-items[data-order-status="in-delivery"] {
+  background: #ffdbac !important;
+  border: 1px solid #ff9000 !important;
+}
+
+/* Highlight items that are finished */
+.fdm-orders-items[data-order-status="finished"] {
+  background: #bfe3cd !important;
+  border: 1px solid rgb(0, 179, 9) !important;
+}
+
+
+/* Loading overlay para chamadas update_orders */
+.fdm-orders-loading,
+#fdm-orders-loading {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 2147483647;
+  pointer-events: auto
+}
+
+/* When the loading overlay is placed inside the details panel, position it absolutely to cover the panel only */
+.fdm-orders-full-details>#fdm-orders-loading,
+.fdm-orders-full-details #fdm-orders-loading {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  z-index: 120700 !important;
+  pointer-events: auto !important;
+}
+
+.fdm-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.12);
+  border-top-color: #222;
+  border-radius: 50%;
+  animation: fdm-spin 1s linear infinite
+}
+
+@keyframes fdm-spin {
+  to {
+    transform: rotate(360deg)
+  }
+}
+
+/* --- Botões do Header do Pedido --- */
+.myd-order-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.myd-header-action-btn {
+  position: relative;
+  padding: 10px 10px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.myd-header-action-btn:focus {
+  background: #ffae00;
+  border-color: #ffae00;
+  outline: none;
+}
+
+.myd-header-action-btn:hover {
+  background: #ffae00;
+  border-color: #ffae00;
+}
+
+.myd-header-action-btn:hover svg {
+  fill: #fff;
+}
+
+.myd-header-action-btn:hover svg path,
+.myd-header-action-btn:hover svg g {
+  fill: #fff !important;
+}
+
+.myd-header-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* Label tooltip que aparece ao lado esquerdo do botão no hover */
+.myd-header-action-btn::after,
+.myd-edit-order-btn::after {
+  content: attr(title);
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 5px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.myd-header-action-btn:hover::after,
+.myd-edit-order-btn:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.myd-edit-order-btn {
+  position: relative;
+  padding: 10px 10px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.myd-edit-order-btn:focus {
+  background: #ffae00;
+  border-color: #ffae00;
+}
+
+.myd-edit-order-btn:hover {
+  background: #ffae00;
+  border-color: #ffae00;
+}
+
+.myd-edit-order-btn:hover svg {
+  stroke: #fff;
+}
+
+.myd-edit-order-btn:active {
+  transform: scale(0.95);
+}
+
+/* --- Modal Editar Pedido --- */
+#myd-edit-order-modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 130000;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+}
+
+#myd-edit-order-modal .myd-modal-backdrop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#myd-edit-order-modal .myd-modal-dialog {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 480px;
+  width: 94%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+#myd-edit-order-modal .myd-modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+#myd-edit-order-modal .myd-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#myd-edit-order-modal .myd-form-group {
+  margin-bottom: 16px;
+}
+
+#myd-edit-order-modal .myd-form-group label {
+  display: block;
+  text-align: left;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+#myd-edit-order-modal .myd-form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#myd-edit-order-modal .myd-form-group input:focus {
+  outline: none;
+  border-color: #ffae00;
+  box-shadow: 0 0 0 3px rgba(255, 174, 0, 0.15);
+}
+
+#myd-edit-order-modal .myd-form-group input:disabled {
+  background: #f0f0f0;
+  color: #888;
+  cursor: not-allowed;
+}
+
+#myd-edit-order-modal .myd-address-section {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+#myd-edit-order-modal .myd-address-section-title {
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 12px;
+  color: #444;
+}
+
+#myd-edit-order-modal .myd-address-row {
+  margin-bottom: 12px;
+}
+
+#myd-edit-order-modal .myd-address-row:last-child {
+  margin-bottom: 0;
+}
+
+#myd-edit-order-modal .myd-address-row label {
+  display: block;
+  font-size: 13px;
+  text-align: left;
+  margin-bottom: 4px;
+  color: #666;
+}
+
+.myd-edit-address-number {
+  display: block;
+  font-size: 13px;
+  text-align: left;
+  margin-bottom: 4px;
+  color: #666;
+}
+
+.myd-edit-neighborhood {
+  display: block;
+  font-size: 13px;
+  text-align: left;
+  margin-bottom: 4px;
+  color: #666;
+}
+
+#myd-edit-order-modal .myd-address-row input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#myd-edit-order-modal .myd-address-row-inline {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+#myd-edit-order-modal .myd-address-row-inline .myd-field-small {
+  flex: 1;
+}
+
+#myd-edit-order-modal .myd-address-row-inline .myd-field-large {
+  flex: 2;
+}
+
+#myd-edit-order-modal .myd-address-row-inline label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #666;
+}
+
+#myd-edit-order-modal .myd-address-row-inline input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+#myd-edit-order-modal .myd-address-row-inline input:focus {
+  outline: none;
+  border-color: #ffae00;
+  box-shadow: 0 0 0 3px rgba(255, 174, 0, 0.15);
+}
+
+#myd-edit-order-modal .myd-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+#myd-edit-order-modal .myd-btn-cancel {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: background 0.2s;
+}
+
+#myd-edit-order-modal .myd-btn-cancel:hover {
+  background: #f5f5f5;
+}
+
+#myd-edit-order-modal .myd-btn-save {
+  padding: 10px 20px;
+  border: none;
+  background: #ffae00;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+#myd-edit-order-modal .myd-btn-save:hover {
+  background: #e69a00;
+}
+
+/* --- Order Header Row --- */
+.myd-order-header-row {
+  padding-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.myd-order-header-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* --- Badge Canal de Venda --- */
+.myd-channel-badge {
+  background: #eee;
+  border: 1px solid #dadada;
+  border-radius: 16px;
+  padding: 2px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: #222;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.myd-channel-badge span {
+  font-size: 10px !important;
+}
+
+.fdm-order-list-items-customer-name .myd-channel-badge {
+  margin-left: auto;
+}
+
+.myd-channel-badge svg {
+  width: 13px;
+  height: 13px;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Dashboard panel styles moved from inline */
+.dashboard-panel {
+  padding: 24px;
+  margin-bottom: 32px
+}
+
+.dashboard-title {
+  font-size: 1.5em;
+  margin-bottom: 20px
+}
+
+.dashboard-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px
+}
+
+.dashboard-info-block {
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 20px;
+  flex: 1
+}
+
+.dashboard-info-sub {
+  margin-top: 8px
+}
+
+.dashboard-info-link {
+  color: #d32f2f;
+  cursor: pointer
+}
+
+.dashboard-hours {
+  margin-top: 8px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 4px 12px;
+  display: inline-block
+}
+
+.dashboard-info-value {
+  font-size: 2em;
+  margin-top: 16px
+}
+
+.dashboard-orders {
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 20px
+}
+
+.dashboard-orders-title {
+  margin-bottom: 12px
+}
+
+.dashboard-orders-info {
+  font-size: 0.8em;
+  color: #888;
+  cursor: help
+}
+
+.dashboard-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px
+}
+
+.dashboard-stat {
+  text-align: left
+}
+
+.dashboard-stat-value {
+  font-size: 2em;
+  font-weight: 700
+}
+
+.dashboard-stat-label {
+  color: #888
+}
+
+@media (max-width:800px) {
+  .dashboard-info {
+    flex-direction: column
+  }
+
+  .dashboard-stats {
+    flex-direction: column
+  }
+}
+
+/* Day toggle buttons */
+.dashboard-day-link {
+  cursor: pointer;
+  color: #888;
+  outline: none;
+  padding: 2px 6px;
+}
+
+.dashboard-day-link.active {
+  color: #e53935;
+  text-decoration: underline
+}
+
+.dashboard-orders-info {
+  position: relative;
+  display: inline-block;
+  cursor: help
+}
+
+.dashboard-orders-info::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0b0b0f;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease, transform .12s ease;
+  z-index: 9999
+}
+
+.dashboard-orders-info::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #0b0b0f;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease
+}
+
+.dashboard-orders-info:hover::after,
+.dashboard-orders-info:focus::after,
+.dashboard-orders-info:active::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px)
+}
+
+.dashboard-orders-info:hover::before,
+.dashboard-orders-info:focus::before,
+.dashboard-orders-info:active::before {
+  opacity: 1
+}
+
+/* --- WhatsApp Disconnect Alert Popup --- */
+.myd-alert-overlay {
+  display: none;
+  position: fixed;
+  z-index: 100001;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  align-items: center;
+  justify-content: center;
+}
+
+.myd-alert-modal {
+  background: #fff;
+  padding: 60px 30px 30px;
+  border-radius: 28px;
+  max-width: 420px;
+  width: 95%;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  position: relative;
+  margin: 20px;
+}
+
+.myd-alert-icon-wrap {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid #fff;
+  z-index: 2;
+  fff
+}
+
+.myd-alert-icon-wrap span {
+  font-size: 45px;
+}
+
+.myd-alert-title {
+  margin: 5px 0 12px;
+  color: #1d1d1f;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.myd-alert-desc {
+  color: #6e6e73;
+  font-size: 17px;
+  margin-bottom: 35px;
+  line-height: 1.6;
+}
+
+.myd-alert-desc b {
+  color: #d32f2f;
+}
+
+.myd-alert-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.myd-alert-btn {
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.myd-alert-btn-ignore {
+  flex: 1;
+  border: 1px solid #d2d2d7;
+  background: #fff;
+  color: #1d1d1f;
+  font-weight: 600;
+}
+
+.myd-alert-btn-ignore:hover {
+  color: #1d1d1f;
+  background: #DCDCDC;
+}
+
+.myd-alert-btn-connect {
+  flex: 2;
+  border: none;
+  background: #25d366;
+  color: #fff;
+  font-weight: 500;
+}
+
+.myd-alert-btn-connect:hover {
+  background: #1c9e4c;
+  transform: translateY(-2px);
+}

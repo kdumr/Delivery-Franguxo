@@ -1,0 +1,428 @@
+
+.modal .schedule-table-body td:first-child {
+    color: #4b4b4b !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px 0px 16px;
+    width: fit-content;
+    font-size: 25px;
+    font-weight: 600;
+    color: #151515;
+}
+.modal-subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 0px 16px 10px 16px;
+    font-size: 14px;
+    color: #888888;
+    font-weight: 400;
+}
+
+/* Força remoção de borda em todas as tabelas do modal, sobrescrevendo reset.css */
+.modal .schedule-table,
+.modal .schedule-table *,
+.modal .schedule-table-body,
+.modal .schedule-table-body *,
+.modal table,
+.modal table *,
+.modal td,
+.modal th {
+    border: none !important;
+}
+
+.scroll-custom {
+    scrollbar-width: thin !important;
+    scrollbar-color: #ff6600 transparent !important;
+}
+
+.scroll-custom::-webkit-scrollbar {
+    display: block !important;
+    width: 8px !important;
+    background: transparent !important;
+}
+
+.scroll-custom::-webkit-scrollbar-thumb {
+    background: #ff6600 !important;
+    border-radius: 10px !important;
+}
+
+/* Esconde o scrollbar nativo até o NiceScroll ser ativado */
+.schedule-table-scroll {
+    border-top: 2px solid #f2f2f2;
+    scrollbar-width: none !important;
+    /* Firefox */
+    -ms-overflow-style: none !important;
+    /* IE e Edge */
+}
+
+.schedule-table-scroll::-webkit-scrollbar {
+    display: none !important;
+    /* Chrome, Safari, Opera */
+}
+
+/* Exibe o scrollbar customizado após o modal abrir */
+.scroll-custom {
+    scrollbar-width: thin !important;
+    scrollbar-color: #ff6600 transparent !important;
+    -ms-overflow-style: auto !important;
+}
+
+.scroll-custom::-webkit-scrollbar {
+    display: block !important;
+    width: 8px !important;
+    background: transparent !important;
+}
+
+.scroll-custom::-webkit-scrollbar-thumb {
+    background: #ff6600 !important;
+    border-radius: 10px !important;
+}
+
+.modal-footer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    border-top: #000;
+    padding-top: 20px;
+}
+
+.btn-salvar:hover {
+    background: #df5900;
+}
+
+.btn-salvar {
+    background: #ff6600;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-size: 1.08rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: background 0.2s, box-shadow 0.2s;
+    opacity: 1;
+}
+
+.btn-salvar:disabled {
+    background: #ff6600;
+    opacity: 0.5;
+    cursor: default;
+    box-shadow: none;
+}
+
+.btn-salvar:hover:disabled {
+    background: #ff6600;
+    box-shadow: none;
+}
+
+.schedule-table th:first-child,
+.schedule-table-body td:first-child {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+}
+
+.schedule-table thead th {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+
+}
+
+.schedule-table-wrapper {
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 2px solid #f2f2f2;
+
+}
+
+.schedule-table {
+    margin-block-end: 0;
+    border-collapse: collapse;
+    width: 100%;
+    background: #fff;
+    font-size: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: none !important;
+}
+
+.schedule-table-scroll {
+    flex: 1 1 auto;
+    max-height: 38vh;
+    overflow-y: auto;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.schedule-table-body {
+    border-radius: 0 0 10px 10px;
+    border: none !important;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 10px 16px;
+    text-align: left;
+}
+
+.schedule-table th {
+    color: #888;
+    font-weight: 700;
+    font-size: 1.02rem;
+    border-bottom: 2px solid #f2f2f2;
+}
+
+.schedule-table tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.schedule-table tr:nth-child(odd) {
+    background: #fff;
+}
+
+.schedule-table input[type="time"] {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 1rem;
+    outline: none;
+    color: #ff6600;
+    font-weight: 600;
+    background: #fff;
+    transition: border 0.2s;
+}
+
+.schedule-table input[type="time"]:focus {
+    border: 1.5px solid #ff6600;
+}
+
+.status-card {
+    display: flex;
+    align-items: flex-start;
+    /* SVG icon aligns with the first line */
+    justify-content: center;
+    padding: 10px 16px;
+    width: fit-content;
+}
+
+.status-ellipse {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #2ecc40;
+    margin-right: 8px;
+    box-shadow: 0 0 6px #2ecc40aa;
+    animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 6px #2ecc40aa;
+    }
+
+    50% {
+        transform: scale(1.25);
+        box-shadow: 0 0 18px #2ecc4088;
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 6px #2ecc40aa;
+    }
+}
+
+.status-text {
+    font-size: 16px;
+    margin-left: 8px;
+    color: #888888;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.status-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    /* Ensure left alignment */
+}
+
+.status-subtext {
+    display: block;
+    font-size: 13px;
+    margin-left: 8px;
+    /* Same as main text baseline */
+    margin-top: -2px;
+    /* Pull up slightly for tighter spacing */
+    color: #a0a0a0;
+    font-weight: 400;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgb(0 0 0 / 50%);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(.68, -0.55, .27, 1.55), opacity 0.2s;
+    will-change: transform, opacity;
+    display: flex;
+    flex-direction: column;
+    /* overflow-y removido para não rolar o modal inteiro */
+    position: relative;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Notificação de sucesso */
+.myd-notification-card {
+    position: fixed;
+    top: 20px;
+    right: -300px;
+    background-color: #28a745;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2147483647;
+    transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.myd-notification-card.show {
+    right: 20px !important;
+}
+
+.myd-notification-card.myd-notification-error {
+    background-color: #dc3545;
+    /* Red */
+}
+
+.myd-notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+
+
+/* Sizing for status icon SVGs defined in CSS as requested */
+.status-card svg {
+    width: 24px;
+    height: 24px;
+    /* Aligns SVG top with text top */
+}
+
+.status-card.bg-ignore-close svg {
+    margin-top: 2px;
+    width: 20px;
+    height: 20px;
+}
+
+.btn-toggle-status:hover {
+    background-color: #ebebeb !important;
+    border-color: none !important;
+}
+
+/* Toggle Status Button Styles */
+.btn-toggle-status {
+    margin-right: auto;
+    color: #2ecc40;
+    border: 1.5px solid #ff6600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-toggle-status.is-open {
+    border-color: #e74c3c;
+    /* Red */
+    color: #e74c3c;
+}
+
+.btn-toggle-status.is-close {
+    border-color: #28a745;
+    /* Green */
+    color: #28a745;
+}
+
+.btn-toggle-status:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.myd-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

@@ -1,0 +1,31 @@
+/* Disable autocomplete for myd-cart__checkout-input fields */
+.myd-cart__checkout-input {
+    -webkit-autofill: none !important;
+    box-shadow: 0 0 0 1000px white inset !important;
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Chrome specific autocomplete disable */
+.myd-cart__checkout-input:-webkit-autofill,
+.myd-cart__checkout-input:-webkit-autofill:hover,
+.myd-cart__checkout-input:-webkit-autofill:focus,
+.myd-cart__checkout-input:-webkit-autofill:active {
+    box-shadow: 0 0 0 1000px white inset !important;
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Firefox specific */
+.myd-cart__checkout-input:-moz-autofill {
+    background-color: white !important;
+    box-shadow: 0 0 0 1000px white inset !important;
+}
+
+/* Remove browser default styling for autofill */
+.myd-cart__checkout-input:autofill {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: inherit !important;
+}

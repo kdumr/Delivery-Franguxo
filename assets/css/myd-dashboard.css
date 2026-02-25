@@ -1,0 +1,1764 @@
+/* Row inteiro da data nos pedidos do painel lateral */
+.myd-order-date-header-row {
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+/* Header de data nos pedidos do painel lateral */
+.myd-order-date-header {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.myd-dashboard-orders {
+  margin-bottom: 50px;
+  flex: 1 1 220px;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 14px;
+  border-radius: 8px;
+}
+
+.myd-dashboard-sales {
+  margin-bottom: 50px;
+  flex: 1 1 220px;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 14px;
+  border-radius: 8px;
+}
+
+/* Ajuste para dashboard ao lado do sidebar fixo */
+.myd-dashboard-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.myd-sidebar-left {
+  background: #efeff0;
+  top: 0;
+  width: 70px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  left: 0;
+
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.myd-dashboard-wrap {
+  margin-left: 70px;
+  width: calc(100% - 70px);
+  min-width: 0;
+}
+
+/* Estilos do header de entrega */
+.myd-insight-title-row {
+  display: flex;
+  flex-direction: column;
+  min-height: 48px;
+}
+
+.myd-insight-subtitle {
+  font-size: 13px;
+  color: #6b6b6b;
+  line-height: 1.4;
+}
+
+.myd-delivery-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 48px;
+}
+
+.myd-delivery-subtitle {
+  font-size: 13px;
+  color: #8a8a8a;
+}
+
+.myd-delivery-metrics {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  min-height: 52px;
+}
+
+.myd-delivery-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.myd-delivery-metric-label {
+  font-size: 13px;
+  color: #6b6b6b;
+}
+
+.myd-delivery-metric-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2b2b2b;
+}
+
+/* Cards de insights alinhados */
+.myd-dashboard-insights {
+  align-items: stretch;
+}
+
+.myd-dashboard-insights .myd-dashboard-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.myd-dashboard-insights .myd-insight-title-row {
+  height: 58px;
+  min-height: 58px;
+  max-height: 58px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.myd-dashboard-insights .myd-insight-subtitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+.myd-dashboard-insights .myd-delivery-metrics {
+  height: 52px;
+  min-height: 52px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 900px) {
+  .myd-sidebar-left {
+    width: 100vw;
+    height: 60px;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .myd-dashboard-wrap {
+    margin-left: 0;
+    margin-bottom: 60px;
+    width: 100vw;
+  }
+}
+
+/* Sidebar Dashboard (copiado do order-panel-frontend.min.css) */
+.myd-sidebar-left {
+  background: #efeff0;
+  top: 0;
+  width: 70px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  left: 0;
+
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: width 0.3s ease;
+}
+
+.myd-sidebar-toggle {
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000000;
+  padding: 0;
+  color: #666;
+  transition: background 0.2s, color 0.2s, transform 0.3s ease;
+}
+
+.myd-sidebar-toggle:focus {
+  background: #fff;
+  color: #666;
+}
+
+.myd-sidebar-toggle:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.myd-sidebar-toggle svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+
+/* Título da seção do menu */
+.myd-sidebar-section-title {
+  display: none;
+  color: #888;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px 8px 16px;
+  white-space: nowrap;
+}
+
+/* Labels dos itens do menu */
+.myd-sidebar-label {
+  display: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+/* Estado expandido do sidebar */
+.myd-sidebar-left.expanded {
+  width: 220px;
+}
+
+.myd-sidebar-left.expanded .myd-sidebar-section-title {
+  display: block;
+}
+
+.myd-sidebar-left.expanded .myd-sidebar-label {
+  display: inline;
+}
+
+.myd-sidebar-left.expanded .myd-sidebar-item {
+  justify-content: flex-start;
+  padding-left: 20px;
+  padding-right: 16px;
+}
+
+/* Override: keep 'Atualizar dados' (refresh) centered even when sidebar is expanded */
+.myd-sidebar-left.expanded .myd-sidebar-item#myd-sidebar-refresh {
+  justify-content: center;
+  padding-left: 0;
+}
+
+.myd-sidebar-left.expanded .myd-sidebar-item svg {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.myd-sidebar-left.expanded .myd-sidebar-toggle svg {
+  transform: rotate(180deg);
+}
+
+.myd-sidebar-left.expanded~.myd-dashboard-wrap {
+  margin-left: 220px;
+  width: calc(100% - 220px);
+}
+
+.myd-sidebar-header {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.myd-sidebar-logo {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.myd-sidebar-nav {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.myd-sidebar-item {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  border: none;
+  background: transparent;
+  outline: none;
+  z-index: 2;
+}
+
+.myd-sidebar-item:hover {
+  background: #d4d4d4 !important;
+  color: #fff;
+}
+
+.myd-sidebar-item:focus {
+  background: none;
+}
+
+.myd-sidebar-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% !important;
+  object-fit: cover;
+  display: block;
+  overflow: hidden;
+}
+
+.myd-sidebar-logo {
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.myd-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.myd-sidebar-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-right: 3px solid #ed972b;
+}
+
+.myd-sidebar-item svg {
+  width: 28px;
+  height: 28px;
+}
+
+.myd-sidebar-badge {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: #f44336;
+  color: #fff;
+  border-radius: 12px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+  z-index: 3;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@media (max-width: 900px) {
+  .myd-sidebar-left {
+    width: 100%;
+    height: 60px;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .myd-sidebar-left .myd-sidebar-header,
+  .myd-sidebar-left .myd-sidebar-footer {
+    display: none;
+  }
+
+  .myd-sidebar-left .myd-sidebar-nav {
+    flex-direction: row;
+    gap: 8px;
+    padding: 0 8px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .myd-sidebar-item {
+    width: auto;
+    height: 100%;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-left: none;
+  }
+}
+
+/* Botão de fechar do painel de detalhes do pedido à esquerda */
+.myd-side-panel-close-btn--left {
+  left: 16px;
+  margin-top: 32px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.myd-side-panel-close-btn--left:hover {
+  background: none !important;
+}
+
+.myd-extra-group {
+  margin: 15px;
+}
+
+/* Linha do item do pedido: nome à esquerda, valor à direita */
+.myd-item-title-price-wrap {
+  font-size: 16px;
+  color: #333333;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.myd-item-title {
+  font-size: 16px;
+  color: #333333;
+  font-weight: 600;
+}
+
+.myd-order-detail-info-value-channel {
+  background: #eee !important;
+  border: #dadada 1px solid;
+  border-radius: 16px !important;
+  padding: 2px 10px !important;
+  display: inline-flex !important;
+  color: #222;
+  font-weight: 600;
+  align-items: center;
+  padding: 4px 12px;
+  background: #fff;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.myd-order-detail-info-value-channel svg {
+  display: flex;
+  align-self: center;
+  margin-right: 3px;
+  width: 13px;
+  height: 13px;
+}
+
+/* Painel de detalhes do pedido (side-panel secundário) */
+.myd-order-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.myd-order-detail-title {
+  font-size: 2rem;
+  margin: 0 0 8px 0;
+}
+
+.myd-order-detail-date {
+  font-size: 1.3rem;
+  color: #222;
+}
+
+.myd-order-detail-status {
+  background: #e6f7ec;
+  color: #1a7a37;
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-weight: 600;
+}
+
+.myd-order-detail-info {
+  font-size: 12px !important;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+  color: #444;
+}
+
+.myd-order-detail-items-title {
+  font-size: 24px;
+  margin: 24px 0 12px 0;
+}
+
+.myd-order-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  margin-bottom: 16px;
+}
+
+.myd-order-detail-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: bold;
+  background: #fafafa;
+  color: #666;
+}
+
+.myd-order-detail-table td {
+  padding: 10px 12px;
+}
+
+.myd-order-detail-table td[colspan] {
+  text-align: center;
+  padding: 18px;
+}
+
+/* Styles extracted from includes/class-dashboard-shortcode.php */
+
+.myd-dashboard-wrap {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 50px 100px;
+}
+
+.myd-dashboard-sales {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  background: #fff;
+}
+
+.myd-dashboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.myd-dashboard-header p {
+  color: #666;
+  margin: 0;
+}
+
+.myd-dashboard-header span {
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 28px;
+}
+
+/* New section header for the dashboard title + icon */
+.myd-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.myd-section-header .myd-dashboard-title-icon svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+  stroke: currentColor;
+  color: #111;
+}
+
+.myd-section-header .myd-dashboard-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+}
+
+.myd-dashboard-filter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.myd-dashboard-filter label {
+  color: #666;
+  font-size: 13px;
+  margin-right: 6px;
+}
+
+.myd-period-caption {
+  width: 100%;
+  font-weight: 400;
+}
+
+.myd-period-caption label {
+  display: block;
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 6px 0;
+}
+
+.myd-period-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.myd-period-name {
+  background: #ed972b;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.myd-period-dates {
+  background: #f1f1f1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #444;
+}
+
+.myd-period-toggle {
+  border: 0;
+  background: transparent;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.myd-period-toggle:hover {
+  background: #444444;
+  border-radius: 6px;
+}
+
+.myd-period-toggle:hover svg path {
+  fill: #ffffff;
+}
+
+.myd-period-toggle:focus {
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Backdrop overlay when popup is open */
+.myd-popup-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.24);
+  z-index: 12000;
+  animation: myd-fadeIn 0.2s ease-out;
+}
+
+@keyframes myd-fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide down animation for popup */
+@keyframes myd-slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.myd-period-popup {
+  flex-direction: column;
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  padding: 32px 32px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  z-index: 12001;
+  align-items: center;
+  animation: myd-slideDown 0.2s ease-out;
+}
+
+.myd-period-popup-top {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.myd-period-inputs {
+  border-bottom: 1px solid rgb(220, 220, 220);
+  padding-bottom: 24px;
+}
+
+.myd-period-popup-top .myd-date-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.myd-date-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.myd-period-popup-top input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* date input wrapper with custom icon */
+.myd-date-input-wrap {
+  position: relative;
+}
+
+.myd-date-input-wrap input {
+  width: 100%;
+  padding-right: 40px;
+  box-sizing: border-box;
+}
+
+.myd-date-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.myd-date-icon:hover,
+.myd-date-icon:focus,
+.myd-date-icon:active {
+  background: transparent;
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+.myd-date-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Center flatpickr month dropdown inside our popup */
+.myd-period-popup .flatpickr-months {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.myd-period-popup .flatpickr-monthDropdown-months {
+  display: inline-block;
+  margin: 0;
+}
+
+.myd-period-popup .flatpickr-current-month {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* ensure month controls occupy full width and center their contents */
+.myd-period-popup .flatpickr-months {
+  width: 100%;
+}
+
+.myd-period-popup .flatpickr-month .flatpickr-current-month,
+.myd-period-popup .flatpickr-monthDropdown-months {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* position the month-dropdown centered under the current month label */
+.myd-period-popup .flatpickr-current-month {
+  position: relative;
+}
+
+.myd-period-popup .flatpickr-monthDropdown-months {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(100% + 6px);
+  z-index: 13000;
+}
+
+/* stronger override: make the months container the positioning context
+   and nudge the dropdown a bit higher for visual alignment */
+.myd-period-popup .flatpickr-months {
+  position: relative;
+}
+
+.myd-period-popup .flatpickr-monthDropdown-months {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: calc(100% + 2px) !important;
+  z-index: 13000 !important;
+  min-width: 120px;
+}
+
+/* Global flatpickr overrides (calendar renders outside popup) */
+.flatpickr-calendar .flatpickr-months {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+.flatpickr-calendar .flatpickr-month {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+.flatpickr-calendar .flatpickr-current-month {
+  display: flex !important;
+  width: 100% !important;
+  left: 0 !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.flatpickr-calendar .flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-calendar .flatpickr-current-month .numInputWrapper {
+  margin: 0 4px !important;
+}
+
+/* Hide month dropdown and year input - show as label only */
+.flatpickr-calendar .flatpickr-monthDropdown-months {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  pointer-events: none !important;
+  border: none !important;
+  background: transparent !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  cursor: default !important;
+}
+
+.flatpickr-calendar .flatpickr-monthDropdown-months:hover {
+  background: transparent !important;
+}
+
+.flatpickr-calendar .numInputWrapper {
+  pointer-events: none !important;
+}
+
+.flatpickr-calendar .numInputWrapper input {
+  pointer-events: none !important;
+  border: none !important;
+  background: transparent !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  color: #393939 !important;
+}
+
+.flatpickr-calendar .numInputWrapper .arrowUp,
+.flatpickr-calendar .numInputWrapper .arrowDown {
+  display: none !important;
+}
+
+.flatpickr-calendar .flatpickr-current-month span.cur-month {
+  margin-left: 0 !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.flatpickr-calendar .flatpickr-current-month span.cur-month:hover {
+  background: transparent !important;
+}
+
+/* Selected day color */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: #ed972b !important;
+  border-color: #ed972b !important;
+}
+
+/* Form control input text color */
+.form-control,
+input.form-control {
+  color: rgb(62, 62, 62) !important;
+}
+
+.myd-dashboard-header span {
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 28px;
+}
+
+/* Date validation error */
+.myd-date-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: #dc3545;
+  font-size: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.myd-date-error svg {
+  flex-shrink: 0;
+}
+
+/* Period presets (Ontem, Últ. 7 dias, Últ. 30 dias) */
+.myd-period-presets {
+  padding-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.myd-period-presets a {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #ed972b;
+  border-radius: 9999px;
+  color: #ed972b;
+  font-size: 14px;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+}
+
+.myd-period-presets a:hover {
+  background: #ed972b;
+  color: #fff;
+}
+
+.myd-period-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 24px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.myd-period-actions .button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.myd-period-actions .button.apply {
+  background: #ed972b;
+  color: #fff;
+  border-color: #ed972b;
+}
+
+.myd-period-actions .button.apply:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: default;
+  opacity: 0.7;
+}
+
+.myd-dashboard-cards {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0 22px 0;
+  flex-wrap: wrap;
+}
+
+.myd-dashboard-card {
+  flex: 1 1 220px;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.myd-card-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.myd-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(237, 150, 43, 0.137);
+  border-radius: 6px;
+  flex-shrink: 0;
+  color: #ed972b;
+}
+
+.myd-card-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.myd-card-content {
+  flex: 1;
+}
+
+/* Align value and delta: price left, delta to the right */
+.myd-card-content .value {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.myd-card-price {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Prevent price or delta from wrapping */
+.myd-card-price {
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.myd-card-delta {
+  flex: 0 0 auto;
+}
+
+/* Card wrapper for the filter form */
+.myd-dashboard-filter-box {
+  margin-bottom: 16px;
+  flex: 1 1 220px;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 14px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.myd-dashboard-card .title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.myd-dashboard-card .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+}
+
+.myd-dashboard-card .title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+#mydSalesChart {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.myd-period-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.myd-order-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 18px 12px;
+  border-bottom: 1px solid rgb(220, 220, 220);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .myd-period-popup {
+    position: static;
+    min-width: auto;
+    box-shadow: none;
+    margin-top: 8px;
+  }
+
+  .myd-period-popup-top .myd-date-column {
+    flex: 1 1 100%;
+  }
+}
+
+.myd-order-col {
+  padding: 0 18px;
+}
+
+/* Skeleton loading animation */
+.myd-order-number {
+  flex: 0 0 140px;
+}
+
+@keyframes myd-skeleton-pulse {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.myd-skeleton {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: myd-skeleton-pulse 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  color: transparent !important;
+  user-select: none;
+  pointer-events: none;
+}
+
+.myd-dashboard-card .value.myd-skeleton {
+  min-width: 80px;
+  min-height: 24px;
+}
+
+.myd-chart-wrap.myd-skeleton {
+  min-height: 160px;
+}
+
+.myd-chart-wrap.myd-skeleton canvas {
+  opacity: 0;
+}
+
+.myd-dashboard-header-actions {
+  margin-left: auto;
+}
+
+.myd-generate-fake-orders-btn {
+  background: #ed972b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.myd-generate-fake-orders-btn:hover {
+  background: #c97a1a;
+}
+
+/* Delta (percentage change) next to card values */
+.myd-card-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 4px;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.myd-card-delta .myd-delta-arrow {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.myd-card-delta .myd-delta-value {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.myd-card-delta--up {
+  color: #1e7e34;
+}
+
+.myd-card-delta--down {
+  color: #b02a37;
+}
+
+.myd-card-delta--neutral {
+  color: #6c757d;
+}
+
+/* External chart legend (outside canvas) */
+.myd-chart-legend {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 6px 0 6px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.myd-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #444;
+  font-size: 13px;
+}
+
+.myd-legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.myd-legend-label {
+  color: #717171;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.myd-legend-label strong {
+  font-weight: 700;
+  color: #717171;
+}
+
+/* Tooltip customizado do gráfico */
+.myd-chart-tooltip {
+  position: absolute;
+  z-index: 13000;
+  min-width: 260px;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 12px 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #333;
+  opacity: 0;
+  transition: opacity 120ms ease-in-out;
+}
+
+.myd-chart-tooltip .myd-tooltip-top {
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.myd-chart-tooltip .myd-tooltip-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.myd-chart-tooltip .myd-tooltip-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ed972b;
+}
+
+.myd-chart-tooltip .myd-tooltip-pct {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.myd-chart-tooltip .myd-pct--up {
+  color: #1e7e34;
+}
+
+.myd-chart-tooltip .myd-pct--down {
+  color: #b02a37;
+}
+
+.myd-chart-tooltip .myd-tooltip-rel {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px
+}
+
+.myd-chart-tooltip .myd-tooltip-actions {
+  text-align: left;
+}
+
+.myd-tooltip-btn {
+  background: transparent;
+  border: 1px solid #d9534f;
+  color: #d9534f;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700
+}
+
+.myd-tooltip-btn:hover {
+  background: #fdf2f2
+}
+
+/* Chart view tabs */
+.myd-chart-tabs {
+  display: flex;
+  gap: 18px;
+  padding: 8px 6px 6px 6px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 8px;
+}
+
+.myd-chart-tab {
+  background: transparent;
+  border: 0;
+  padding: 6px 8px;
+  color: #6b3aa3;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.myd-chart-tab--active {
+  color: #6b3aa3;
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 #6b3aa3;
+}
+
+/* Side panel (right slide-in) and backdrop styles */
+#myd-side-panel-backdrop,
+.myd-side-panel-backdrop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1990;
+  opacity: 0;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+}
+
+#myd-side-panel-backdrop.open,
+.myd-side-panel-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.myd-side-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 42%;
+  max-width: 760px;
+  background: #fff;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+  z-index: 2000;
+  transform: translateX(100%);
+  transition: transform 240ms ease;
+  overflow: auto;
+  padding: 0px 24px;
+}
+
+.myd-side-panel.open {
+  transform: translateX(0);
+}
+
+.myd-side-panel-header {
+  padding: 32px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.myd-side-panel-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.myd-side-panel-header h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #2b2b2b;
+}
+
+.myd-side-panel-metric {
+  font-size: 16px;
+  color: #2b2b2b;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Very large title used when showing 'Pedidos concluídos' */
+.myd-side-panel-header h3.myd-title-200 {
+  font-size: 24px !important;
+  line-height: 1;
+}
+
+#myd-side-panel-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* size the close SVG */
+.myd-side-panel-close-btn svg,
+#myd-side-panel-close svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+#myd-side-panel-body {}
+
+/* Summary block inside the side panel (matches card appearance) */
+.myd-side-panel-summary {
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  color: #666;
+  margin-bottom: 12px;
+}
+
+/* Order list inside side panel */
+.myd-side-panel-loading {
+  padding: 16px;
+  color: #666;
+}
+
+.myd-order-list {
+  display: block;
+}
+
+.myd-order-item {
+  border: 1px solid #eee;
+  background: #fff;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+
+.myd-order-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.myd-order-meta {
+  color: #666;
+  font-size: 13px;
+}
+
+.myd-order-customer {
+  color: #444;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.myd-no-orders {
+  padding: 16px;
+  color: #666;
+}
+
+.myd-order-row {
+  display: flex;
+  align-items: center;
+  padding: 25px 12px;
+  border-bottom: 1px solid rgb(220, 220, 220);
+}
+
+
+
+.myd-order-list .myd-order-row:hover {
+  background: #ebebeb !important;
+  transition: background 0.15s;
+}
+
+.myd-order-row--header {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  background: transparent;
+  font-weight: 700;
+  padding: 12px;
+  color: #666;
+  border-bottom: 1px solid rgb(220, 220, 220);
+}
+
+/* Style for header columns: Horário, Pedido, Total do pedido */
+.myd-order-row--header .myd-order-col {
+  color: #3E3E3E;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Order detail panel styles */
+.myd-order-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.myd-order-status {
+  background: #e6f7ec;
+  color: #1a7a37;
+  padding: 6px 10px;
+  border-radius: 16px;
+  font-weight: 600;
+}
+
+.myd-order-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 12px 0 18px 0;
+}
+
+.myd-order-detail-box {
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.myd-order-detail-box-label {
+  color: #777;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.myd-order-detail-box-value {
+  color: #222;
+  font-weight: 600;
+}
+
+.myd-order-history {
+  margin: 12px 0;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.myd-order-history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 6px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.myd-order-history-item:last-child {
+  border-bottom: 0;
+}
+
+.myd-order-history-date {
+  color: #888;
+  font-size: 12px;
+}
+
+.myd-order-items {
+  margin-top: 14px;
+}
+
+.myd-order-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.myd-order-items-table th,
+.myd-order-items-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.myd-order-items-table th {
+  background: #fafafa;
+  color: #666;
+  font-weight: 700;
+}
+
+.myd-order-items-table td:last-child,
+.myd-order-items-table th:last-child {
+  text-align: right;
+}
+
+.myd-order-time {
+  width: 80px;
+  color: #666;
+}
+
+.myd-order-number {
+  flex: 0 0 120px;
+}
+
+.myd-order-total {
+  flex: 1 1 auto;
+  color: #333;
+}
+
+.myd-order-arrow {
+  width: 24px;
+  text-align: right;
+  color: #d94b3b;
+  font-size: 18px;
+}
+
+/* Ensure arrow cells are hidden in order lists (only shown in detail/back button) */
+.myd-order-list .myd-order-arrow,
+.myd-side-panel .myd-order-list .myd-order-arrow {
+  display: none !important;
+}
+
+/* side-panel header back button */
+.myd-side-panel-header button#myd-side-panel-back,
+.myd-side-panel-header .myd-side-panel-back-btn {
+  background: transparent;
+  border: 0;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-right: 12px;
+  color: #333;
+  cursor: pointer;
+}
+
+.myd-side-panel-header button#myd-side-panel-back svg,
+.myd-side-panel-header .myd-side-panel-back-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* end-row chevron icon */
+.myd-order-end-icon {
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.myd-order-end-icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* Top summary cards inside side-panel for Pedidos concluídos */
+.myd-panel-cards {
+  display: flex;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.myd-panel-card {
+  flex: 1 1 0;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 12px 14px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.myd-panel-card-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.myd-panel-card-value {
+  font-size: 14px;
+  color: #222;
+  font-weight: 600;
+}
+
+.myd-panel-card--date .myd-panel-card-value {
+  color: #333;
+}
+
+.myd-panel-card--state .myd-panel-card-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

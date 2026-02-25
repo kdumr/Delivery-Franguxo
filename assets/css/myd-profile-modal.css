@@ -1,0 +1,584 @@
+/* =========================================
+   1. Orders Modal Styles (Legacy/Shared)
+   ========================================= */
+.myd-orders-modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myd-orders-modal {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 32px #0002;
+    max-width: 800px;
+    width: 95vw;
+    min-width: 320px;
+    min-height: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.myd-orders-modal__header {
+    padding: 24px 32px 16px 32px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.myd-orders-modal__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.myd-orders-modal__close {
+    background: none;
+    border: none;
+    font-size: 1.7rem;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background .15s;
+}
+
+.myd-orders-modal__close:hover {
+    background: #f0f0f0;
+}
+
+.myd-orders-modal__content {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.myd-orders-modal__desc {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.myd-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+}
+
+.myd-orders-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+    color: #666;
+}
+
+.myd-orders-loading svg {
+    width: 48px;
+    height: 48px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.myd-order-item {
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 20px;
+    background: #faf9fd;
+    transition: box-shadow .15s;
+}
+
+.myd-order-item:hover {
+    box-shadow: 0 2px 8px #0001;
+}
+
+.myd-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.myd-order-number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.myd-order-status {
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.myd-order-status--pending {
+    color: #856404;
+}
+
+.myd-order-status--processing {
+    color: #004085;
+}
+
+.myd-order-status--completed {
+    color: #155724;
+}
+
+.myd-order-status--cancelled {
+    color: #721c24;
+}
+
+.myd-order-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.myd-order-date {
+    font-weight: 500;
+}
+
+.myd-order-total {
+    font-weight: 600;
+    color: #333;
+}
+
+@media (max-width:600px) {
+    .myd-orders-modal {
+        width: 98vw;
+        max-height: 90vh;
+    }
+
+    .myd-orders-modal__header {
+        padding: 20px 24px 12px 24px;
+    }
+
+    .myd-orders-modal__content {
+        padding: 20px 24px;
+    }
+
+    .myd-order-item {
+        padding: 12px;
+    }
+
+    .myd-orders-list {
+        gap: 8px;
+    }
+
+    .myd-order-details {
+        gap: 4px;
+    }
+}
+
+/* =========================================
+   2. Profile Modal Styles
+   ========================================= */
+.myd-profile-modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Initial hidden state, toggled by JS */
+.myd-profile-modal-bg[style*="display:none"] {
+    display: none !important;
+}
+
+.myd-profile-modal {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 32px #0002;
+    max-width: 700px;
+    width: 95vw;
+    min-width: 320px;
+    min-height: 620px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    position: relative;
+}
+
+.myd-profile-modal__sidebar {
+    background: #faf9fd;
+    min-width: 210px;
+    padding: 32px 0 24px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #eee;
+    border-radius: 18px 0 0 18px;
+}
+
+.myd-profile-modal__sidebar-inner {
+    width: 100%;
+}
+
+.myd-profile-modal__greeting {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-align: center;
+}
+
+.myd-profile-modal__email {
+    font-size: 0.98rem;
+    color: #888;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.myd-profile-modal__menu {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 32px;
+}
+
+.myd-profile-modal__menu-btn {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 12px 32px;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Modified from inline */
+.myd-profile-modal__menu-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.myd-profile-modal__menu-btn.active,
+.myd-profile-modal__menu-btn:hover {
+    background: #f0ebff;
+    color: #ffae00;
+}
+
+.myd-profile-modal__logout {
+    margin-top: auto;
+    color: #b00;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    padding: 12px 32px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.myd-profile-modal__logout svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.myd-profile-modal__logout:hover {
+    background: #ffeaea;
+    color: #3b3b3b;
+}
+
+.myd-profile-modal__content {
+    flex: 1;
+    background: #faf9fd;
+    padding: 40px 36px 32px 36px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.myd-profile-modal__close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    background: #dcdcdc;
+    border: none;
+    padding: 0;
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    transition: background .15s ease, color .15s ease, transform .12s ease;
+}
+
+.myd-profile-modal__close:hover {
+    background: #464646;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.myd-profile-modal__close svg.cf-icon-svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.myd-profile-modal__title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+
+.myd-profile-modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.myd-profile-modal__label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 1rem;
+    text-align: left;
+    display: block;
+}
+
+.myd-profile-modal__input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.myd-profile-modal__save-btn {
+    background: #ffae00;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-top: 18px;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.myd-profile-modal__save-btn:hover {
+    background: #ffae00;
+}
+
+.myd-profile-modal__desc {
+    font-size: 0.97rem;
+    color: #888;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+@media (max-width:600px) {
+    .myd-profile-modal {
+        position: relative;
+        flex-direction: column;
+        min-width: 0;
+        max-width: 98vw;
+    }
+
+    .myd-profile-modal__menu {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 8px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        gap: 0;
+        margin: 0;
+        padding: 0 14px;
+        background: transparent;
+        border: none;
+        z-index: 10;
+    }
+
+    /* Override the column direction for specific mobile layout if needed by legacy, but keeping 'flex-direction:row' as per @media block logic */
+    .myd-profile-modal__menu-btn {
+        flex: 1;
+        text-align: center;
+        padding: 0;
+        margin: 0 6px;
+        border-radius: 0;
+        font-size: 0.96rem;
+        font-weight: 500;
+        color: #8E8E8E;
+        background: transparent;
+        justify-content: center;
+        gap: 0px;
+    }
+
+    .myd-profile-modal__menu-btn:hover {
+        background: transparent;
+    }
+
+    .myd-profile-modal__menu-btn.active {
+        color: #2B2B2B;
+        background: transparent;
+    }
+
+    .myd-profile-modal__logout {
+        display: inline-flex !important;
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 80px;
+        justify-content: center;
+        width: auto;
+        background: none;
+        color: #b00;
+        padding: 12px 16px;
+        border-radius: 8px;
+        text-align: center;
+        z-index: 999999;
+    }
+
+    .myd-profile-modal__logout.myd-profile-modal__logout--mobile-hidden {
+        display: none !important;
+    }
+
+    .myd-profile-modal__content {
+        padding: 24px 12px 64px 12px;
+    }
+
+    .myd-profile-modal__email {
+        margin-bottom: 0;
+    }
+
+    .myd-profile-modal__sidebar {
+        padding: 24px 0 24px 0;
+    }
+}
+
+@media (min-width: 768px) {
+
+    /* Re-asserting the expected desktop behavior */
+    .myd-profile-modal__menu-btn {
+        flex-direction: row !important;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .myd-profile-modal__menu-btn span {
+        margin-top: 0 !important;
+        margin-left: 8px;
+    }
+}
+
+.myd-profile-modal__menu-btn.active svg {
+    fill: #ffae00 !important;
+}
+
+.myd-profile-modal__menu-btn.active span {
+    color: #ffae00 !important;
+}
+
+.myd-profile-modal__menu-btn.active svg path {
+    fill: #ffae00 !important;
+}
+
+/* =========================================
+   3. Refactored Inline Styles
+   ========================================= */
+.myd-input-wrapper {
+    position: relative;
+}
+
+.myd-profile-modal__input--password {
+    padding-right: 38px !important;
+}
+
+.myd-password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.myd-password-toggle:active svg,
+.myd-password-toggle:focus svg {
+    stroke: #ffae00 !important;
+}
+
+.myd-password-error-msg {
+    color: #d32f2f;
+    min-height: 22px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+/* SVG Inline Style Refactor */
+.myd-profile-svg-fill {
+    fill: #454545;
+}
+
+/* Helper classes */
+.d-none {
+    display: none;
+}
+
+/* Overrides para o filtro de categorias */
+.myd-content-filter__categories {
+    justify-content: flex-start !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.myd-content-filter__categories::-webkit-scrollbar {
+    display: none !important;
+}

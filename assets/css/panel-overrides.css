@@ -1,0 +1,141 @@
+/* panel-overrides.css (moved) */
+/* All rules previously in this file were consolidated into
+	order-panel-frontend.min.css on 2025-11-04 to centralize styles.
+	Keep this file as a marker to avoid accidental re-addition of
+	overrides; if you need to restore edits, edit `order-panel-frontend.min.css`.
+*/
+
+/* NOTE: file intentionally left minimal to avoid duplicate styles. */
+
+/* Delivery action buttons (moved from inline styles in template) */
+.myd-delivery-actions{
+	display: flex;
+	gap: 16px;
+	align-items: center;
+}
+
+.myd-delivery-actions button{
+	color: #ffae00 !important;
+	font-size: 14px !important;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	border-color: rgb(220, 220, 220);
+	font-weight: 500 !important;
+	border-radius: 8px;
+	padding: 8px 16px;
+	background: transparent !important;
+}
+
+/* hover background and smooth transition for delivery action buttons */
+.myd-delivery-actions button{
+    transition: background 120ms ease;
+}
+.myd-delivery-actions button:hover{
+    background: #00000014 !important;
+}
+
+/* Reset all interactive states to prevent pink/magenta background */
+.myd-delivery-actions button:active,
+.myd-delivery-actions button:focus,
+.myd-delivery-actions button:visited,
+.myd-delivery-actions button:focus-visible,
+.fdm-orders-full-items .myd-delivery-actions button:active,
+.fdm-orders-full-items .myd-delivery-actions button:focus {
+	background: transparent !important;
+	background-color: transparent !important;
+	outline: none !important;
+	box-shadow: none !important;
+	color: #f38a00 !important;
+	-webkit-tap-highlight-color: transparent !important;
+}
+
+.myd-delivery-actions button {
+	-webkit-tap-highlight-color: transparent;
+	-webkit-appearance: none;
+}
+
+/* icon inside google maps button */
+.myd-gmaps-icon{
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	flex: 0 0 18px;
+}
+.myd-gmaps-icon svg{
+	width: 18px;
+	height: 18px;
+	display: block;
+}
+.myd-gmaps-text{
+	line-height: 1;
+}
+
+/* copy button icon sizing */
+.myd-copy-icon{
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	flex: 0 0 18px;
+}
+.myd-copy-icon svg{
+	width: 18px;
+	height: 18px;
+	display: block;
+}
+.myd-copy-text{ line-height: 1; }
+
+/* Ensure SVG paths inherit the button text color (override inline fills) */
+.myd-delivery-actions button .myd-gmaps-icon svg path,
+.myd-delivery-actions button .myd-gmaps-icon svg g{
+    fill: currentColor !important;
+}
+
+/* Force copy button and its SVG to use exact same color */
+
+
+/* Unificar cor do botão de copiar com os demais */
+.fdm-orders-full-items .myd-delivery-actions button.myd-copy-delivery-info,
+.fdm-orders-full-items .myd-delivery-actions button.myd-copy-delivery-info .myd-copy-text,
+.myd-delivery-actions button.myd-copy-delivery-info .myd-copy-text{
+	color: #f38a00 !important;
+}
+.fdm-orders-full-items .myd-delivery-actions button.myd-copy-delivery-info .myd-copy-icon svg *,
+.myd-delivery-actions button.myd-copy-delivery-info .myd-copy-icon svg *{
+	fill: #f38a00 !important;
+	stroke: #f38a00 !important;
+}
+
+
+
+
+/* Explicitly set button text color to match original SVG color */
+.myd-delivery-actions button{
+    color: #f38a00   !important;
+}
+
+/* Force SVG elements to use exact color when browsers prioritize inline fills */
+.myd-delivery-actions .myd-gmaps-icon svg,
+.myd-delivery-actions .myd-gmaps-icon svg *{
+	fill: #f38a00  !important;
+	stroke: #f38a00  !important;
+}
+
+/* Stronger, very specific selectors to avoid being overridden by compiled CSS */
+.fdm-orders-full-items .myd-delivery-actions button.myd-gmaps-link,
+.fdm-orders-full-items .myd-delivery-actions .myd-gmaps-text,
+.myd-delivery-actions button.myd-gmaps-link .myd-gmaps-text{
+	color: #f38a00  !important;
+}
+.fdm-orders-full-items .myd-delivery-actions button.myd-gmaps-link .myd-gmaps-icon svg *{
+	fill: #f38a00  !important;
+	stroke: #f38a00  !important;
+}
+
+
+
+

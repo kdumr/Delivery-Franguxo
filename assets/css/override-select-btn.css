@@ -1,0 +1,20 @@
+/*
+  Este arquivo sobrescreve todos os estilos do botão select-btn para garantir que apenas o JS controla o visual.
+*/
+.top-bar .select-menu .select-btn,
+.top-bar .select-menu .select-btn.status-open,
+.top-bar .select-menu .select-btn.status-close,
+.top-bar .select-menu .select-btn.status-ignore,
+.top-bar .select-menu .select-btn.status-open .sBtn-text,
+.top-bar .select-menu .select-btn.status-close .sBtn-text,
+.top-bar .select-menu .select-btn .sBtn-text,
+.top-bar .select-menu .select-btn .sBtn-subtext,
+.top-bar .select-menu .select-btn svg,
+.top-bar .select-menu .select-btn i.bx {
+  all: unset !important;
+}
+
+.myd-select-btn,
+.myd-select-btn * {
+  all: unset !important;
+}

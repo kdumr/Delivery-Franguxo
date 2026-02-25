@@ -1,0 +1,547 @@
+/* Simple Auth Modal CSS - Modern Design */
+
+.simple-auth-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.simple-auth-modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 420px;
+    width: 90%;
+    min-height: 50%;
+    justify-content: center;
+    /* centraliza horizontalmente os elementos do conteúdo */
+    max-height: 90vh;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.simple-auth-content-wrapper {
+    padding: 40px;
+    overflow-y: auto;
+    max-height: calc(90vh - 80px);
+    flex: 0 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    /* centraliza verticalmente os elementos dentro do wrapper */
+}
+
+/* Scrollbar customizada */
+.simple-auth-content-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.simple-auth-content-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.simple-auth-content-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.simple-auth-content-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.simple-auth-modal h2 {
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+}
+
+.simple-auth-form-group {
+    margin-bottom: 20px;
+}
+
+.simple-auth-form-group-6mb {
+    margin-bottom: 16px;
+}
+
+.simple-auth-form-group-10mb {
+    margin-bottom: 20px;
+}
+
+.simple-auth-form-group-15mb {
+    margin-bottom: 24px;
+}
+
+.simple-auth-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #374151;
+    font-size: 14px;
+}
+
+.simple-auth-required {
+    color: #ef4444;
+}
+
+.simple-auth-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    background: #fafafa;
+}
+
+.simple-auth-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.simple-auth-input::placeholder {
+    color: #9ca3af;
+    font-size: 15px;
+}
+
+.simple-auth-input-date {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    background: #fafafa;
+}
+
+.simple-auth-input-date:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.simple-auth-forgot-pass {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.simple-auth-forgot-pass-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: #3b82f6;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    padding: 4px 0;
+}
+
+.simple-auth-forgot-pass-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.simple-auth-btn-primary {
+    width: 100%;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.simple-auth-btn-primary:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.simple-auth-btn-login {
+    width: 100%;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    .simple-auth-btn-disabled {
+        opacity: 0.6;
+        cursor: not-allowed !important;
+    }
+}
+
+.simple-auth-btn-login:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.simple-auth-btn-secondary {
+    width: 100%;
+    background: #f3f4f6;
+    margin-bottom: 16px !important;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+    padding: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.simple-auth-btn-secondary:focus {
+    background-color: #f3f4f6 !important;
+    color: #6b7280 !important;
+    border: 2px solid #e5e7eb !important;
+}
+
+.simple-auth-btn-secondary:hover {
+    background: #e5e7eb;
+    color: #374151;
+    transform: translateY(-1px);
+}
+
+.simple-auth-success-msg {
+    color: #059669;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 16px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+}
+
+.simple-auth-warning-msg {
+    color: #d97706;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 12px 16px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+}
+
+.simple-auth-error-msg {
+    color: #dc2626;
+    min-height: 24px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+}
+
+.simple-auth-field-error {
+    color: #dc2626;
+    font-size: 13px;
+    min-height: 20px;
+    margin-top: 8px;
+    display: none;
+    font-weight: 500;
+}
+
+.simple-auth-email-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.simple-auth-email-label {
+    font-size: 13px;
+    color: #666;
+}
+
+.simple-auth-email-value {
+    font-weight: 600;
+}
+
+.simple-auth-change-btn {
+    color: #FF9800;
+    text-decoration: underline;
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.simple-auth-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.simple-auth-btn-flex {
+    flex: 1;
+    background: #ffae00 !important;
+    color: #fff;
+    border: none;
+    padding: 16px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.simple-auth-btn-flex:hover {
+    background: #ffae00;
+    transform: translateY(-1px);
+}
+
+.simple-auth-btn-flex:focus {
+    background: #ffae00;
+}
+
+.simple-auth-btn-flex-secondary {
+    flex: 1;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+    padding: 14px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.simple-auth-btn-flex-secondary:hover {
+    background: #e5e7eb;
+    color: #374151;
+    transform: translateY(-1px);
+}
+
+/* Close button (round) */
+.simple-auth-close-btn {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.12s ease;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.simple-auth-close-btn:hover {
+    background-color: #e5e7eb;
+    transform: translateY(-1px);
+}
+
+.simple-auth-close-icon {
+    width: 24px;
+    height: 24px;
+    fill: #000000;
+    display: block;
+}
+
+/* Garante preenchimento do path dentro do SVG caso não esteja visível */
+.simple-auth-close-icon path {
+    fill: #000000 !important;
+    stroke: none;
+}
+
+/* Prevent SVG from shrinking inside flex/inline contexts */
+.simple-auth-close-btn svg,
+.simple-auth-close-icon {
+    flex: 0 0 auto;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+/* If the container becomes very small, scale the SVG up a bit to remain visible */
+.simple-auth-close-btn svg {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+/* Ensure button size does not clip the SVG and icon stays centered */
+.simple-auth-close-btn {
+    padding: 0;
+    /* remove extra padding that may affect layout */
+    overflow: visible;
+    /* allow icon to render even if container is too small */
+    box-sizing: content-box;
+    z-index: 1000000;
+    /* ensure it's above modal content */
+}
+
+/* Spinner & loading overlay (injected by SimpleAuth) */
+.hds-flight-icon--animation-loading {
+    width: 56px;
+    height: 56px;
+    display: inline-block;
+    transform-origin: 50% 50%;
+}
+
+@keyframes hds-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.hds-flight-icon--animation-loading {
+    animation: hds-rotate 1s linear infinite;
+}
+
+/* Backdrop dims the page and is placed above the modal to darken it; blocks interactions */
+.simple-auth-page-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    pointer-events: auto;
+    z-index: 100000
+}
+
+/* Spinner overlays content (above backdrop and modal) so the loading indicator is always visible */
+.simple-auth-loading-spinner {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100001;
+    pointer-events: none
+}
+
+.simple-auth-loading-inner {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Código de 6 dígitos (input boxes) */
+.code-wrap {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px
+}
+
+.code-box {
+    width: 48px;
+    height: 48px;
+    text-align: center;
+    font-size: 1.25rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: .15s
+}
+
+.code-box:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, .15)
+}
+
+.dash {
+    user-select: none;
+    font-weight: 600;
+    letter-spacing: .25rem
+}
+
+@media (hover:none) {
+    .code-box {
+        font-size: 1.4rem
+    }
+}
+
+.simple-auth-close-btn .simple-auth-close-icon {
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    /* keep it positioned naturally inside the button */
+}
+
+/* Fallback: if some global rule forces svg to scale down, force a minimum render size */
+.simple-auth-close-btn svg path {
+    vector-effect: non-scaling-stroke;
+}
+
+/* Ensure the modal content is positioned relatively for absolute close button */
+.simple-auth-modal-content {
+    position: relative;
+}
+
+/* Per-step titles */
+.simple-auth-title {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #111;
+}
+
+.simple-auth-title-email {
+    display: block;
+}
+
+.simple-auth-title-register {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .simple-auth-close-btn {
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+    }
+}

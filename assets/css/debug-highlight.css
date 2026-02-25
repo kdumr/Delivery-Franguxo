@@ -1,0 +1,80 @@
+/*  
+ * CSS de teste para debug - destacamento forçado
+ * Adicione este arquivo temporariamente para testar
+ */
+
+/* Força o destacamento de TODOS os pedidos novos QUE NÃO FORAM CLICADOS */
+.fdm-orders-items[data-order-status="new"]:not([data-order-clicked="true"]) {
+    background: #fff3cd !important;
+    border: 2px solid #ffc107 !important;
+    box-shadow: 0 0 15px rgba(255,193,7,0.8) !important;
+    animation: shake-subtle 3s infinite !important;
+}
+
+.fdm-orders-items[data-order-status="new"]:not([data-order-clicked="true"]) .fdm-order-list-items-status {
+    background: #ffc107 !important;
+    color: #212529 !important;
+    font-weight: 700 !important;
+}
+
+@keyframes pulse-highlight {
+    0% { box-shadow: 0 0 15px rgba(255,193,7,0.4); }
+    50% { box-shadow: 0 0 25px rgba(255,193,7,0.8); }
+    100% { box-shadow: 0 0 15px rgba(255,193,7,0.4); }
+}
+
+/* Animação de tremor sutil */
+@keyframes shake-subtle {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-1px); }
+    20% { transform: translateX(1px); }
+    30% { transform: translateX(-1px); }
+    40% { transform: translateX(1px); }
+    50% { transform: translateX(0); }
+    60% { transform: translateX(0); }
+    70% { transform: translateX(0); }
+    80% { transform: translateX(0); }
+    90% { transform: translateX(0); }
+}
+
+/* OPÇÃO: Tremor mais pronunciado (substitua 'shake-subtle' por 'shake-strong' se quiser) */
+@keyframes shake-strong {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-2px) translateY(-1px); }
+    20% { transform: translateX(2px) translateY(1px); }
+    30% { transform: translateX(-2px) translateY(-1px); }
+    40% { transform: translateX(2px) translateY(1px); }
+    50% { transform: translateX(0); }
+    60% { transform: translateX(-1px); }
+    70% { transform: translateX(1px); }
+    80% { transform: translateX(0); }
+    90% { transform: translateX(0); }
+}
+
+/* Debug: destaca TODOS os pedidos para verificar seletor */
+.fdm-orders-items {
+    border: 1px dashed red !important;
+}
+
+/* Mostra o status no console */
+.fdm-orders-items:before {
+    content: "Status: " attr(data-order-status) " " attr(data-order-clicked);
+    position: absolute;
+    background: red;
+    color: white;
+    font-size: 10px;
+    padding: 2px;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+}
+
+/* Estilo diferente para pedidos clicados */
+.fdm-orders-items[data-order-clicked="true"] {
+    border: 1px dashed green !important;
+}
+
+.fdm-orders-items[data-order-clicked="true"]:before {
+    background: green !important;
+    content: "CLICADO - Status: " attr(data-order-status);
+}

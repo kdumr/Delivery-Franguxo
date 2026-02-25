@@ -1,0 +1,106 @@
+.fdm-track-order-content-customer,
+.fdm-track-order-content-products,
+.fdm-track-order-content-status {
+    border: 1px solid #eaeaea;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    padding: 20px;
+    width: 100%
+}
+
+.fdm-track-order-content-status {
+    color: #fff;
+    display: flex;
+    font-size: 22px;
+    font-weight: 700;
+    justify-content: center
+}
+
+.fdm-track-order-content {
+    display: flex;
+    flex-wrap: wrap;
+    height: auto;
+    width: 100%
+}
+
+.myd-item-hide {
+    display: none
+}
+
+.myd-track-order-update-wrapper {
+    align-items: center;
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
+}
+
+.myd-pulsating-circle {
+    animation: pulse 1.6s infinite;
+    background: #3aca2b;
+    border-radius: 100px;
+    display: block;
+    height: 15px;
+    width: 15px
+}
+
+@keyframes pulse {
+    0% {
+        outline: 1px solid rgba(47, 224, 27, .338);
+        transform: scale(1)
+    }
+
+    50% {
+        outline: 6px solid rgba(47, 224, 27, .338);
+        transform: scale(.8)
+    }
+
+    to {
+        outline: 6px solid rgba(47, 224, 27, 0);
+        transform: scale(1)
+    }
+}
+
+.myd-track-order-status--new {
+    background: #d0ad02
+}
+
+.myd-track-order-status--confirmed {
+    background: #208e2a
+}
+
+.myd-track-order-status--indelivery {
+    background: #d8800d
+}
+
+.myd-track-order-status--finished {
+    background: #007bbf
+}
+
+.myd-track-order-status--canceled {
+    background: #bb1e1e
+}
+
+.myd-track-order-status--done {
+    background: #037d91
+}
+
+.myd-track-order-status--waiting {
+    background: #4e6585
+}
+
+.fdm-track-order-content-products .fdm-products-order-loop {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 14px
+}
+
+.fdm-track-order-content-products .fdm-order-list-items-product-extra {
+    font-size: 14px;
+    color: #666;
+    font-weight: 400;
+    padding-left: 8px;
+    width: 100%
+}

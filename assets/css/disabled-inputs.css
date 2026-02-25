@@ -1,0 +1,21 @@
+/* Disabled / readonly inputs styling */
+input[readonly], input[disabled], textarea[readonly], textarea[disabled], select[disabled] {
+	background: #f5f5f5 !important;
+	color: #666 !important;
+	cursor: not-allowed !important;
+	box-shadow: none !important;
+	border-color: #e0e0e0 !important;
+}
+
+/* Specific project class for checkout inputs */
+.myd-cart__checkout-input[readonly], .myd-cart__checkout-input[disabled] {
+	background: #f5f5f5 !important;
+	color: #666 !important;
+}
+
+/* Make placeholder less prominent on disabled inputs */
+input[readonly]::placeholder, input[disabled]::placeholder, textarea[readonly]::placeholder, textarea[disabled]::placeholder {
+	color: #999 !important;
+}
+
+ 

@@ -1,0 +1,461 @@
+/* =========================================
+   Settings Modal - Dashboard (Profile-style)
+   ========================================= */
+.myd-settings-modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 100200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myd-settings-modal {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 32px #0002;
+    max-width: 700px;
+    width: 95vw;
+    min-width: 320px;
+    min-height: 420px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    position: relative;
+}
+
+.myd-settings-modal__sidebar {
+    background: #faf9fd;
+    min-width: 210px;
+    padding: 32px 0 24px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #eee;
+    border-radius: 18px 0 0 18px;
+}
+
+.myd-settings-modal__sidebar-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.myd-settings-modal__avatar-wrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.myd-settings-modal__sidebar-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #eee;
+    display: block;
+}
+
+.myd-settings-modal__avatar-edit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.myd-settings-modal__avatar-wrapper:hover .myd-settings-modal__avatar-edit {
+    opacity: 1;
+}
+
+.myd-settings-modal__greeting {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-align: center;
+}
+
+.myd-settings-modal__email {
+    font-size: 0.92rem;
+    color: #888;
+    margin-bottom: 32px;
+    text-align: center;
+    word-break: break-all;
+    padding: 0 12px;
+}
+
+.myd-settings-modal__menu {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 32px;
+}
+
+.myd-settings-modal__menu-btn {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 12px 32px;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background .15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.myd-settings-modal__menu-btn.active,
+.myd-settings-modal__menu-btn:hover {
+    background: #f0ebff;
+    color: #ffae00;
+}
+
+.myd-settings-modal__menu-btn.active svg,
+.myd-settings-modal__menu-btn.active svg path {
+    fill: #ffae00 !important;
+    stroke: #ffae00 !important;
+}
+
+.myd-settings-modal__menu-btn span {
+    font-size: 12px;
+}
+
+.myd-settings-modal__content {
+    flex: 1;
+    background: #faf9fd;
+    padding: 40px 36px 32px 36px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+}
+
+.myd-settings-modal__close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    background: #dcdcdc;
+    border: none;
+    padding: 0;
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    transition: background .15s ease, color .15s ease, transform .12s ease;
+}
+
+.myd-settings-modal__close:hover {
+    background: #464646;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.myd-settings-modal__close svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.myd-settings-modal__title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+.myd-settings-modal__desc {
+    font-size: 0.97rem;
+    color: #888;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.myd-settings-modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.myd-settings-modal__label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 1rem;
+    text-align: left;
+    display: block;
+}
+
+.myd-settings-modal__input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.myd-settings-modal__save-btn {
+    background: #ffae00;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-top: 18px;
+    cursor: pointer;
+    transition: background .15s;
+    width: 100%;
+}
+
+.myd-settings-modal__save-btn:hover {
+    background: #e69d00;
+}
+
+.myd-settings-modal__save-btn:focus {
+    background: #ffae00;
+}
+
+.myd-settings-modal__save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.myd-settings-modal__msg {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    min-height: 20px;
+}
+
+.myd-settings-modal__msg--success {
+    color: #2a7a2a;
+}
+
+.myd-settings-modal__msg--error {
+    color: #c0392b;
+}
+
+/* OTP code inputs */
+.myd-otp-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 18px 0 8px;
+}
+
+.myd-otp-input {
+    width: 46px;
+    height: 52px;
+    text-align: center;
+    font-size: 1.35rem;
+    font-weight: 600;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+    background: #fff;
+    color: #222;
+}
+
+.myd-otp-input:focus {
+    border-color: #ffae00;
+    box-shadow: 0 0 0 2px rgba(255, 174, 0, 0.18);
+}
+
+.myd-otp-dash {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #999;
+    user-select: none;
+    margin: 0 2px;
+}
+
+/* Password eye toggle */
+.myd-settings-input-wrapper--pass {
+    position: relative;
+}
+
+.myd-settings-input-wrapper--pass .myd-settings-modal__input {
+    padding-right: 40px;
+}
+
+.myd-pass-eye {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(15%);
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+
+.myd-pass-eye:hover {
+    opacity: 1;
+}
+
+/* Tab content toggle */
+.myd-settings-tab {
+    display: none;
+}
+
+.myd-settings-tab.active {
+    display: block;
+}
+
+/* Avatar preview */
+.myd-settings-modal__avatar-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #eee;
+    display: none;
+    margin: 12px auto;
+}
+
+.myd-settings-modal__avatar-preview.visible {
+    display: block;
+}
+
+.myd-settings-modal__file-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.myd-settings-modal__file-input:hover {
+    border-color: #ffae00;
+}
+
+/* Input wrapper for password toggle */
+.myd-settings-input-wrapper {
+    position: relative;
+}
+
+.myd-settings-input-wrapper .myd-settings-modal__input {
+    padding-right: 38px;
+}
+
+.myd-settings-password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .myd-settings-modal {
+        position: relative;
+        flex-direction: column;
+        min-width: 0;
+        max-width: 98vw;
+    }
+
+    .myd-settings-modal__sidebar {
+        padding: 24px 0 24px 0;
+    }
+
+    .myd-settings-modal__email {
+        margin-bottom: 0;
+    }
+
+    .myd-settings-modal__menu {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 8px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        gap: 0;
+        margin: 0;
+        padding: 0 14px;
+        background: transparent;
+        border: none;
+        z-index: 10;
+    }
+
+    .myd-settings-modal__menu-btn {
+        flex: 1;
+        text-align: center;
+        padding: 0;
+        margin: 0 6px;
+        border-radius: 0;
+        font-size: 0.96rem;
+        font-weight: 500;
+        color: #8E8E8E;
+        background: transparent;
+        justify-content: center;
+    }
+
+    .myd-settings-modal__menu-btn:hover {
+        background: transparent;
+    }
+
+    .myd-settings-modal__menu-btn.active {
+        color: #2B2B2B;
+        background: transparent;
+    }
+
+    .myd-settings-modal__content {
+        padding: 24px 12px 64px 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .myd-settings-modal__menu-btn {
+        flex-direction: row !important;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .myd-settings-modal__menu-btn span {
+        margin-top: 0 !important;
+        margin-left: 8px;
+    }
+}
