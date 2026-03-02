@@ -2,11 +2,11 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
-COPY ai-agent/package*.json ./
+COPY package*.json ./
 
 RUN npm install --omit=dev
 
-COPY ai-agent/ .
+COPY . .
 
 EXPOSE 3000
 
