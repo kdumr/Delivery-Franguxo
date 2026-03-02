@@ -3,7 +3,7 @@ function replace8211(text) {
   if (!text) return '';
   return text.replace(/&#8211;/g, '-');
 }
-const { app, BrowserWindow, Menu, shell, ipcMain, Notification, dialog, session, globalShortcut } = require('electron');
+const { app, BrowserWindow, BrowserView, Menu, shell, ipcMain, Notification, dialog, session, globalShortcut } = require('electron');
 
 // Permite autoplay sem gesto do usuário no Electron (desativa a política do Chromium)
 // Nota: esta alteração torna o aplicativo capaz de reproduzir áudio automaticamente
@@ -488,6 +488,7 @@ function openLogWindow() {
 let mainWindow;
 let logWindow = null;
 let manualUpdateCheck = false;
+let waView = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -501,6 +502,7 @@ function createWindow() {
       contextIsolation: true,
       enableRemoteModule: false,
       webSecurity: true,
+      webviewTag: true,
       autoplayPolicy: 'no-user-gesture-required',
       preload: path.join(__dirname, 'preload.js')
     },
@@ -526,10 +528,63 @@ function createWindow() {
       sameSite: c.sameSite
     })));
 
+    // Pré-carregar WhatsApp Web nativamente via BrowserView em Background
+    waView = new BrowserView({
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        partition: 'persist:whatsapp'
+      }
+    });
+    waView.webContents.userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+    waView.webContents.loadURL('https://web.whatsapp.com');
+
+    // Tratamos links do whatsapp normalmente
+    waView.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    });
+
+    // Detectar novas mensagens através da mudança de título usando Regex
+    waView.webContents.on('page-title-updated', (event, title) => {
+      if (mainWindow) {
+        const match = title.match(/^\((\d+)\)/);
+        if (match) {
+          mainWindow.webContents.send('whatsapp-unread-count', parseInt(match[1]));
+        } else {
+          mainWindow.webContents.send('whatsapp-unread-count', 0);
+        }
+      }
+    });
+
     mainWindow.maximize();
     mainWindow.show();
     if (process.platform === 'darwin') {
       app.dock.show();
+    }
+  });
+
+  // Escutando chamadas IPC do Front (injetadas via JS)
+  ipcMain.on('show-whatsapp', () => {
+    if (mainWindow && waView) {
+      mainWindow.addBrowserView(waView);
+      // getContentBounds no Windows previne que a barra superior bugue o tamanho, garantindo que pegamos só a área renderizável
+      const bounds = mainWindow.getContentBounds();
+      waView.setBounds({ x: 80, y: 0, width: bounds.width - 80, height: bounds.height });
+    }
+  });
+
+  ipcMain.on('hide-whatsapp', () => {
+    if (mainWindow && waView) {
+      mainWindow.removeBrowserView(waView);
+    }
+  });
+
+  mainWindow.on('resize', () => {
+    // Atualiza dimensões se a BrowserView estiver anexada
+    if (mainWindow && waView && mainWindow.getBrowserViews().includes(waView)) {
+      const bounds = mainWindow.getContentBounds();
+      waView.setBounds({ x: 80, y: 0, width: bounds.width - 80, height: bounds.height });
     }
   });
 
@@ -589,6 +644,8 @@ function createWindow() {
       mainWindow.maximize();
       mainWindow.show();
     }
+
+    // O comportamento dos botões agora roda de forma segura no preload.js
   });
 
   // Salvar cookies no disco quando a janela for fechada
@@ -606,6 +663,13 @@ function createWindow() {
   globalShortcut.register('Ctrl+Shift+L', () => {
     if (mainWindow) {
       mainWindow.webContents.openDevTools();
+    }
+  });
+
+  // Atalho para abrir DevTools do WhatsApp (BrowserView) com Ctrl+Shift+W
+  globalShortcut.register('Ctrl+Shift+W', () => {
+    if (waView && waView.webContents && !waView.webContents.isDestroyed()) {
+      waView.webContents.openDevTools();
     }
   });
 
@@ -739,6 +803,15 @@ function createMenu() {
           label: 'Ferramentas do Desenvolvedor',
           accelerator: 'F12',
           click: () => mainWindow && mainWindow.webContents.toggleDevTools()
+        },
+        {
+          label: 'DevTools do WhatsApp',
+          accelerator: 'CmdOrCtrl+Shift+W',
+          click: () => {
+            if (waView && waView.webContents && !waView.webContents.isDestroyed()) {
+              waView.webContents.toggleDevTools();
+            }
+          }
         },
         { type: 'separator' },
         {

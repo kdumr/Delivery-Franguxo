@@ -51,6 +51,8 @@ class Myd_Api {
 		add_action( 'rest_api_init', [ $this, 'register_manual_order_routes' ] );
 		// Register create order page route
 		add_action( 'template_redirect', [ $this, 'handle_create_order_page' ] );
+		// Register Gemini Config route
+		add_action( 'rest_api_init', [ $this, 'register_gemini_routes' ] );
 
 		// Ensure AJAX handlers for whatsapp status are always available (both logged-in and anonymous)
 		add_action('wp_ajax_myd_get_whatsapp_status', function() {
@@ -145,6 +147,33 @@ class Myd_Api {
 
 		// When MercadoPago reports an approved payment, update linked order if possible
 		add_action('myd_mercadopago_payment_approved', [ $this, 'handle_mp_approved' ], 10, 2);
+	}
+
+	/**
+	 * Register Gemini Server config route
+	 */
+	public function register_gemini_routes() {
+		\register_rest_route('myd-delivery/v1', '/gemini/config', [
+			'methods' => 'GET',
+			'callback' => [$this, 'get_gemini_config'],
+			'permission_callback' => '__return_true', // Em produção, ideal ter uma chave/token entre Node e WP
+		]);
+	}
+
+	/**
+	 * Output config block for Node.js Gemini API Server
+	 */
+	public function get_gemini_config( $request ) {
+		$config = [
+			'gemini_enabled'       => get_option('gemini_enabled', 'no') === 'yes',
+			'gemini_api_key'       => get_option('gemini_api_key', ''),
+			'gemini_system_prompt' => get_option('gemini_system_prompt', ''),
+			'evolution_api_url'    => get_option('evolution_api_url', ''),
+			'evolution_api_key'    => get_option('evolution_api_key', ''),
+			'evolution_instance'   => get_option('evolution_instance_name', '')
+		];
+
+		return rest_ensure_response( $config );
 	}
 
 	/**

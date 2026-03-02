@@ -483,6 +483,29 @@
   display: flex;
   flex-direction: column;
   height: 900px;
+  position: relative;
+}
+
+/* WhatsApp sidebar button */
+#myd-sidebar-whatsapp-btn:hover svg path,
+#myd-sidebar-whatsapp-btn.active svg path {
+  fill: #25D366;
+}
+
+/* WhatsApp Web panel */
+#myd-whatsapp-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background: #fff;
+}
+
+#myd-whatsapp-panel webview {
+  width: 100%;
+  height: 100%;
 }
 
 .fdm-orders-list {

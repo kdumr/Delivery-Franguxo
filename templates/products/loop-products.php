@@ -70,7 +70,7 @@ $hide_price_class = $price_label === 'hide' ? 'myd-product-item__price--hide' : 
 			}
 		}
 		?>
-		<?php echo wp_get_attachment_image( $image_id, 'medium', false, [ 'class' => 'myd-product-item-img attachment-medium size-medium', 'alt' => 'MyD Delivery Product Image' ] ); ?>
+		<?php echo wp_get_attachment_image( $image_id, 'medium', false, [ 'class' => 'myd-product-item-img attachment-medium size-medium', 'alt' => 'MyD Delivery Product Image', 'loading' => 'lazy', 'decoding' => 'async' ] ); ?>
 	</div>
 </article>
 
