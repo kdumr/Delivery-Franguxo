@@ -42,6 +42,20 @@ async function fetchActiveOrdersFromWP(phoneNumber) {
     }
 }
 
+async function fetchStoreHoursFromWP() {
+    try {
+        const token = process.env.WP_GEMINI_TOKEN || '';
+        const response = await axios.get(`${WP_URL}/wp-json/myd-delivery/v1/gemini/store-hours`, {
+            timeout: 3000,
+            headers: { 'x-gemini-token': token }
+        });
+        return response.data?.hours || "Horários não configurados.";
+    } catch (e) {
+        console.error("ERRO [fetchStoreHoursFromWP]:", e.message);
+        return "Desculpe, não conseguimos obter os horários agora.";
+    }
+}
+
 /**
  * Cliente Redis para armazenar histórico e sessão
  */

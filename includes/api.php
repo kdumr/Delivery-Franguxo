@@ -255,12 +255,12 @@ class Myd_Api {
 					
 					$status = get_post_meta( $order_id, 'order_status', true );
 					$status_br = [
-						'new' => 'Novo Pedido - Aguardando restaurante visualizar',
-						'confirmed' => 'Pedido em preparo / Na cozinha',
-						'in-delivery' => 'Em entrega / A caminho da casa do cliente',
+						'new' => 'Aguardando restaurante confirmar',
+						'confirmed' => 'Pedido em preparo 🟢',
+						'in-delivery' => 'Em entrega 🟡',
 						'waiting' => 'Aguardando status',
 						'canceled' => 'Cancelado',
-						'finished' => 'Concluído / Já Entregue'
+						'finished' => 'Concluído ✅'
 					];
 					
 					$items_raw = get_post_meta($order_id, 'myd_order_items', true) ?: [];
