@@ -11,4 +11,19 @@ services:
       # Caso for pra produção (VPS Linux), coloque a URL final: https://seusite.com
       - WP_URL=http://host.docker.internal/franguxo
       - WP_GEMINI_TOKEN=ColoqueASuaSenhaAqui
-      - REDIS_URL=redis://127.0.0.1:6379
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: delivery-franguxo-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis_data:
