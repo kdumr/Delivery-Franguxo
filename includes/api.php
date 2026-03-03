@@ -156,14 +156,32 @@ class Myd_Api {
 		\register_rest_route('myd-delivery/v1', '/gemini/config', [
 			'methods' => 'GET',
 			'callback' => [$this, 'get_gemini_config'],
-			'permission_callback' => '__return_true', // Em produção, ideal ter uma chave/token entre Node e WP
+			'permission_callback' => [$this, 'check_gemini_permission'],
 		]);
 
 		\register_rest_route('myd-delivery/v1', '/gemini/orders/active/(?P<phone>[\d]+)', [
 			'methods' => 'GET',
 			'callback' => [$this, 'get_gemini_active_orders'],
-			'permission_callback' => '__return_true', // Permitir acesso da IA
+			'permission_callback' => [$this, 'check_gemini_permission'],
 		]);
+	}
+
+	/**
+	 * Permissão de acesso ao Painel Gemini (Node.js AI Agent)
+	 */
+	public function check_gemini_permission( $request ) {
+		$token = $request->get_header('x_gemini_token');
+		$saved_token = get_option('gemini_server_token', '');
+		
+		if ( empty( $saved_token ) ) {
+			return new \WP_Error( 'gemini_config_missing', 'Você precisa configurar o Token de Segurança do Gemini no painel do Delivery Franguxo para liberar o uso da API.', array( 'status' => 401 ) );
+		}
+		
+		if ( $token !== $saved_token ) {
+			return new \WP_Error( 'gemini_unauthorized', 'Token de Segurança inválido ou não informado.', array( 'status' => 401 ) );
+		}
+		
+		return true;
 	}
 
 	/**
@@ -197,7 +215,7 @@ class Myd_Api {
 		}
 
 		$orders = [];
-		$active_statuses = ['waiting', 'paid', 'in-production', 'sent'];
+		$active_statuses = ['new', 'confirmed', 'in-delivery', 'waiting'];
 
 		// Get all recent active orders (limit 150)
 		$args = [
@@ -231,10 +249,12 @@ class Myd_Api {
 					
 					$status = get_post_meta( $order_id, 'order_status', true );
 					$status_br = [
-						'waiting' => 'Aguardando Pagamento/Aprovação',
-						'paid' => 'Pago e Aguardando Produção',
-						'in-production' => 'Sendo Preparado / Na Cozinha',
-						'sent' => 'Saiu para Entrega / A Caminho'
+						'new' => 'Novo Pedido - Aguardando restaurante visualizar',
+						'confirmed' => 'Pedido em preparo / Na cozinha',
+						'in-delivery' => 'Em entrega / A caminho da casa do cliente',
+						'waiting' => 'Aguardando status',
+						'canceled' => 'Cancelado',
+						'finished' => 'Concluído / Já Entregue'
 					];
 					
 					$items_raw = get_post_meta($order_id, 'myd_order_items', true) ?: [];

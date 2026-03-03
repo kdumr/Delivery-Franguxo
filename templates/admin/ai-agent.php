@@ -38,6 +38,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 						<tr>
 							<th scope="row">
+								<label for="gemini_server_token"><strong><?php esc_html_e( 'Token de Segurança da API', 'myd-delivery-pro' ); ?></strong></label>
+							</th>
+							<td>
+								<input name="gemini_server_token" type="password" id="gemini_server_token" value="<?php echo esc_attr( get_option( 'gemini_server_token' ) ); ?>" class="regular-text">
+								<p class="description"><?php esc_html_e( 'Crie uma senha forte e coloque esta exata mesma senha no .env do seu Servidor Node. Isso bloqueia que pessoas não autorizadas consultem a API e vejam os pedidos dos outros.', 'myd-delivery-pro' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
 								<label for="gemini_system_prompt"><strong><?php esc_html_e( 'Instruções da IA (Prompt de Sistema)', 'myd-delivery-pro' ); ?></strong></label>
 							</th>
 							<td>

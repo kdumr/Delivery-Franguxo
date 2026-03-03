@@ -551,6 +551,11 @@ class Settings extends Admin_Settings {
 				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
 			],
 			[
+				'name' => 'gemini_server_token',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			[
 				'name' => 'gemini_system_prompt',
 				'option_group' => self::CONFIG_GROUP,
 				'args' => [ 'sanitize_callback' => 'sanitize_textarea_field' ], 

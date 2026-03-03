@@ -11,17 +11,17 @@ app.use(cors());
 // URL base onde o WordPress está rodando
 const WP_URL = process.env.WP_URL || 'http://localhost/franguxo';
 
-/**
- * Helper para buscar do Wordpress a API_KEY do Lojista, o 
- * System Prompt que o dono cadastrou, e a instância da Evolution API ativa.
- */
 async function fetchConfigFromWP() {
     try {
-        const response = await axios.get(`${WP_URL}/wp-json/myd-delivery/v1/gemini/config`, { timeout: 3000 });
+        const token = process.env.WP_GEMINI_TOKEN || '';
+        const response = await axios.get(`${WP_URL}/wp-json/myd-delivery/v1/gemini/config`, {
+            timeout: 3000,
+            headers: { 'x-gemini-token': token }
+        });
         return response.data;
     } catch (e) {
-        console.error("ERRO [fetchConfigFromWP]: Falha ao tentar contato com o WordPress", e.message);
-        return null; // WordPress deve estar fora do ar ou URL incorreta
+        console.error("ERRO [fetchConfigFromWP]: Falha ao tentar contato ou autenticar com o WordPress", e.message);
+        return null; // WordPress deve estar fora do ar, URL incorreta, ou Token inválido
     }
 }
 
@@ -30,11 +30,15 @@ async function fetchConfigFromWP() {
  */
 async function fetchActiveOrdersFromWP(phoneNumber) {
     try {
-        const response = await axios.get(`${WP_URL}/wp-json/myd-delivery/v1/gemini/orders/active/${phoneNumber}`, { timeout: 3000 });
+        const token = process.env.WP_GEMINI_TOKEN || '';
+        const response = await axios.get(`${WP_URL}/wp-json/myd-delivery/v1/gemini/orders/active/${phoneNumber}`, {
+            timeout: 3000,
+            headers: { 'x-gemini-token': token }
+        });
         return response.data;
     } catch (e) {
         console.error(`ERRO [fetchActiveOrdersFromWP] falha para o celular ${phoneNumber}:`, e.message);
-        return null;
+        return null; // Erro de autenticação 401 ou erro de servidor.
     }
 }
 

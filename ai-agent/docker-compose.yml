@@ -10,3 +10,4 @@ services:
       # Se o Docker rodar e o WordPress estiver na mesma máquina rodando WAMP/XAMPP, 'host.docker.internal' vai apontar pro localhost do seu Windows.
       # Caso for pra produção (VPS Linux), coloque a URL final: https://seusite.com
       - WP_URL=http://host.docker.internal/franguxo
+      - WP_GEMINI_TOKEN=ColoqueASuaSenhaAqui
