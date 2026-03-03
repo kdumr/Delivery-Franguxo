@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const { GoogleGenAI } = require('@google/genai');
+const { createClient } = require('redis');
 
 const app = express();
 app.use(express.json());
@@ -10,6 +11,23 @@ app.use(cors());
 
 // URL base onde o WordPress está rodando
 const WP_URL = process.env.WP_URL || 'http://localhost/franguxo';
+
+// Configuração do Redis
+const redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+redisClient.on('error', (err) => console.log('[ERRO] Redis Client Error', err));
+
+// Tentativa de conexão com Redis inicial
+(async () => {
+    try {
+        await redisClient.connect();
+        console.log('[INFO] Conectado ao Redis com sucesso!');
+    } catch (err) {
+        console.error('[ERRO] Falha ao conectar no Redis:', err);
+    }
+})();
 
 async function fetchConfigFromWP() {
     try {
@@ -43,11 +61,9 @@ async function fetchActiveOrdersFromWP(phoneNumber) {
 }
 
 /**
- * Histórico e estado em memória básico (MVP)
- * Evitamos usar banco de dados externo agora para manter a migração simples.
- * Mapearemos `numeroCelular => [history]`
+ * Histórico e estado em memória movido para o Redis
+ * Mapearemos `numeroCelular => [history]` expirando em 2 horas
  */
-const conversationHistory = new Map();
 
 /**
  * Recebe todos os Eventos que a Evolution dispara
@@ -136,8 +152,23 @@ app.post('/webhook', async (req, res) => {
             systemInstruction += `\n\n[INFORMAÇÃO DO SISTEMA EM TEMPO REAL]\nO cliente com o qual você está falando AGORA NÃO POSSUI pedidos em andamento. Se ele perguntar do pedido, informe gentilmente que não consta nenhum pedido aberto no momento.`;
         }
 
+        // Obtendo histórico do Redis (2 horas = 7200 segundos)
+        const redisKey = `history:${phoneNumber}`;
+        let history = [];
+        try {
+            const rawHistory = await redisClient.get(redisKey);
+            if (rawHistory) {
+                history = JSON.parse(rawHistory);
+            }
+        } catch (err) {
+            console.error('[ERRO] Falha ao ler histórico do Redis:', err);
+        }
+
+        // Adiciona a nova mensagem do usuário ao histórico (formato @google/genai)
+        history.push({ role: 'user', parts: [{ text: text }] });
+
         const promptParams = {
-            contents: text,
+            contents: history,
             config: {
                 systemInstruction: systemInstruction
             }
@@ -157,15 +188,26 @@ app.post('/webhook', async (req, res) => {
             // Caimos pro 1.5-flash de fallback:
             const status = modelErr.response?.status || modelErr.status;
             if (status === 429) {
-                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-2.5-flash...");
+                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-1.5-flash-8b...");
                 const responseFallback = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
+                    model: 'gemini-1.5-flash-8b',
                     contents: promptParams.contents,
                     config: promptParams.config
                 });
                 reply = responseFallback.text;
             } else {
                 throw modelErr; // Repassa erro se não for cota
+            }
+        }
+
+        // Se deu sucesso, grava a resposta do modelo no histórico
+        if (reply) {
+            history.push({ role: 'model', parts: [{ text: reply }] });
+            try {
+                // Salva no Redis e expira em 2 horas (7200 segundos) se não houver novas interações
+                await redisClient.set(redisKey, JSON.stringify(history), { EX: 7200 });
+            } catch (err) {
+                console.error('[ERRO] Falha ao salvar histórico no Redis:', err);
             }
         }
 
