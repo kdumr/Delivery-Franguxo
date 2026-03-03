@@ -16,7 +16,7 @@ services:
   redis:
     image: redis:alpine
     container_name: delivery-franguxoredis
-    restart: always-
+    restart: always
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
