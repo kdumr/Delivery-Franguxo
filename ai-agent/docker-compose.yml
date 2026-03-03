@@ -3,6 +3,8 @@ services:
     build: .
     container_name: delivery-franguxo-gemini
     restart: always
+    ports:
+      - "3000:3000"
     environment:
       - PORT=3000
       # Se o Docker rodar e o WordPress estiver na mesma máquina rodando WAMP/XAMPP, 'host.docker.internal' vai apontar pro localhost do seu Windows.
@@ -17,6 +19,8 @@ services:
     image: redis:alpine
     container_name: delivery-franguxo-redis
     restart: always
+    ports:
+      - "6369:6369"
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
