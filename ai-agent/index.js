@@ -153,9 +153,9 @@ app.post('/webhook', async (req, res) => {
             // Caimos pro 1.5-flash de fallback:
             const status = modelErr.response?.status || modelErr.status;
             if (status === 429) {
-                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-2.5-flash...");
+                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-1.5-flash-8b...");
                 const responseFallback = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
+                    model: 'gemini-1.5-flash-8b',
                     contents: promptParams.contents,
                     config: promptParams.config
                 });
@@ -183,7 +183,12 @@ app.post('/webhook', async (req, res) => {
 async function sendEvolutionMessage(baseUrl, token, instanceName, number, textContent) {
     if (!baseUrl || !instanceName) return;
 
-    const endpoint = `${baseUrl}/message/sendText/${instanceName}`;
+    // Remove eventuais barras sobrando no final da baseUrl para nao gerar duplas barras ex: //message
+    const cleanBaseUrl = baseUrl.replace(/\/+$/, '');
+
+    // Na Evolution API, o endpoint de envio de texto é /message/sendText/{instanceName}
+    const endpoint = `${cleanBaseUrl}/message/sendText/${instanceName}`;
+
     try {
         await axios.post(endpoint, {
             number: number,
@@ -195,7 +200,8 @@ async function sendEvolutionMessage(baseUrl, token, instanceName, number, textCo
             }
         });
     } catch (err) {
-        console.error("[EVO_ERR] Enviar Mensagem Falhou:", err.message);
+        // Log more details about the Evolution API error
+        console.error("[EVO_ERR] Enviar Mensagem Falhou:", err.response?.status, err.response?.data || err.message, "URL tentada:", endpoint);
     }
 }
 
