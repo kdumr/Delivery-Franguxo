@@ -113,6 +113,16 @@ class Admin_Page {
 			],
 			[
 				'parent_slug' => 'myd-delivery-dashoboard',
+				'page_title' => 'MyD Delivery Agente IA',
+				'menu_title' => esc_html__( 'Agente IA', 'myd-delivery-pro' ),
+				'capability' => 'manage_options',
+				'slug' => 'myd-delivery-ai-agent',
+				'call_template' => [ $this, 'get_template_ai_agent' ],
+				'position' => 6.5,
+				'condition' => true,
+			],
+			[
+				'parent_slug' => 'myd-delivery-dashoboard',
 				'page_title' => 'MyD Delivery Add-ons',
 				'menu_title' => esc_html__( 'Add-ons', 'myd-delivery-pro' ),
 				'capability' => 'read',
@@ -130,6 +140,7 @@ class Admin_Page {
 			'customers' => MYD_PLUGIN_PATH . 'templates/admin/customers.php',
 			'addons' => MYD_PLUGIN_PATH . 'templates/admin/addons.php',
 			'fidelidade' => MYD_PLUGIN_PATH . 'templates/admin/fidelidade.php',
+			'ai_agent' => MYD_PLUGIN_PATH . 'templates/admin/ai-agent.php',
 		];
 	}
 
@@ -140,6 +151,15 @@ class Admin_Page {
 	 */
 	public function get_template_fidelidade() {
 		include_once $this->page_templates['fidelidade'];
+	}
+
+	/**
+	 * Get template page AI Agent
+	 *
+	 * @since 1.9.99
+	 */
+	public function get_template_ai_agent() {
+		include_once $this->page_templates['ai_agent'];
 	}
 	/**
 	 * Add admin page

@@ -41,6 +41,9 @@ app.post('/webhook', async (req, res) => {
 
     const body = req.body;
 
+    // Log the entire webhook payload for debugging if needed (Evolution V2 formats)
+    console.log("[WEBHOOK_RECV] EVENT:", body.event);
+
     // Verificamos se o evento é "mensagem chegando"
     if (body.event !== 'messages.upsert' || !body.data || !body.data.messages || body.data.messages.length === 0) {
         return;
@@ -78,7 +81,7 @@ app.post('/webhook', async (req, res) => {
     // Marca como Lida ou Digitando usando Evolution (Bonus UX assincrono)
     const evoUrl = wpConfig.evolution_api_url?.replace(/\/+$/, '');
     const evoToken = wpConfig.evolution_api_key;
-    const evoInstance = wpConfig.evolution_instance;
+    const evoInstance = wpConfig.evolution_instance; // Note: the WP API returns {"evolution_instance": "..."}
 
     await simulateTyping(evoUrl, evoToken, evoInstance, phoneNumber);
 
