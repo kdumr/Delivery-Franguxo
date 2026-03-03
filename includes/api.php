@@ -187,43 +187,49 @@ class Myd_Api {
 	 */
 	public function get_gemini_active_orders( $request ) {
 		$phone = $request->get_param('phone');
-		// Clean phone number (remove DDI if it's 55 to match local DB format, usually it's saved raw)
-		// For safety, let's search with the exact phone, and also fallback to stripping '55' if it's BR
-		$phone_variants = [ $phone ];
-		if ( strlen($phone) > 11 && strpos($phone, '55') === 0 ) {
-			$phone_variants[] = substr($phone, 2); // sem 55
+		
+		// Clean phone to bare numbers
+		$clean_req_phone = preg_replace('/\D/', '', $phone);
+		
+		// Always strip country code '55' if it's a Brazilian number
+		if ( strlen($clean_req_phone) >= 12 && strpos($clean_req_phone, '55') === 0 ) {
+			$clean_req_phone = substr($clean_req_phone, 2);
 		}
 
 		$orders = [];
 		$active_statuses = ['waiting', 'paid', 'in-production', 'sent'];
 
-		foreach ( $phone_variants as $p ) {
-			$args = [
-				'post_type' => 'mydelivery-orders',
-				'post_status' => 'publish', // Pedidos salvos
-				'posts_per_page' => 10,
-				'meta_query' => [
-					'relation' => 'AND',
-					[
-						'key' => 'customer_phone',
-						'value' => $p,
-						'compare' => 'LIKE' // Use LIKE in case of formatting like (11) 9...
-					],
-					[
-						'key' => 'order_status',
-						'value' => $active_statuses,
-						'compare' => 'IN'
-					]
+		// Get all recent active orders (limit 150)
+		$args = [
+			'post_type' => 'mydelivery-orders',
+			'post_status' => 'publish',
+			'posts_per_page' => 150,
+			'meta_query' => [
+				[
+					'key' => 'order_status',
+					'value' => $active_statuses,
+					'compare' => 'IN'
 				]
-			];
+			]
+		];
 
-			$query = new \WP_Query( $args );
-			if ( $query->have_posts() ) {
-				foreach ( $query->posts as $post ) {
-					$order_id = $post->ID;
-					// Parse the order details to make it short and context-friendly for AI
+		$query = new \WP_Query( $args );
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $post ) {
+				$order_id = $post->ID;
+				$db_phone = get_post_meta($order_id, 'customer_phone', true);
+				if (!$db_phone) continue;
+
+				// clean the db phone to bare numbers
+				$clean_db_phone = preg_replace('/\D/', '', $db_phone);
+				if ( strlen($clean_db_phone) >= 12 && strpos($clean_db_phone, '55') === 0 ) {
+					$clean_db_phone = substr($clean_db_phone, 2);
+				}
+				
+				// Exact match or partial match for safety without code DDI
+				if ($clean_req_phone === $clean_db_phone || strpos($clean_db_phone, $clean_req_phone) !== false || strpos($clean_req_phone, $clean_db_phone) !== false ) {
+					
 					$status = get_post_meta( $order_id, 'order_status', true );
-					// Translate status for AI
 					$status_br = [
 						'waiting' => 'Aguardando Pagamento/Aprovação',
 						'paid' => 'Pago e Aguardando Produção',
@@ -245,7 +251,6 @@ class Myd_Api {
 						'itens_resumo' => implode(', ', $items_summary)
 					];
 				}
-				break; // Found orders for this variant, stop searching
 			}
 		}
 
