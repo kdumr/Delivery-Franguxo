@@ -45,28 +45,48 @@ app.post('/webhook', async (req, res) => {
     console.log("[WEBHOOK_RECV] EVENT:", body.event);
 
     // Verificamos se o evento é "mensagem chegando"
-    if (body.event !== 'messages.upsert' || !body.data || !body.data.messages || body.data.messages.length === 0) {
+    if (body.event !== 'messages.upsert') {
         return;
     }
 
-    const messageData = body.data.messages[0];
+    // A Evolution API V1 e V2 pode enviar a mensagem aninhada de formas diferentes
+    let messageData = null;
+    if (body.data && Array.isArray(body.data.messages) && body.data.messages.length > 0) {
+        messageData = body.data.messages[0];
+    } else if (body.data && body.data.key) {
+        // Formato flat V2 em alguns endpoints
+        messageData = body.data;
+    } else if (body.data && body.data.message) {
+        messageData = body.data;
+    } else {
+        console.log("[AVISO] Formato de mensagem desconhecido! Body recebido:");
+        console.log(JSON.stringify(body, null, 2));
+        return;
+    }
 
-    // Ignora mensagens do próprio "Bot" e ignora Grupos
-    if (messageData.key.fromMe || !messageData.message) return;
-    const remoteJid = messageData.key.remoteJid;
-    if (!remoteJid || remoteJid.includes('@g.us')) return;
+    // Ignora mensagens enviadas pelo próprio Bot (fromMe)
+    const key = messageData.key || {};
+    if (key.fromMe || !messageData.message) {
+        return;
+    }
+
+    // Extrai o número e ignora grupos (@g.us)
+    const remoteJid = key.remoteJid;
+    if (!remoteJid || remoteJid.includes('@g.us') || remoteJid.includes('status@broadcast')) return;
 
     const phoneNumber = remoteJid.replace('@s.whatsapp.net', '');
 
-    // Extrai o texto da conversa
+    // Extrai o texto da conversa (Evolution API embute o texto de diferentes formas conforme o tipo)
     let text = null;
     if (messageData.message.conversation) {
         text = messageData.message.conversation;
-    } else if (messageData.message.extendedTextMessage?.text) {
+    } else if (messageData.message.extendedTextMessage && messageData.message.extendedTextMessage.text) {
         text = messageData.message.extendedTextMessage.text;
+    } else {
+        // Pode ser imagem, áudio, botão, list response... Se não há texto claro, ignora
+        return;
     }
 
-    // Não é texto puro... pode ser sticker, list response, etc... ignorar por hora
     if (!text) return;
 
     // 1) Busca configurações em tempo real do WordPress
