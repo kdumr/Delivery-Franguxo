@@ -539,27 +539,6 @@ class Settings extends Admin_Settings {
 				'option_group' => self::CONFIG_GROUP,
 				'args' => [ 'sanitize_callback' => 'sanitize_textarea_field' ],
 			],
-			// Inteligência Artificial (Gemini)
-			[
-				'name' => 'gemini_enabled',
-				'option_group' => self::CONFIG_GROUP,
-				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
-			],
-			[
-				'name' => 'gemini_api_key',
-				'option_group' => self::CONFIG_GROUP,
-				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
-			],
-			[
-				'name' => 'gemini_server_token',
-				'option_group' => self::CONFIG_GROUP,
-				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
-			],
-			[
-				'name' => 'gemini_system_prompt',
-				'option_group' => self::CONFIG_GROUP,
-				'args' => [ 'sanitize_callback' => 'sanitize_textarea_field' ], 
-			],
 			// Button message options
 			[
 				'name' => 'evolution_btn_enabled',

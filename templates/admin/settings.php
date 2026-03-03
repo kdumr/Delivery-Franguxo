@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<a href="#tab_advanced" id="tab-advanced" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'Advanced', 'myd-delivery-pro' ); ?></a>
 		<a href="#tab_shortcodes" id="tab-shortcodes" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'Shortcodes', 'myd-delivery-pro' ); ?></a>
 		<a href="#tab_smtp" id="tab-smtp" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'SMTP', 'myd-delivery-pro' ); ?></a>
-		<a href="#tab_evolution" id="tab-evolution" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)" style="display:inline-flex;align-items:center;"><img src="<?php echo esc_url( plugins_url( 'assets/img/logo-evo-ai.svg', MYD_PLUGIN_MAIN_FILE ) ); ?>" alt="Evolution" style="height:18px;" /></a>
+		<a href="#tab_evolution" id="tab-evolution" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'Evolution', 'myd-delivery-pro' ); ?></a>
 	</nav>
 
 	<form method="post" action="options.php">

@@ -48,6 +48,9 @@ function myd_get_status_icon_svg_inline($is_open) {
     }
     // Sempre busca o valor atualizado da configuração
     $current = get_option('myd-delivery-force-open-close-store', 'ignore');
+    if ( ! in_array( $current, ['ignore', 'open', 'close'], true ) ) {
+        $current = 'ignore';
+    }
     $store_open = Store_Data::is_store_open();
     $status_map = [
         'ignore' => ['text' => $store_open ? 'Loja aberta' : 'Loja fechada', 'subtext' => $store_open ? '(Dentro do horário programado)' : '(Fora do horário programado)'],

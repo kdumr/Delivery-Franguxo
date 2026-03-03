@@ -489,7 +489,7 @@ if ( $myd_fidelidade_ativo === 'on' ) :
 				<div class="myd-content-filter">
 					<?php if ( ! isset( $args['filter_type'] ) || isset( $args['filter_type'] ) && $args['filter_type'] !== 'hide_filter' ) : ?>
 						<div class="myd-content-filter__categories">
-							<?php foreach( (array) $this->get_categories() as $v ) : ?>
+							<?php foreach( $this->get_categories() as $v ) : ?>
 								<div class="myd-content-filter__tag" data-anchor="<?php echo str_replace( ' ', '-', esc_attr( $v ) ); ?>"><?php echo esc_html( $v ); ?></div>
 							<?php endforeach; ?>
 						</div>

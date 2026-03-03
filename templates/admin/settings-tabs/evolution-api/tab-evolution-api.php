@@ -44,41 +44,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</td>
 			</tr>
 			
-			<!-- Seção do Agente de Inteligência Artificial Google Gemini -->
-			<tr>
-				<td colspan="2"><hr><h3 style="margin-bottom:0;"><?php esc_html_e( '🤖 Inteligência Artificial (Google Gemini)', 'myd-delivery-pro' ); ?></h3>
-				<p class="description"><?php esc_html_e( 'Permite que a IA responda automaticamente mensagens na Evolution API.', 'myd-delivery-pro' ); ?></p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">
-					<label for="gemini_enabled"><?php esc_html_e( 'Ativar Agente IA?', 'myd-delivery-pro' ); ?></label>
-				</th>
-				<td>
-					<input name="gemini_enabled" type="checkbox" id="gemini_enabled" value="yes" <?php checked('yes', get_option('gemini_enabled', 'no')); ?>>
-					<span class="description"><?php esc_html_e( 'Marcar para a IA processar e responder mensagens recebidas via Webhook na instância local configurada acima.', 'myd-delivery-pro' ); ?></span>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">
-					<label for="gemini_api_key"><?php esc_html_e( 'Google Gemini API Key', 'myd-delivery-pro' ); ?></label>
-				</th>
-				<td>
-					<input name="gemini_api_key" type="password" id="gemini_api_key" value="<?php echo esc_attr( get_option( 'gemini_api_key' ) ); ?>" class="regular-text">
-					<p class="description"><a href="https://aistudio.google.com/app/apikey" target="_blank"><?php esc_html_e( 'Obter chaves da API do Google AI Studio', 'myd-delivery-pro' ); ?></a></p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">
-					<label for="gemini_system_prompt"><?php esc_html_e( 'Instruções da IA (Prompt de Sistema)', 'myd-delivery-pro' ); ?></label>
-				</th>
-				<td>
-					<textarea name="gemini_system_prompt" id="gemini_system_prompt" class="large-text" rows="8" placeholder="Ex: Olá! Você é um atendente simpático de uma pizzaria..."><?php echo esc_textarea( get_option( 'gemini_system_prompt' ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'O comportamento do agente. Diga que regras ele deve seguir, como deve responder aos clientes e limite escopos de respostas.', 'myd-delivery-pro' ); ?></p>
-				</td>
-			</tr>
-			<tr><td colspan="2"><hr></td></tr>
-			
 			<tr>
 				<th scope="row">
 					<label for="evolution_message_confirmed"><?php esc_html_e( 'Mensagem de Pedido Aceito', 'myd-delivery-pro' ); ?></label>
