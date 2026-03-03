@@ -139,35 +139,54 @@ app.post('/webhook', async (req, res) => {
     }
     // Se a sessão JÁ existe, lida com a resposta baseada no Menu
     else {
+        let sessionData = JSON.parse(session);
         // Atualiza o Timeout pra mais 2h a partir de agora só pelo fato de ele ter respondido
         await redisClient.expire(redisKey, 7200);
 
         const choice = text.trim();
 
-        if (choice === '1' || choice === '2') {
-            replyText = `Para fazer seu pedido acesse: ${WP_URL}`;
-        }
-        else if (choice === '3') {
-            const horas = await fetchStoreHoursFromWP();
-            replyText = `🕐 Nossos horários de funcionamento:\n${horas}\n\nPara voltar ao menu, digite *0*.`;
-        }
-        else if (choice === '5') {
-            const activeOrders = await fetchActiveOrdersFromWP(phoneNumber);
-            if (activeOrders && activeOrders.length > 0) {
-                replyText = `📦 Você tem ${activeOrders.length} pedido(s) em andamento:\n\n`;
-                for (const order of activeOrders) {
-                    replyText += `*Pedido #${order.id}*\nStatus: ${order.status_br}\nSubtotal: ${order.total}\n---\n`;
+        if (sessionData.state === 'MAIN_MENU' || !sessionData.state) {
+            if (choice === '1' || choice === '2') {
+                replyText = `Para fazer seu pedido acesse: ${WP_URL}\n\nPara voltar ao menu, digite *0*.`;
+                sessionData.state = 'SUB_MENU';
+            }
+            else if (choice === '3') {
+                const horas = await fetchStoreHoursFromWP();
+                replyText = `🕐 Nossos horários de funcionamento:\n${horas}\n\nPara voltar ao menu, digite *0*.`;
+                sessionData.state = 'SUB_MENU';
+            }
+            else if (choice === '5') {
+                const activeOrders = await fetchActiveOrdersFromWP(phoneNumber);
+                if (activeOrders && activeOrders.length > 0) {
+                    replyText = `📦 Você tem ${activeOrders.length} pedido(s) em andamento:\n\n`;
+                    for (const order of activeOrders) {
+                        replyText += `*Pedido #${order.id}*\nStatus: ${order.status_br}\nSubtotal: ${order.total}\n---\n`;
+                    }
+                    replyText += `\nPara voltar ao menu, digite *0*.`;
+                } else {
+                    replyText = `No momento não encontramos nenhum pedido ativo vinculado ao número ${phoneNumber}.\n\nPara voltar ao menu, digite *0*.`;
                 }
-            } else {
-                replyText = `No momento não encontramos nenhum pedido ativo vinculado ao número ${phoneNumber}.\n\nPara voltar ao menu, digite *0*.`;
+                sessionData.state = 'SUB_MENU';
+            }
+            else if (choice === '0') {
+                replyText = `*Menu Principal*\n\nPara fazer o seu pedido acesse: ${WP_URL}\n\n*1.* Fazer pedido online\n*2.* Acessar cardápio\n*3.* Horário de funcionamento\n*5.* Acessar meus pedidos\n\n_Envie o número da opção desejada._`;
+            }
+            else {
+                replyText = `Opção inválida.\n\nPor favor, digite 1, 2, 3 ou 5 para navegar no menu principal. Se precisar acessar o site: ${WP_URL}`;
             }
         }
-        else if (choice === '0') {
-            replyText = `*Menu Principal*\n\nPara fazer o seu pedido acesse: ${WP_URL}\n\n*1.* Fazer pedido online\n*2.* Acessar cardápio\n*3.* Horário de funcionamento\n*5.* Acessar meus pedidos`;
-        }
         else {
-            replyText = `Opção inválida. Por favor, digite 1, 2, 3 ou 5 para navegar no menu principal. Se precisar acessar o site: ${WP_URL}`;
+            // Está no SUB_MENU (já escolheu algo antes)
+            if (choice === '0') {
+                replyText = `*Menu Principal*\n\nPara fazer o seu pedido acesse: ${WP_URL}\n\n*1.* Fazer pedido online\n*2.* Acessar cardápio\n*3.* Horário de funcionamento\n*5.* Acessar meus pedidos\n\n_Envie o número da opção desejada._`;
+                sessionData.state = 'MAIN_MENU';
+            } else {
+                replyText = `Por favor, digite *0* para voltar ao menu principal.`;
+            }
         }
+
+        // Salva as atualizações de estado do menu no Redis
+        await redisClient.setEx(redisKey, 7200, JSON.stringify(sessionData));
     }
 
     try {
