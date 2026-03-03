@@ -26,6 +26,19 @@ async function fetchConfigFromWP() {
 }
 
 /**
+ * Consulta pedidos em andamento do respectivo número
+ */
+async function fetchActiveOrdersFromWP(phoneNumber) {
+    try {
+        const response = await axios.get(`${WP_URL}/wp-json/myd-delivery/v1/gemini/orders/active/${phoneNumber}`, { timeout: 3000 });
+        return response.data;
+    } catch (e) {
+        console.error(`ERRO [fetchActiveOrdersFromWP] falha para o celular ${phoneNumber}:`, e.message);
+        return null;
+    }
+}
+
+/**
  * Histórico e estado em memória básico (MVP)
  * Evitamos usar banco de dados externo agora para manter a migração simples.
  * Mapearemos `numeroCelular => [history]`
@@ -105,10 +118,19 @@ app.post('/webhook', async (req, res) => {
 
     await simulateTyping(evoUrl, evoToken, evoInstance, phoneNumber);
 
+    // 2) Consulta se o cliente tem pedidos em andamento
+    const activeOrders = await fetchActiveOrdersFromWP(phoneNumber);
+
     const startTime = Date.now();
     try {
         const ai = new GoogleGenAI({ apiKey: wpConfig.gemini_api_key });
-        const systemInstruction = wpConfig.gemini_system_prompt || "You are a helpful assistant.";
+        let systemInstruction = wpConfig.gemini_system_prompt || "You are a helpful assistant.";
+
+        if (activeOrders && activeOrders.length > 0) {
+            systemInstruction += `\n\n[INFORMAÇÃO DO SISTEMA EM TEMPO REAL]\nO cliente com o qual você está falando AGORA possui os seguintes pedidos em andamento:\n${JSON.stringify(activeOrders)}\nSe o cliente perguntar sobre o pedido dele, status ou entrega, use essas informações para responder de forma amigável. DICA IMPORTANTE: NUNCA, em hipótese alguma, informe sobre pedidos de outras pessoas ou invente pedidos que não estão nesta lista.`;
+        } else {
+            systemInstruction += `\n\n[INFORMAÇÃO DO SISTEMA EM TEMPO REAL]\nO cliente com o qual você está falando AGORA NÃO POSSUI pedidos em andamento. Se ele perguntar do pedido, informe gentilmente que não consta nenhum pedido aberto no momento.`;
+        }
 
         const promptParams = {
             contents: text,

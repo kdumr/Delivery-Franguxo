@@ -158,6 +158,12 @@ class Myd_Api {
 			'callback' => [$this, 'get_gemini_config'],
 			'permission_callback' => '__return_true', // Em produção, ideal ter uma chave/token entre Node e WP
 		]);
+
+		\register_rest_route('myd-delivery/v1', '/gemini/orders/active/(?P<phone>[\d]+)', [
+			'methods' => 'GET',
+			'callback' => [$this, 'get_gemini_active_orders'],
+			'permission_callback' => '__return_true', // Permitir acesso da IA
+		]);
 	}
 
 	/**
@@ -174,6 +180,76 @@ class Myd_Api {
 		];
 
 		return rest_ensure_response( $config );
+	}
+
+	/**
+	 * Output active orders for Gemini based on phone number
+	 */
+	public function get_gemini_active_orders( $request ) {
+		$phone = $request->get_param('phone');
+		// Clean phone number (remove DDI if it's 55 to match local DB format, usually it's saved raw)
+		// For safety, let's search with the exact phone, and also fallback to stripping '55' if it's BR
+		$phone_variants = [ $phone ];
+		if ( strlen($phone) > 11 && strpos($phone, '55') === 0 ) {
+			$phone_variants[] = substr($phone, 2); // sem 55
+		}
+
+		$orders = [];
+		$active_statuses = ['waiting', 'paid', 'in-production', 'sent'];
+
+		foreach ( $phone_variants as $p ) {
+			$args = [
+				'post_type' => 'mydelivery-orders',
+				'post_status' => 'publish', // Pedidos salvos
+				'posts_per_page' => 10,
+				'meta_query' => [
+					'relation' => 'AND',
+					[
+						'key' => 'customer_phone',
+						'value' => $p,
+						'compare' => 'LIKE' // Use LIKE in case of formatting like (11) 9...
+					],
+					[
+						'key' => 'order_status',
+						'value' => $active_statuses,
+						'compare' => 'IN'
+					]
+				]
+			];
+
+			$query = new \WP_Query( $args );
+			if ( $query->have_posts() ) {
+				foreach ( $query->posts as $post ) {
+					$order_id = $post->ID;
+					// Parse the order details to make it short and context-friendly for AI
+					$status = get_post_meta( $order_id, 'order_status', true );
+					// Translate status for AI
+					$status_br = [
+						'waiting' => 'Aguardando Pagamento/Aprovação',
+						'paid' => 'Pago e Aguardando Produção',
+						'in-production' => 'Sendo Preparado / Na Cozinha',
+						'sent' => 'Saiu para Entrega / A Caminho'
+					];
+					
+					$items_raw = get_post_meta($order_id, 'myd_order_items', true) ?: [];
+					$items_summary = [];
+					foreach($items_raw as $it) {
+						$items_summary[] = $it['product_name'] ?? 'Item';
+					}
+
+					$orders[] = [
+						'numero_pedido' => $order_id,
+						'status_atual' => $status_br[$status] ?? $status,
+						'total' => get_post_meta( $order_id, 'order_total', true ),
+						'metodo_pagamento' => get_post_meta( $order_id, 'order_payment_method', true ),
+						'itens_resumo' => implode(', ', $items_summary)
+					];
+				}
+				break; // Found orders for this variant, stop searching
+			}
+		}
+
+		return rest_ensure_response( $orders );
 	}
 
 	/**
