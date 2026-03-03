@@ -164,6 +164,12 @@ class Myd_Api {
 			'callback' => [$this, 'get_gemini_active_orders'],
 			'permission_callback' => [$this, 'check_gemini_permission'],
 		]);
+
+		\register_rest_route('myd-delivery/v1', '/gemini/store-hours', [
+			'methods' => 'GET',
+			'callback' => [$this, 'get_store_hours'],
+			'permission_callback' => [$this, 'check_gemini_permission'],
+		]);
 	}
 
 	/**

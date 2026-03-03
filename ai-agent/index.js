@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const { GoogleGenAI } = require('@google/genai');
 const { createClient } = require('redis');
 
 const app = express();
@@ -110,10 +109,10 @@ app.post('/webhook', async (req, res) => {
 
     if (!text) return;
 
-    // 1) Busca configurações em tempo real do WordPress
+    // 1) Busca configurações básicas da Evolution ativas no WordPress
     const wpConfig = await fetchConfigFromWP();
-    if (!wpConfig || wpConfig.gemini_enabled !== true || !wpConfig.gemini_api_key) {
-        console.log(`[INFO] Mensagem recebida de ${phoneNumber}, mas a IA está desativada no WP.`);
+    if (!wpConfig || !wpConfig.evolution_api_url) {
+        console.log(`[INFO] Mensagem recebida de ${phoneNumber}, mas a conexão da Evolution API não está cadastrada no WP.`);
         return;
     }
 
@@ -126,98 +125,55 @@ app.post('/webhook', async (req, res) => {
 
     await simulateTyping(evoUrl, evoToken, evoInstance, phoneNumber);
 
-    // 2) Consulta se o cliente tem pedidos em andamento
-    const activeOrders = await fetchActiveOrdersFromWP(phoneNumber);
+    // 2) Consulta Redis para ver se o cliente já está em uma sessão de navegação
+    const redisKey = `session:${phoneNumber}`;
+    let session = await redisClient.get(redisKey);
 
-    const startTime = Date.now();
-    try {
-        const ai = new GoogleGenAI({ apiKey: wpConfig.gemini_api_key });
-        let systemInstruction = wpConfig.gemini_system_prompt || "You are a helpful assistant.";
+    let replyText = "";
 
-        if (activeOrders && activeOrders.length > 0) {
-            systemInstruction += `\n\n[INFORMAÇÃO DO SISTEMA EM TEMPO REAL]\nO cliente com o qual você está falando AGORA possui os seguintes pedidos em andamento:\n${JSON.stringify(activeOrders)}\nSe o cliente perguntar sobre o pedido dele, status ou entrega, use essas informações para responder de forma amigável. DICA IMPORTANTE: NUNCA, em hipótese alguma, informe sobre pedidos de outras pessoas ou invente pedidos que não estão nesta lista.`;
-        } else {
-            systemInstruction += `\n\n[INFORMAÇÃO DO SISTEMA EM TEMPO REAL]\nO cliente com o qual você está falando AGORA NÃO POSSUI pedidos em andamento. Se ele perguntar do pedido, informe gentilmente que não consta nenhum pedido aberto no momento.`;
+    // Se a sessão NÃO existe, envia o Menu Principal e cria a sessão (Expira em 2h = 7200s)
+    if (!session) {
+        replyText = `Olá, seja bem vindo(a) ao Franguxo | Frango Frito.\n\nPara fazer o seu pedido acesse: ${WP_URL}\n\n*1.* Fazer pedido online\n*2.* Acessar cardápio\n*3.* Horário de funcionamento\n*5.* Acessar meus pedidos\n\n_Envie o número da opção desejada._`;
+
+        await redisClient.setEx(redisKey, 7200, JSON.stringify({ state: 'MAIN_MENU', lastInteraction: Date.now() }));
+    }
+    // Se a sessão JÁ existe, lida com a resposta baseada no Menu
+    else {
+        // Atualiza o Timeout pra mais 2h a partir de agora só pelo fato de ele ter respondido
+        await redisClient.expire(redisKey, 7200);
+
+        const choice = text.trim();
+
+        if (choice === '1' || choice === '2') {
+            replyText = `Para fazer seu pedido acesse: ${WP_URL}`;
         }
-
-        // Busca Histórico via Redis
-        const redisKey = `chat_history:${phoneNumber}`;
-        let history = [];
-        try {
-            const stored = await redisClient.get(redisKey);
-            if (stored) {
-                history = JSON.parse(stored);
-            }
-        } catch (err) {
-            console.error("Redis Get Error:", err);
+        else if (choice === '3') {
+            const horas = await fetchStoreHoursFromWP();
+            replyText = `🕐 Nossos horários de funcionamento:\n${horas}\n\nPara voltar ao menu, digite *0*.`;
         }
-
-        // Adiciona a nova mensagem do usuário no contexto
-        history.push({
-            role: 'user',
-            parts: [{ text: text }]
-        });
-
-        const promptParams = {
-            contents: history,
-            config: {
-                systemInstruction: systemInstruction
-            }
-        };
-
-        let reply = "";
-        try {
-            // Tenta primeiro o modelo 2.0 que é o default
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.0-flash',
-                contents: promptParams.contents,
-                config: promptParams.config
-            });
-            reply = response.text;
-        } catch (modelErr) {
-            // Conta de teste ou Free Tier pode bater limite rápido no 2.0.
-            // Caimos pro 1.5-flash de fallback:
-            const status = modelErr.response?.status || modelErr.status;
-            if (status === 429) {
-                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-2.5-flash...");
-                const responseFallback = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
-                    contents: promptParams.contents,
-                    config: promptParams.config
-                });
-                reply = responseFallback.text;
+        else if (choice === '5') {
+            const activeOrders = await fetchActiveOrdersFromWP(phoneNumber);
+            if (activeOrders && activeOrders.length > 0) {
+                replyText = `📦 Você tem ${activeOrders.length} pedido(s) em andamento:\n\n`;
+                for (const order of activeOrders) {
+                    replyText += `*Pedido #${order.id}*\nStatus: ${order.status_br}\nSubtotal: ${order.total}\n---\n`;
+                }
             } else {
-                throw modelErr; // Repassa erro se não for cota
+                replyText = `No momento não encontramos nenhum pedido ativo vinculado ao número ${phoneNumber}.\n\nPara voltar ao menu, digite *0*.`;
             }
         }
-
-        console.log(`[SUCESSO] Gemini gerou resposta em ${Date.now() - startTime}ms`);
-        await sendEvolutionMessage(evoUrl, evoToken, evoInstance, phoneNumber, reply);
-
-        // Adiciona a resposta da IA no histórico
-        history.push({
-            role: 'model',
-            parts: [{ text: reply }]
-        });
-
-        // Limita histórico a 30 interações para manter o contexto limpo e economizar tokens
-        if (history.length > 30) {
-            history = history.slice(history.length - 30);
+        else if (choice === '0') {
+            replyText = `*Menu Principal*\n\nPara fazer o seu pedido acesse: ${WP_URL}\n\n*1.* Fazer pedido online\n*2.* Acessar cardápio\n*3.* Horário de funcionamento\n*5.* Acessar meus pedidos`;
         }
-
-        // Salva de volta no redis com TTL de 7200 segundos (2 horas)
-        try {
-            await redisClient.setEx(redisKey, 7200, JSON.stringify(history));
-        } catch (err) {
-            console.error("Redis Set Error:", err);
+        else {
+            replyText = `Opção inválida. Por favor, digite 1, 2, 3 ou 5 para navegar no menu principal. Se precisar acessar o site: ${WP_URL}`;
         }
+    }
 
+    try {
+        await sendEvolutionMessage(evoUrl, evoToken, evoInstance, phoneNumber, replyText);
     } catch (apiError) {
-        console.error("[ERRO_GEMINI API] Falhou: ", apiError.response?.data || apiError.message);
-        // Mensagem utilitária se de fato ambos os modelos estourarem a cota
-        if (apiError.response?.status === 429 || apiError.message?.includes('429')) {
-            await sendEvolutionMessage(evoUrl, evoToken, evoInstance, phoneNumber, "Desculpe, nosso atendente virtual está sobrecarregado no momento (Muitos pedidos!). Por favor, aguarde um humano.");
-        }
+        console.error("[ERRO ENVIO EVO] Falhou: ", apiError.message);
     }
 });
 
