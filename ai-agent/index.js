@@ -117,19 +117,41 @@ app.post('/webhook', async (req, res) => {
             }
         };
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash',
-            contents: promptParams.contents,
-            config: promptParams.config
-        });
-
-        const reply = response.text;
+        let reply = "";
+        try {
+            // Tenta primeiro o modelo 2.0 que é o default
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.0-flash',
+                contents: promptParams.contents,
+                config: promptParams.config
+            });
+            reply = response.text;
+        } catch (modelErr) {
+            // Conta de teste ou Free Tier pode bater limite rápido no 2.0.
+            // Caimos pro 1.5-flash de fallback:
+            const status = modelErr.response?.status || modelErr.status;
+            if (status === 429) {
+                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-1.5-flash...");
+                const responseFallback = await ai.models.generateContent({
+                    model: 'gemini-1.5-flash',
+                    contents: promptParams.contents,
+                    config: promptParams.config
+                });
+                reply = responseFallback.text;
+            } else {
+                throw modelErr; // Repassa erro se não for cota
+            }
+        }
 
         console.log(`[SUCESSO] Gemini gerou resposta em ${Date.now() - startTime}ms`);
         await sendEvolutionMessage(evoUrl, evoToken, evoInstance, phoneNumber, reply);
 
     } catch (apiError) {
         console.error("[ERRO_GEMINI API] Falhou: ", apiError.response?.data || apiError.message);
+        // Mensagem utilitária se de fato ambos os modelos estourarem a cota
+        if (apiError.response?.status === 429 || apiError.message?.includes('429')) {
+            await sendEvolutionMessage(evoUrl, evoToken, evoInstance, phoneNumber, "Desculpe, nosso atendente virtual está sobrecarregado no momento (Muitos pedidos!). Por favor, aguarde um humano.");
+        }
     }
 });
 
