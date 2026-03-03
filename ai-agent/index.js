@@ -188,9 +188,9 @@ app.post('/webhook', async (req, res) => {
             // Caimos pro 1.5-flash de fallback:
             const status = modelErr.response?.status || modelErr.status;
             if (status === 429) {
-                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-1.5-flash-8b...");
+                console.log("[AVISO] Cota do Gemini 2.0 excedida! Tentando fallback para gemini-2.5-flash...");
                 const responseFallback = await ai.models.generateContent({
-                    model: 'gemini-1.5-flash-8b',
+                    model: 'gemini-2.5-flash',
                     contents: promptParams.contents,
                     config: promptParams.config
                 });
