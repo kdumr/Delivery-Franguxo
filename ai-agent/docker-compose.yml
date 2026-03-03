@@ -3,32 +3,19 @@ services:
     build: .
     container_name: delivery-franguxo-gemini
     restart: always
+    ports:
+      - "3000:3000"
     environment:
       - PORT=3000
       # Se o Docker rodar e o WordPress estiver na mesma máquina rodando WAMP/XAMPP, 'host.docker.internal' vai apontar pro localhost do seu Windows.
       # Caso for pra produção (VPS Linux), coloque a URL final: https://seusite.com
-      - WP_URL=http://dev.franguxo.app.br
-      - WP_GEMINI_TOKEN=QgEkhScmWJhCIG5ZP1y0FXb3Fb59QdpV8K7G1UMkYwEcaukIsLlev3XA8451wwXp
+      - WP_URL=http://host.docker.internal/franguxo
+      - WP_GEMINI_TOKEN=ColoqueASuaSenhaAqui
       - REDIS_URL=redis://redis:6379
-    depends_on:
-      - redis
 
   redis:
     image: redis:alpine
-    container_name: delivery-franguxoredis
-    restart: always
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-
-  redisinsight:
-    image: redis/redisinsight:latest
-    container_name: delivery-franguxo-redisinsight
+    container_name: delivery-franguxo-redis
     restart: always
     ports:
-      - "5540:5540"
-    depends_on:
-      - redis
-
-volumes:
-  redis_data:
+      - "6379:6379"

@@ -12,23 +12,6 @@ app.use(cors());
 // URL base onde o WordPress está rodando
 const WP_URL = process.env.WP_URL || 'http://localhost/franguxo';
 
-// Configuração do Redis
-const redisClient = createClient({
-    url: process.env.REDIS_URL || 'redis://localhost:6379'
-});
-
-redisClient.on('error', (err) => console.log('[ERRO] Redis Client Error', err));
-
-// Tentativa de conexão com Redis inicial
-(async () => {
-    try {
-        await redisClient.connect();
-        console.log('[INFO] Conectado ao Redis com sucesso!');
-    } catch (err) {
-        console.error('[ERRO] Falha ao conectar no Redis:', err);
-    }
-})();
-
 async function fetchConfigFromWP() {
     try {
         const token = process.env.WP_GEMINI_TOKEN || '';
@@ -61,9 +44,14 @@ async function fetchActiveOrdersFromWP(phoneNumber) {
 }
 
 /**
- * Histórico e estado em memória movido para o Redis
- * Mapearemos `numeroCelular => [history]` expirando em 2 horas
+ * Cliente Redis para armazenar histórico e sessão
  */
+const redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
+redisClient.connect().catch(console.error);
 
 /**
  * Recebe todos os Eventos que a Evolution dispara
@@ -152,20 +140,23 @@ app.post('/webhook', async (req, res) => {
             systemInstruction += `\n\n[INFORMAÇÃO DO SISTEMA EM TEMPO REAL]\nO cliente com o qual você está falando AGORA NÃO POSSUI pedidos em andamento. Se ele perguntar do pedido, informe gentilmente que não consta nenhum pedido aberto no momento.`;
         }
 
-        // Obtendo histórico do Redis (2 horas = 7200 segundos)
-        const redisKey = `history:${phoneNumber}`;
+        // Busca Histórico via Redis
+        const redisKey = `chat_history:${phoneNumber}`;
         let history = [];
         try {
-            const rawHistory = await redisClient.get(redisKey);
-            if (rawHistory) {
-                history = JSON.parse(rawHistory);
+            const stored = await redisClient.get(redisKey);
+            if (stored) {
+                history = JSON.parse(stored);
             }
         } catch (err) {
-            console.error('[ERRO] Falha ao ler histórico do Redis:', err);
+            console.error("Redis Get Error:", err);
         }
 
-        // Adiciona a nova mensagem do usuário ao histórico (formato @google/genai)
-        history.push({ role: 'user', parts: [{ text: text }] });
+        // Adiciona a nova mensagem do usuário no contexto
+        history.push({
+            role: 'user',
+            parts: [{ text: text }]
+        });
 
         const promptParams = {
             contents: history,
@@ -200,19 +191,26 @@ app.post('/webhook', async (req, res) => {
             }
         }
 
-        // Se deu sucesso, grava a resposta do modelo no histórico
-        if (reply) {
-            history.push({ role: 'model', parts: [{ text: reply }] });
-            try {
-                // Salva no Redis e expira em 2 horas (7200 segundos) se não houver novas interações
-                await redisClient.set(redisKey, JSON.stringify(history), { EX: 7200 });
-            } catch (err) {
-                console.error('[ERRO] Falha ao salvar histórico no Redis:', err);
-            }
-        }
-
         console.log(`[SUCESSO] Gemini gerou resposta em ${Date.now() - startTime}ms`);
         await sendEvolutionMessage(evoUrl, evoToken, evoInstance, phoneNumber, reply);
+
+        // Adiciona a resposta da IA no histórico
+        history.push({
+            role: 'model',
+            parts: [{ text: reply }]
+        });
+
+        // Limita histórico a 30 interações para manter o contexto limpo e economizar tokens
+        if (history.length > 30) {
+            history = history.slice(history.length - 30);
+        }
+
+        // Salva de volta no redis com TTL de 7200 segundos (2 horas)
+        try {
+            await redisClient.setEx(redisKey, 7200, JSON.stringify(history));
+        } catch (err) {
+            console.error("Redis Set Error:", err);
+        }
 
     } catch (apiError) {
         console.error("[ERRO_GEMINI API] Falhou: ", apiError.response?.data || apiError.message);
