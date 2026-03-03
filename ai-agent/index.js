@@ -160,7 +160,7 @@ app.post('/webhook', async (req, res) => {
                 if (activeOrders && activeOrders.length > 0) {
                     replyText = `📦 Você tem ${activeOrders.length} pedido(s) em andamento:\n\n`;
                     for (const order of activeOrders) {
-                        replyText += `*Pedido #${order.id}*\nStatus: ${order.status_br}\nSubtotal: ${order.total}\n---\n`;
+                        replyText += `*Pedido #${order.numero_pedido}*\nStatus: ${order.status_atual}\n---\n`;
                     }
                     replyText += `\nPara voltar ao menu, digite *0*.`;
                 } else {
@@ -169,7 +169,7 @@ app.post('/webhook', async (req, res) => {
                 sessionData.state = 'SUB_MENU';
             }
             else if (choice === '0') {
-                replyText = `*Menu Principal*\n\nPara fazer o seu pedido acesse: ${WP_URL}\n\n*1.* Fazer pedido online\n*2.* Acessar cardápio\n*3.* Horário de funcionamento\n*5.* Acessar meus pedidos\n\n_Envie o número da opção desejada._`;
+                replyText = `*1.* Fazer pedido online\n*2.* Acessar cardápio\n*3.* Horário de funcionamento\n*5.* Acessar meus pedidos\n\n_Envie o número da opção desejada._`;
             }
             else {
                 replyText = `Opção inválida.\n\nPor favor, digite 1, 2, 3 ou 5 para navegar no menu principal. Se precisar acessar o site: ${WP_URL}`;
