@@ -35,13 +35,18 @@ function loadConfig() {
       if (cfg.clientSecret)  IFOOD_CLIENT_SECRET = cfg.clientSecret;
       if (cfg.merchantId)    IFOOD_MERCHANT_ID   = cfg.merchantId;
       if (cfg.wpBaseUrl)     WP_BASE_URL         = cfg.wpBaseUrl;
-      if (cfg.wpApiSecret)   WP_API_SECRET        = cfg.wpApiSecret;
-      console.log('[Config] Loaded from config.json');
+      if (cfg.wpApiSecret)   WP_API_SECRET       = cfg.wpApiSecret;
+      console.log('[Config] Loaded from config.json:', Object.keys(cfg).filter(k => cfg[k]).join(', '));
+    } else {
+      console.log('[Config] No config.json found — starting with env variables only.');
     }
   } catch (e) {
     console.warn('[Config] Failed to load config.json:', e.message);
   }
 }
+
+// Ensure it loads at boot time!
+loadConfig();
 
 function saveConfig() {
   try {
