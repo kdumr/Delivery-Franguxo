@@ -40,15 +40,19 @@ async function acknowledgeEvents(events, clientId, clientSecret) {
   const token = await getToken(clientId, clientSecret);
   const ids = events.map((e) => ({ id: e.id }));
 
-  await axios.post(`${IFOOD_BASE}/order/v1.0/events/acknowledgment`, ids, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    timeout: 15000,
-  });
-
-  console.log(`[iFood] Acknowledged ${ids.length} event(s)`);
+  try {
+    await axios.post(`${IFOOD_BASE}/order/v1.0/events/acknowledgment`, ids, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      timeout: 15000,
+    });
+    console.log(`[iFood] Acknowledged ${ids.length} event(s)`);
+  } catch (err) {
+    console.error(`[iFood] ACK Request Failed:`, err.response?.data || err.message);
+    throw err;
+  }
 }
 
 /**
@@ -62,14 +66,18 @@ async function acknowledgeEvents(events, clientId, clientSecret) {
 async function getOrderDetails(orderId, clientId, clientSecret) {
   const token = await getToken(clientId, clientSecret);
 
-  const response = await axios.get(`${IFOOD_BASE}/order/v1.0/orders/${orderId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    timeout: 15000,
-  });
-
-  return response.data;
+  try {
+    const response = await axios.get(`${IFOOD_BASE}/order/v1.0/orders/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 15000,
+    });
+    return response.data;
+  } catch (err) {
+    console.error(`[iFood] Get Order Details Failed (${orderId}):`, err.response?.data || err.message);
+    throw err;
+  }
 }
 
 module.exports = { pollEvents, acknowledgeEvents, getOrderDetails };
