@@ -41,6 +41,8 @@ async function acknowledgeEvents(events, clientId, clientSecret) {
   const ids = events.map((e) => ({ id: e.id }));
 
   try {
+    console.log(`[iFood-Debug] ACK request to: ${IFOOD_BASE}/order/v1.0/events/acknowledgment`);
+    console.log(`[iFood-Debug] ACK payload:`, JSON.stringify(ids));
     await axios.post(`${IFOOD_BASE}/order/v1.0/events/acknowledgment`, ids, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -67,7 +69,10 @@ async function getOrderDetails(orderId, clientId, clientSecret) {
   const token = await getToken(clientId, clientSecret);
 
   try {
-    const response = await axios.get(`${IFOOD_BASE}/order/v1.0/orders/${orderId}`, {
+    const url = `${IFOOD_BASE}/order/v1.0/orders/${orderId}`;
+    console.log(`[iFood-Debug] GET Order Details URL: ${url}`);
+    
+    const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

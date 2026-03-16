@@ -35,21 +35,23 @@ async function processEvent(event, config) {
   const { clientId, clientSecret, wpUrl, wpSecret } = config;
 
   // Guard: skip unknown / non-order events
-  const code = event.code || event.fullCode || '';
-  if (!code) {
-    console.log(`[Processor] Skipping event without code: id=${event.id}`);
+  const code = (event.code || event.fullCode || '').trim();
+  const eventId = (event.id || '').trim();
+  
+  if (!code || !eventId) {
+    console.log(`[Processor] Skipping event without code or id.`);
     return;
   }
 
   // Deduplication
-  if (processedEventIds.has(event.id)) {
-    console.log(`[Processor] Duplicate event ignored: id=${event.id}`);
+  if (processedEventIds.has(eventId)) {
+    console.log(`[Processor] Duplicate event ignored: id=${eventId}`);
     return;
   }
-  processedEventIds.add(event.id);
+  processedEventIds.add(eventId);
 
-  const orderId = event.orderId || event.order_id;
-  console.log(`[Processor] Event code=${code} orderId=${orderId} eventId=${event.id}`);
+  const orderId = (event.orderId || event.order_id || '').trim();
+  console.log(`[Processor] Event code=${code} orderId=${orderId} eventId=${eventId}`);
 
   // Fetch full order details only for events that have an order
   let orderDetails = null;
