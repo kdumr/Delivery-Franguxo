@@ -75,10 +75,12 @@ async function processEvent(event, config) {
 
   // Forward to WordPress
   if (wpUrl && wpSecret) {
-    await forwardToWordPress(payload, wpUrl, wpSecret);
+    const success = await forwardToWordPress(payload, wpUrl, wpSecret);
+    return success;
   } else {
     console.warn('[Processor] WordPress URL or secret not configured — skipping forward');
     console.log('[Processor] Payload:', JSON.stringify(payload, null, 2));
+    return false; // Not integrated successfully yet
   }
 }
 
@@ -88,6 +90,7 @@ async function processEvent(event, config) {
  * @param {Object} payload
  * @param {string} wpUrl     e.g. https://franguxo.app.br
  * @param {string} wpSecret  shared secret for X-WP-Secret header
+ * @returns {Promise<boolean>}
  */
 async function forwardToWordPress(payload, wpUrl, wpSecret) {
   const url = `${wpUrl.replace(/\/$/, '')}/wp-json/myd/v1/ifood/order`;
@@ -102,12 +105,14 @@ async function forwardToWordPress(payload, wpUrl, wpSecret) {
     });
 
     console.log(`[WP Forward] Success — status=${response.status} orderId=${payload.event.orderId || '—'}`);
+    return true;
   } catch (err) {
     const status = err.response?.status;
     const body = err.response?.data;
     console.error(`[WP Forward] Failed — status=${status}:`, body || err.message);
-    throw err; // rethrow so caller can handle
+    return false; // Do not throw, return false so the caller knows it failed
   }
 }
 
 module.exports = { processEvent };
+

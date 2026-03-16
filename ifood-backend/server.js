@@ -138,15 +138,25 @@ app.post('/ifood/webhook', async (req, res) => {
   events.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
 
   for (const event of events) {
-    await processEvent(event, getIfoodConfig()).catch((e) =>
-      console.error('[Webhook] processEvent error:', e.message)
-    );
+    try {
+      const success = await processEvent(event, getIfoodConfig());
+      if (success !== false) { 
+        // We consider undefined (non-order events) or true as successfully handled
+        successfulEvents.push(event);
+      }
+    } catch (e) {
+      console.error('[Webhook] processEvent error:', e.message);
+    }
   }
 
-  // Acknowledge all events after processing
-  acknowledgeEvents(events, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET).catch((e) =>
-    console.error('[Webhook] ACK error:', e.message)
-  );
+  // Acknowledge only events that were successfully processed
+  if (successfulEvents.length > 0) {
+    acknowledgeEvents(successfulEvents, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET).catch((e) =>
+      console.error('[Webhook] ACK error:', e.message)
+    );
+  } else {
+    console.log('[Webhook] No events to acknowledge.');
+  }
 });
 
 // ─── Helper: build config object ────────────────────────────────────────────
@@ -194,13 +204,24 @@ async function runPollCycle() {
 
     events.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
 
+    const successfulEvents = [];
+
     for (const event of events) {
-      await processEvent(event, getIfoodConfig()).catch((e) =>
-        console.error('[Polling] processEvent error:', e.message)
-      );
+      try {
+        const success = await processEvent(event, getIfoodConfig());
+        if (success !== false) {
+          successfulEvents.push(event);
+        }
+      } catch (e) {
+        console.error('[Polling] processEvent error:', e.message);
+      }
     }
 
-    await acknowledgeEvents(events, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+    if (successfulEvents.length > 0) {
+      await acknowledgeEvents(successfulEvents, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+    } else {
+      console.log('[Polling] No events to acknowledge.');
+    }
 
   } catch (err) {
     console.error('[Polling] Error:', err.message);
