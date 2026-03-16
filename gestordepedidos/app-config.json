@@ -1,6 +1,6 @@
 {
   "wordpress": {
-    "url": "https://dev.franguxo.app.br",
+    "url": "https://franguxo.app.br",
     "loginPath": "/pedidos/"
   },
   "auth": {
