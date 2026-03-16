@@ -137,6 +137,10 @@ app.post('/ifood/webhook', async (req, res) => {
   // Sort events by createdAt (iFood may deliver out of order)
   events.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
 
+  if (events.length > 0) {
+    console.log(`[Webhook] Event #0 Debug Dump:`, JSON.stringify(events[0], null, 2));
+  }
+
   const successfulEvents = [];
 
   for (const event of events) {
