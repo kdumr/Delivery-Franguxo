@@ -60,6 +60,17 @@ async function processEvent(event, config) {
       orderDetails = await getOrderDetails(orderId, clientId, clientSecret);
     } catch (err) {
       console.error(`[Processor] Failed to fetch order details for ${orderId}:`, err.response?.data || err.message);
+      
+      // Fallback: sometimes iFood (especially in Sandbox) puts the real order UUID in event.id
+      if (eventId && eventId !== orderId) {
+        console.log(`[Processor] Attempting fallback to fetch order details using event id: ${eventId}`);
+        try {
+          orderDetails = await getOrderDetails(eventId, clientId, clientSecret);
+          console.log(`[Processor] Fallback successful! Order details fetched using eventId.`);
+        } catch (fbErr) {
+          console.error(`[Processor] Fallback also failed for ${eventId}:`, fbErr.response?.data || fbErr.message);
+        }
+      }
     }
   }
 
