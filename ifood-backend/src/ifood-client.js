@@ -4,6 +4,13 @@ const { getToken } = require('./token-manager');
 
 const IFOOD_BASE = 'https://merchant-api.ifood.com.br';
 
+axios.interceptors.request.use(request => {
+  console.log('[Axios Request]', request.method.toUpperCase(), request.url);
+  console.log('[Axios Headers]', JSON.stringify(request.headers, null, 2));
+  if (request.data) console.log('[Axios Body]', JSON.stringify(request.data));
+  return request;
+});
+
 /**
  * Poll iFood for new events.
  * Keeps the merchant ONLINE — must run every 30s.
