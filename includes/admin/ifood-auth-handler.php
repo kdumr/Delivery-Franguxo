@@ -132,3 +132,62 @@ add_action('myd_ifood_token_refresh_check', function() {
         }
     }
 });
+
+/**
+ * AJAX handler: push iFood + WordPress config to the Node.js backend.
+ */
+add_action('wp_ajax_myd_ifood_push_backend_config', function() {
+    if ( ! current_user_can('manage_options') ) {
+        wp_send_json_error( array( 'message' => 'Permissão insuficiente.' ) );
+    }
+
+    $backend_url    = isset($_POST['backendUrl'])    ? sanitize_text_field( $_POST['backendUrl'] )    : '';
+    $backend_secret = isset($_POST['backendSecret']) ? sanitize_text_field( $_POST['backendSecret'] ) : '';
+    $merchant_id    = isset($_POST['merchantId'])    ? sanitize_text_field( $_POST['merchantId'] )    : '';
+    $client_id      = isset($_POST['clientId'])      ? sanitize_text_field( $_POST['clientId'] )      : '';
+    $client_secret  = isset($_POST['clientSecret'])  ? sanitize_text_field( $_POST['clientSecret'] )  : '';
+
+    if ( empty($backend_url) || empty($backend_secret) ) {
+        wp_send_json_error( array( 'message' => 'URL do backend e Backend Secret são obrigatórios.' ) );
+    }
+
+    // Persist merchant_id for future use
+    if ( ! empty($merchant_id) ) {
+        update_option('ifood_merchant_id', $merchant_id);
+    }
+
+    $wp_api_secret = get_option('ifood_wp_api_secret', '');
+    $wp_base_url   = get_site_url();
+
+    $payload = array(
+        'clientId'     => $client_id     ?: get_option('ifood_client_id', ''),
+        'clientSecret' => $client_secret ?: get_option('ifood_client_secret', ''),
+        'merchantId'   => $merchant_id   ?: get_option('ifood_merchant_id', ''),
+        'wpBaseUrl'    => $wp_base_url,
+        'wpApiSecret'  => $wp_api_secret,
+    );
+
+    $response = wp_remote_post( trailingslashit($backend_url) . 'config', array(
+        'timeout' => 15,
+        'headers' => array(
+            'Content-Type'      => 'application/json',
+            'x-backend-secret'  => $backend_secret,
+        ),
+        'body' => wp_json_encode( $payload ),
+    ));
+
+    if ( is_wp_error( $response ) ) {
+        wp_send_json_error( array( 'message' => 'Erro ao conectar ao backend: ' . $response->get_error_message() ) );
+    }
+
+    $http_code = wp_remote_retrieve_response_code( $response );
+    $body      = json_decode( wp_remote_retrieve_body( $response ), true );
+
+    if ( $http_code === 200 && ! empty($body['success']) ) {
+        wp_send_json_success( array( 'message' => 'Configurações enviadas com sucesso!' ) );
+    } else {
+        $msg = isset($body['error']) ? $body['error'] : 'Resposta inesperada do backend (HTTP ' . $http_code . ')';
+        wp_send_json_error( array( 'message' => $msg ) );
+    }
+});
+

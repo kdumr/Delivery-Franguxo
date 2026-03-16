@@ -2796,7 +2796,7 @@ class Myd_Api {
 		do_action('myd_ifood_event', $event, $order);
 
 		// For PLACED events with order details, create a new order post
-		if ( $code === 'PLACED' && ! empty($order) ) {
+		if ( $code === 'PLC' && ! empty($order) ) {
 			$post_id = $this->create_ifood_order_post( $order, $event );
 			if ( $post_id && ! is_wp_error( $post_id ) ) {
 				do_action('myd_ifood_order_created', $post_id, $order, $event);

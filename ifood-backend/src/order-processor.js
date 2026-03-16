@@ -6,7 +6,7 @@ const { getOrderDetails, acknowledgeEvents } = require('./ifood-client');
  * Known event codes that carry an orderId and need processing.
  */
 const ORDER_EVENTS = new Set([
-  'PLACED',
+  'PLC',
   'CONFIRMED',
   'INTEGRATED',
   'READY_TO_PICKUP',
