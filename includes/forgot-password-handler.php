@@ -5,6 +5,10 @@ add_action('wp_ajax_nopriv_myd_forgot_password', 'myd_forgot_password_handler');
 add_action('wp_ajax_myd_forgot_password', 'myd_forgot_password_handler');
 
 function myd_forgot_password_handler() {
+    if ( function_exists('myd_check_ip_rate_limit') && myd_check_ip_rate_limit( 'forgot_password', 5, 3600 ) ) {
+        wp_send_json_error(['message' => 'Muitas solicitações. Tente novamente mais tarde.']);
+    }
+
     // Accept either `email` or `identifier` (CPF digits). Backwards-compatible with existing email param.
     $identifier = '';
     if (isset($_POST['identifier'])) {
@@ -63,8 +67,12 @@ function myd_forgot_password_handler() {
     $history[] = $now;
     update_user_meta($user->ID, 'myd_forgot_code_history', $history);
 
-    // Gera código de 6 dígitos
-    $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+    // Gera código de 6 dígitos criptograficamente seguro
+    try {
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    } catch (\Exception $e) {
+        $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
     $expires = $now + 600; // 10 minutos
     update_user_meta($user->ID, 'myd_forgot_code', $code);
     update_user_meta($user->ID, 'myd_forgot_code_expires', $expires);

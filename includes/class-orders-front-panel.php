@@ -1540,9 +1540,25 @@ class Myd_Orders_Front_Panel {
 					}
 				}
 			}
-
-            
 		}
+
+		// Notificação WebSocket direta: garante envio ao servidor push para pedidos
+		// SEM myd_customer_id (ex: pedidos manuais criados pelo painel).
+		// O hook updated_post_meta em class-plugin.php já dispara para pedidos COM customer,
+		// portanto aqui só chamamos quando customer está vazio (evita notificação duplicada).
+		if ( $has_status_changed && class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
+			try {
+				$customer_for_push = get_post_meta( $order_id, 'myd_customer_id', true );
+				// Só notifica diretamente se NÃO houver customer — o hook do class-plugin.php
+				// já cobre o caso com customer, evitando emissão duplicada do order.status
+				if ( empty( $customer_for_push ) ) {
+					\MydPro\Includes\Push\Push_Notifier::notify( '', $order_id, $order_action );
+				}
+			} catch ( \Exception $e ) {
+				// silencia erros para não quebrar o fluxo
+			}
+		}
+
 		if ( empty( $this->orders_object ) ) {
 			/**
 			 * Query orders
@@ -1632,10 +1648,12 @@ class Myd_Orders_Front_Panel {
 			'date' => get_post_meta( $order->ID, 'order_date', true ),
 			'status' => get_post_meta( $order->ID, 'order_status', true ),
 			'customer_name' => get_post_meta( $order->ID, 'order_customer_name', true ),
+			'customer_note' => get_post_meta( $order->ID, 'order_customer_note', true ),
 			'customer_phone' => get_post_meta( $order->ID, 'customer_phone', true ),
 			'customer_email' => get_post_meta( $order->ID, 'customer_email', true ),
 			'address' => get_post_meta( $order->ID, 'order_address', true ),
 			'address_number' => get_post_meta( $order->ID, 'order_address_number', true ),
+			'address_comp' => get_post_meta( $order->ID, 'order_address_comp', true ),
 			'neighborhood' => get_post_meta( $order->ID, 'order_neighborhood', true ),
 			'real_neighborhood' => get_post_meta( $order->ID, 'order_real_neighborhood', true ),
 			'zipcode' => get_post_meta( $order->ID, 'order_zipcode', true ),
@@ -1850,10 +1868,19 @@ class Myd_Orders_Front_Panel {
 		$order_ids = array();
 		$order_statuses = array();
 
+		// Status terminais: pedidos com esses status não aparecem no kanban ativo
+		// e não devem ser retornados para o polling, pois causariam inserções duplicadas
+		$terminal_statuses = array( 'done', 'finished', 'canceled', 'cancelled', 'delivered', 'refunded', 'completed' );
+
 		if ( ! empty( $query->posts ) ) {
 			foreach ( $query->posts as $pid ) {
+				$status = get_post_meta( $pid, 'order_status', true );
+				// Excluir pedidos com status terminal — eles não estão no kanban ativo
+				if ( in_array( strtolower( (string) $status ), $terminal_statuses, true ) ) {
+					continue;
+				}
 				$order_ids[] = (string) $pid;
-				$order_statuses[ (string) $pid ] = get_post_meta( $pid, 'order_status', true );
+				$order_statuses[ (string) $pid ] = $status;
 			}
 		}
 

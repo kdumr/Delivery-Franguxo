@@ -48,6 +48,44 @@ if ( ! function_exists( 'myd_user_is_allowed_admin' ) ) {
 	}
 }
 
+if ( ! function_exists( 'myd_check_ip_rate_limit' ) ) {
+	/**
+	 * Rate limiter simples baseado em IP usando transient config do WordPress.
+	 *
+	 * @param string $action_name  Name of the action to rate limit.
+	 * @param int    $max_requests Maximum requests allowed.
+	 * @param int    $time_window  Time window in seconds.
+	 * @return bool True if rate limit is exceeded (should block), False otherwise.
+	 */
+	function myd_check_ip_rate_limit( $action_name, $max_requests = 10, $time_window = 60 ) {
+		$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+		if ( $ip === 'unknown' ) {
+			return false;
+		}
+		$transient_name = 'myd_rl_' . md5( $action_name . '_' . $ip );
+		$current_requests = get_transient( $transient_name );
+
+		if ( false === $current_requests ) {
+			set_transient( $transient_name, 1, $time_window );
+			return false;
+		}
+
+		if ( (int) $current_requests >= $max_requests ) {
+			return true; // Blocked
+		}
+
+		// Hack: Transient expiration is not extended on update, and update_option clears cache differently.
+		// For simplicity, we just increase the counter. Note: This resets the TTL if not careful, 
+		// but WP's set_transient will overwrite the existing TTL. Let's just track it simply.
+		$timeout = get_option( '_transient_timeout_' . $transient_name );
+		$time_remaining = $timeout ? (int) $timeout - time() : $time_window;
+		$time_remaining = max( 1, $time_remaining ); // at least 1 second
+
+		set_transient( $transient_name, (int) $current_requests + 1, $time_remaining );
+		return false;
+	}
+}
+
 
 /**
  * Plugin main class
@@ -569,11 +607,21 @@ final class Plugin {
 		// Agendar hook para limpeza de tokens
 		add_action('myd_cleanup_expired_tokens', array($this, 'cleanup_expired_tokens'));
 			// notify push server when order_status meta changes
+			// Deduplicação: evita múltiplas notificações para o mesmo (order_id, status) na mesma requisição.
+			// O webhook do MercadoPago chama update_post_meta('order_status') várias vezes seguidas,
+			// o que dispararia o hook múltiplas vezes para o mesmo pedido.
 			add_action( 'updated_post_meta', function($meta_id, $object_id, $meta_key, $_meta_value) {
 				if ($meta_key !== 'order_status') return;
 				if ( get_post_type($object_id) !== 'mydelivery-orders' ) return;
 				$customer = get_post_meta($object_id, 'myd_customer_id', true);
 				if (!$customer) return;
+
+				// Guard de deduplicação: só notifica uma vez por (order_id + status) por requisição
+				static $notified = array();
+				$dedup_key = $object_id . '_' . $_meta_value;
+				if ( isset( $notified[ $dedup_key ] ) ) return;
+				$notified[ $dedup_key ] = true;
+
 				if ( class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
 					try { \MydPro\Includes\Push\Push_Notifier::notify( $customer, $object_id, $_meta_value ); } catch(\Exception $e) {}
 				}
@@ -638,8 +686,14 @@ final class Plugin {
 
 					// Usar a mesma chave secreta do plugin JWT ou nossa própria
 					$secret_key = \get_option('jwt_auth_secret_key');
-					if (!$secret_key) {
-						$secret_key = \JWT_AUTH_SECRET_KEY ?? 'your-secret-key-here';
+					if ( ! $secret_key ) {
+						$secret_key = defined('JWT_AUTH_SECRET_KEY') ? JWT_AUTH_SECRET_KEY : '';
+					}
+					if ( ! $secret_key ) {
+						// Gera e persiste um secret robusto — nunca usa fallback previsível
+						// wp_generate_password($length, $special_chars, $extra_special_chars)
+						$secret_key = \wp_generate_password( 64, true, true );
+						\update_option( 'jwt_auth_secret_key', $secret_key );
 					}
 
 					$issuedAt = time();
@@ -1293,7 +1347,9 @@ final class Plugin {
 		 * Orders Panel
 		 * TODO: refactor Jquery and merge scripts
 		 */
-		wp_register_script( 'myd-orders-panel', MYD_PLUGN_URL . 'assets/js/orders-panel/frontend.min.js', array(), MYD_CURRENT_VERSION, true );
+		$js_panel_path = defined('MYD_PLUGIN_PATH') ? MYD_PLUGIN_PATH . 'assets/js/orders-panel/frontend.min.js' : '';
+		$js_panel_ver = ($js_panel_path && @file_exists($js_panel_path)) ? filemtime($js_panel_path) : MYD_CURRENT_VERSION;
+		wp_register_script( 'myd-orders-panel', MYD_PLUGN_URL . 'assets/js/orders-panel/frontend.min.js', array(), $js_panel_ver, true );
 		// Expose push server URL and REST base to the frontend orders-panel script
 		wp_localize_script(
 			'myd-orders-panel',

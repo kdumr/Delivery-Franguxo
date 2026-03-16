@@ -49,15 +49,13 @@ class Myd_Api {
 		add_action( 'rest_api_init', [ $this, 'register_misc_routes' ] );
 		// Register manual order endpoints
 		add_action( 'rest_api_init', [ $this, 'register_manual_order_routes' ] );
+		// Register caixa endpoints
+		add_action( 'rest_api_init', [ $this, 'register_caixa_routes' ] );
 		// Register create order page route
 		add_action( 'template_redirect', [ $this, 'handle_create_order_page' ] );
 
-		// Ensure AJAX handlers for whatsapp status are always available (both logged-in and anonymous)
+		// AJAX: status do WhatsApp (apenas para usuários logados)
 		add_action('wp_ajax_myd_get_whatsapp_status', function() {
-			$state = get_option('myd_whatsapp_connection_state', '');
-			wp_send_json(['state' => $state]);
-		});
-		add_action('wp_ajax_nopriv_myd_get_whatsapp_status', function() {
 			$state = get_option('myd_whatsapp_connection_state', '');
 			wp_send_json(['state' => $state]);
 		});
@@ -145,6 +143,8 @@ class Myd_Api {
 
 		// When MercadoPago reports an approved payment, update linked order if possible
 		add_action('myd_mercadopago_payment_approved', [ $this, 'handle_mp_approved' ], 10, 2);
+		// Register cashier (fechamento de caixa) endpoints
+		add_action( 'rest_api_init', [ $this, 'register_cashier_routes' ] );
 	}
 
 	/**
@@ -342,6 +342,19 @@ class Myd_Api {
 					$method = $data['payment_method_id'] ?? null;
 
 					if ($status === 'approved') {
+						// Lock transient: impedir processamento duplicado do mesmo payment_id
+						// MercadoPago envia payment.created E payment.updated para o mesmo pagamento
+						$lock_key = 'myd_mp_lock_' . $payment_id;
+						if ( get_transient( $lock_key ) ) {
+							if (defined('WP_DEBUG') && WP_DEBUG) {
+								error_log('[MYD][MP Webhook] Skipping duplicate webhook for payment ' . $payment_id . ' (transient lock)');
+							}
+							if ($trace_span) { \MydPro\Includes\Myd_Tracing::end_span($trace_span, ['status'=>'skipped_duplicate']); }
+							return new \WP_REST_Response(['status' => 'ok', 'payment_id' => $payment_id, 'skipped' => 'duplicate'], 200);
+						}
+						// Definir lock por 60 segundos (tempo suficiente para processar)
+						set_transient( $lock_key, time(), 60 );
+
 						set_transient('myd_mp_approved_' . $payment_id, [
 							'status' => $status,
 							'status_detail' => $status_detail,
@@ -390,14 +403,19 @@ class Myd_Api {
 						// If payment is approved, trigger the same action as webhook so orders get updated
 						try {
 							if ( isset($data['status']) && $data['status'] === 'approved' ) {
-								set_transient('myd_mp_approved_' . $payment_id, [
-									'status' => $data['status'],
-									'status_detail' => $data['status_detail'] ?? null,
-									'payment_method' => $data['payment_method_id'] ?? null,
-									'updated_at' => time(),
-								], DAY_IN_SECONDS);
-								// Fire action to let other handlers (e.g. order updater) process the approved payment
-								do_action('myd_mercadopago_payment_approved', $payment_id, $data);
+								// Lock transient: se o webhook já processou este payment, pular
+								$lock_key = 'myd_mp_lock_' . $payment_id;
+								if ( ! get_transient( $lock_key ) ) {
+									set_transient( $lock_key, time(), 60 );
+									set_transient('myd_mp_approved_' . $payment_id, [
+										'status' => $data['status'],
+										'status_detail' => $data['status_detail'] ?? null,
+										'payment_method' => $data['payment_method_id'] ?? null,
+										'updated_at' => time(),
+									], DAY_IN_SECONDS);
+									// Fire action to let other handlers process the approved payment
+									do_action('myd_mercadopago_payment_approved', $payment_id, $data);
+								}
 							}
 						} catch ( \Throwable $e ) {
 							// ignore errors here to avoid breaking the API response
@@ -618,12 +636,7 @@ class Myd_Api {
 							}
 							// Mark the order as payment integration type when processed via MercadoPago
 							update_post_meta($order_id, 'order_payment_type', 'payment-integration');
-							// Notify push server (if configured)
-							try {
-								if ( class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
-									\MydPro\Includes\Push\Push_Notifier::notify( get_post_meta( $order_id, 'myd_customer_id', true ), $order_id, get_post_meta($order_id, 'order_status', true) );
-								}
-							} catch(\Exception $e) {}
+							// Nota: notificacao push e feita pelo hook updated_post_meta (com deduplicacao)
 						}
 						// If PIX payment, store creation time for auto-cancel after 10 seconds
 						if ($mp_payment_method === 'pix' && $mp_id) {
@@ -801,8 +814,13 @@ class Myd_Api {
 				   if ($mapped === 'paid') {
 					   // Só seta 'new' se status atual for vazio ou 'started'
 					   \MydPro\Includes\Order_Meta::ensure_initial_status($order_id, 'new', array('', 'started'));
-					   // Publish order
-					   wp_update_post(array('ID' => $order_id, 'post_status' => 'publish'));
+					   // Publish order and update time to match real moment
+					   wp_update_post(array(
+							'ID'            => $order_id,
+							'post_status'   => 'publish',
+							'post_date'     => current_time('mysql'),
+							'post_date_gmt' => current_time('mysql', 1)
+					   ));
 					// Ensure an 8-digit order locator exists (compat with Plugin behavior)
 					$locator = get_post_meta($order_id, 'order_locator', true);
 					if (empty($locator)) {
@@ -838,12 +856,7 @@ class Myd_Api {
 							wp_unschedule_event($timestamp, 'myd_delete_draft_order', array( $order_id ));
 						}
 					}
-					// Optionally notify push server
-					try {
-						if ( class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
-							\MydPro\Includes\Push\Push_Notifier::notify( get_post_meta( $order_id, 'myd_customer_id', true ), $order_id, get_post_meta($order_id, 'order_status', true) );
-						}
-					} catch (\Exception $_) {}
+					// Nota: notificacao push e feita pelo hook updated_post_meta (com deduplicacao)
 				}
 			}
 			if (is_array($data) && !empty($data['payment_method_id'])) {
@@ -852,12 +865,7 @@ class Myd_Api {
 				update_post_meta($order_id, 'order_payment_method', $pm);
 			}
 			update_post_meta($order_id, 'order_payment_type', 'payment-integration');
-			// Optionally notify push server
-			try {
-				if ( class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
-					\MydPro\Includes\Push\Push_Notifier::notify( get_post_meta( $order_id, 'myd_customer_id', true ), $order_id, get_post_meta($order_id, 'order_status', true) );
-				}
-			} catch (\Exception $_) {}
+			// Nota: notificacao push e feita pelo hook updated_post_meta (com deduplicacao)
 		} catch (\Throwable $_) {
 			// ignore errors
 		}
@@ -1023,18 +1031,19 @@ class Myd_Api {
 				),
 			)
 		);
+		// Rota legada: só admins podem atualizar estado da conexão
 		\register_rest_route('myd-delivery/v1', '/whatsapp-connection', [
 		    'methods' => 'POST',
 		    'callback' => function($request) {
 		        $params = $request->get_json_params();
 		        if(isset($params['event']) && $params['event']==='connection.update') {
 		            $state = isset($params['data']['state']) ? $params['data']['state'] : '';
-		            update_option('myd_whatsapp_connection_state', $state);
+		            update_option('myd_whatsapp_connection_state', sanitize_text_field($state));
 		            return new \WP_REST_Response(['status'=>'ok'], 200);
 		        }
 		        return new \WP_REST_Response(['status'=>'ignored'], 200);
 		    },
-		    'permission_callback' => '__return_true',
+		    'permission_callback' => function() { return myd_user_is_allowed_admin(); },
 		]);
 
 		// Proxy endpoints for Google Places (autocomplete + details)
@@ -1139,10 +1148,7 @@ class Myd_Api {
 		\register_rest_route('myd-delivery/v1', '/push/auth', [
 			'methods' => 'POST',
 			'callback' => [ $this, 'push_auth' ],
-			'permission_callback' => function() {
-				// Temporarily allow all requests - we'll validate authentication inside the method
-				return true;
-			},
+			'permission_callback' => '__return_true', // Permitido para clientes sem sessão wp-admin. Validação manual dentro da callback
 		]);
 	}
 
@@ -1190,32 +1196,19 @@ class Myd_Api {
 			'permission_callback' => '__return_true',
 		]);
 
-		// Evolution WhatsApp status proxy: server-side request to avoid CORS/auth issues
+		// Evolution WhatsApp status proxy — apenas admins
 	\register_rest_route('myd-delivery/v1', '/evolution/whatsapp_status', [
 		'methods' => 'GET',
 		'callback' => function($request) {
-			// Temporary debug log: record incoming status requests (remove after debugging)
-			try {
-				$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
-				$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-				if ( function_exists('getallheaders') ) {
-					$h = getallheaders();
-				} else {
-					$h = [];
-				}
-				@error_log('[MYD][EvolutionStatus] request from ' . $ip . ' uri=' . $uri . ' headers=' . substr(json_encode($h),0,1000));
-			} catch (\Throwable $_) { }
 			$api_url = trim((string) get_option('evolution_api_url', ''));
 			$instance = trim((string) get_option('evolution_instance_name', ''));
 			$api_key = trim((string) get_option('evolution_api_key', ''));
 			if (!$api_url || !$instance) {
 				return new \WP_REST_Response(['error' => 'not_configured'], 400);
 			}
-			// ensure instance doesn't duplicate dwp- prefix
 			$inst = preg_replace('#^dwp-#i', '', $instance);
 			$target = rtrim($api_url, '/') . '/instance/connectionState/dwp-' . rawurlencode($inst);
 			$headers = [ 'Accept' => 'application/json' ];
-			// Evolution API expects the API key in the header named `apikey` (see docs)
 			if ($api_key) {
 				$headers['apikey'] = $api_key;
 			}
@@ -1229,10 +1222,10 @@ class Myd_Api {
 			try { $parsed = json_decode($body, true); } catch (\Throwable $_) { $parsed = null; }
 			return new \WP_REST_Response(['status_code' => $code, 'body' => $parsed, 'raw' => $body], $code === 200 ? 200 : 502);
 		},
-		'permission_callback' => '__return_true',
+		'permission_callback' => function() { return myd_user_is_allowed_admin(); },
 	]);
 
-	// Also register same endpoint under old namespace for compatibility
+	// Compatibilidade: namespace legado — também exige admin
 	\register_rest_route('my-delivery/v1', '/evolution/whatsapp_status', [
 		'methods' => 'GET',
 		'callback' => function($request) {
@@ -1256,7 +1249,7 @@ class Myd_Api {
 			try { $parsed = json_decode($body, true); } catch (\Throwable $_) { $parsed = null; }
 			return new \WP_REST_Response(['status_code' => $code, 'body' => $parsed, 'raw' => $body], $code === 200 ? 200 : 502);
 		},
-		'permission_callback' => '__return_true',
+		'permission_callback' => function() { return myd_user_is_allowed_admin(); },
 	]);
 
 		// Evolution webhook receiver: accepts POSTs from Evolution and updates stored connection state
@@ -1450,35 +1443,21 @@ class Myd_Api {
 		'permission_callback' => '__return_true',
 	]);
 
-	// Diagnostic endpoint: accept POSTs to test whether external services can reach the server
+	// Endpoint de diagnóstico: apenas admins podem fazer testes de webhook
 	\register_rest_route('myd-delivery/v1', '/evolution/webhook-test', [
 		'methods' => 'POST',
 		'callback' => function($request) {
-			try {
-				$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
-				$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-				$raw = $request->get_body();
-				if ( function_exists('getallheaders') ) { $h = getallheaders(); } else { $h = []; }
-				@error_log('[MYD][EvolutionWebhookTest] from=' . $ip . ' uri=' . $uri . ' headers=' . substr(json_encode($h),0,1000) . ' body_preview=' . substr((string)$raw,0,2000));
-			} catch (\Throwable $_) { }
 			return new \WP_REST_Response(['status' => 'ok', 'message' => 'webhook-test received'], 200);
 		},
-		'permission_callback' => '__return_true',
+		'permission_callback' => function() { return myd_user_is_allowed_admin(); },
 	]);
 
 	\register_rest_route('my-delivery/v1', '/evolution/webhook-test', [
 		'methods' => 'POST',
 		'callback' => function($request) {
-			try {
-				$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
-				$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-				$raw = $request->get_body();
-				if ( function_exists('getallheaders') ) { $h = getallheaders(); } else { $h = []; }
-				@error_log('[MYD][EvolutionWebhookTest - legacy] from=' . $ip . ' uri=' . $uri . ' headers=' . substr(json_encode($h),0,1000) . ' body_preview=' . substr((string)$raw,0,2000));
-			} catch (\Throwable $_) { }
 			return new \WP_REST_Response(['status' => 'ok', 'message' => 'webhook-test received (legacy)'], 200);
 		},
-		'permission_callback' => '__return_true',
+		'permission_callback' => function() { return myd_user_is_allowed_admin(); },
 	]);
 	}
 
@@ -1522,13 +1501,14 @@ class Myd_Api {
 			}
 		}
 
-		if (!$authenticated) {
-			\error_log('[Push Auth] Authentication failed - no valid login cookie found');
-			return new \WP_REST_Response(['error' => 'Authentication required'], 401);
-		}
-
 		$params = $request->get_json_params();
 		$myd_customer_id = isset($params['myd_customer_id']) ? intval($params['myd_customer_id']) : 0;
+
+		// Requer autenticação de administrador OU um myd_customer_id válido de cliente logado no WebApp
+		if (!$authenticated && $myd_customer_id <= 0) {
+			\error_log('[Push Auth] Authentication failed - no valid login cookie found and no customer ID provided');
+			return new \WP_REST_Response(['error' => 'Authentication required'], 401);
+		}
 
 		$secret = get_option('myd_push_secret', '');
 		if (!$secret) {
@@ -1850,32 +1830,55 @@ class Myd_Api {
 
 		foreach ( $params['items'] as $item ) {
 			$product_id = intval( $item['id'] );
-			$quantity = intval( $item['quantity'] );
-			$price = floatval( $item['price'] );
-			$item_total = $price * $quantity;
-			$subtotal += $item_total;
+			$quantity   = intval( $item['quantity'] );
+			$price      = floatval( $item['price'] );
 
-			$image_id = get_post_meta( $product_id, 'product_image', true );
+			// Processar extras: { total, groups: [{ group, items: [{name, price, quantity, total}] }] }
+			$extras_data        = isset( $item['extras'] ) && is_array( $item['extras'] ) ? $item['extras'] : [];
+			$extras_total       = isset( $extras_data['total'] ) ? floatval( $extras_data['total'] ) : 0;
+			$unit_price_with_extras = $price + $extras_total;
+			$item_total         = $unit_price_with_extras * $quantity;
+			$subtotal          += $item_total;
 
+			// Montar product_extras como string para exibição no painel/impressão
+			$product_extras_lines = [];
+			if ( ! empty( $extras_data['groups'] ) ) {
+				foreach ( $extras_data['groups'] as $extra_group ) {
+					$group_name = isset( $extra_group['group'] ) ? $extra_group['group'] : '';
+					$item_lines = [];
+					foreach ( $extra_group['items'] as $extra_item ) {
+						$qty  = isset( $extra_item['quantity'] ) ? intval( $extra_item['quantity'] ) : 1;
+						$name = isset( $extra_item['name'] ) ? sanitize_text_field( $extra_item['name'] ) : '';
+						$item_lines[] = ( $qty > 1 ? $qty . 'x ' : '' ) . $name;
+					}
+					if ( ! empty( $item_lines ) ) {
+						$product_extras_lines[] = $group_name . ':' . PHP_EOL . implode( PHP_EOL, $item_lines );
+					}
+				}
+			}
+			$product_extras_str = implode( PHP_EOL . PHP_EOL, $product_extras_lines );
+
+			$image_id  = get_post_meta( $product_id, 'product_image', true );
 			$item_note = ! empty( $item['note'] ) ? sanitize_textarea_field( $item['note'] ) : '';
 
 			$order_items[] = [
-				'product_image' => intval( $image_id ),
-				'product_id'    => get_post_meta( $product_id, 'product_id', true ),
-				'product_name'  => $quantity . ' x ' . esc_html( get_the_title( $product_id ) ),
-				'product_extras' => '',
-				'product_price' => Myd_Store_Formatting::format_price( $price ),
-				'product_total' => Myd_Store_Formatting::format_price( $item_total ),
-				'product_note'  => $item_note,
-				'id'            => $product_id,
-				'name'          => esc_html( get_post_meta( $product_id, 'product_name', true ) ),
-				'quantity'      => $quantity,
-				'extras'        => [],
-				'price'         => $price,
-				'total'         => $item_total,
-				'note'          => $item_note,
+				'product_image'  => intval( $image_id ),
+				'product_id'     => get_post_meta( $product_id, 'product_id', true ),
+				'product_name'   => $quantity . ' x ' . esc_html( get_the_title( $product_id ) ),
+				'product_extras' => $product_extras_str,
+				'product_price'  => Myd_Store_Formatting::format_price( $unit_price_with_extras ),
+				'product_total'  => Myd_Store_Formatting::format_price( $item_total ),
+				'product_note'   => $item_note,
+				'id'             => $product_id,
+				'name'           => esc_html( get_post_meta( $product_id, 'product_name', true ) ),
+				'quantity'       => $quantity,
+				'extras'         => $extras_data,
+				'price'          => $unit_price_with_extras,
+				'total'          => $item_total,
+				'note'           => $item_note,
 			];
 		}
+
 
 		// Taxa de entrega
 		$delivery_fee = 0;
@@ -1906,11 +1909,15 @@ class Myd_Api {
 		\error_log( 'MYD_SAVE_TRACE ' . \wp_json_encode( array( 'event' => 'api_save_end', 'order_id' => intval( $order_id ) ) ) );
 
 		// Troco (se dinheiro)
-		if ( $params['payment_method'] === 'DIN' && ! empty( $params['change_for'] ) ) {
+		if ( ! empty( $params['change_for'] ) ) {
 			$change_val = preg_replace( '/[^\d,.-]/', '', $params['change_for'] );
 			$change_val = str_replace( ',', '.', $change_val );
-			update_post_meta( $order_id, 'order_change_for', Myd_Store_Formatting::format_price( floatval( $change_val ) ) );
+			$change_num = floatval( $change_val );
+			if ( $change_num > 0 ) {
+				update_post_meta( $order_id, 'order_change', Myd_Store_Formatting::format_price( $change_num ) );
+			}
 		}
+
 
 		// Observações
 		if ( ! empty( $params['order_notes'] ) ) {
@@ -1958,6 +1965,788 @@ class Myd_Api {
 			'order_id' => $order_id,
 			'message'  => 'Pedido criado com sucesso',
 		], 200 );
+	}
+
+	/**
+	 * Register cashier (fechamento de caixa) routes
+	 */
+	public function register_cashier_routes() {
+		\register_rest_route('myd-delivery/v1', '/cashier/report', [
+			'methods'  => 'GET',
+			'callback' => [ $this, 'cashier_report' ],
+			'permission_callback' => function() {
+				return myd_user_is_allowed_admin();
+			},
+		]);
+	}
+
+	/**
+	 * Gera relatório de fechamento de caixa
+	 */
+	public function cashier_report( $request ) {
+		$open_time  = sanitize_text_field( $request->get_param('open_time') ?: '00:00' );
+		$close_time = sanitize_text_field( $request->get_param('close_time') ?: '23:59' );
+		$delivery_cost = floatval( $request->get_param('delivery_cost') ?: 0 );
+		$date_param = sanitize_text_field( $request->get_param('date') ?: '' );
+
+		// Usar data fornecida ou hoje
+		$today = $date_param && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_param) ? $date_param : current_time('Y-m-d');
+		$date_start = $today . ' ' . $open_time . ':00';
+		$date_end   = $today . ' ' . $close_time . ':59';
+
+		// Buscar pedidos finalizados no período
+		$args = [
+			'post_type'      => 'mydelivery-orders',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'date_query'     => [
+				[
+					'after'     => $date_start,
+					'before'    => $date_end,
+					'inclusive' => true,
+				],
+			],
+			'meta_query'     => [
+				[
+					'key'     => 'order_status',
+					'value'   => ['finished', 'done', 'delivered'],
+					'compare' => 'IN',
+				],
+			],
+		];
+
+		$orders = get_posts( $args );
+		$products       = [];
+		$payment_totals = [
+			'PIX (Online)'      => 0,
+			'Crédito'           => 0,
+			'Débito'            => 0,
+			'VR'                => 0,
+			'Dinheiro'          => 0,
+			'Cartão (Online)'   => 0,
+		];
+		$grand_total  = 0;
+		$order_count  = 0;
+
+		$total_delivery_fee = 0;
+		$total_extras_fee   = 0;
+		$total_coupon_discount = 0;
+		$total_fidelity_discount = 0;
+		$total_mercadopago_fee = 0;
+
+		foreach ( $orders as $order ) {
+			$order_id = $order->ID;
+			$order_count++;
+			$order_ids_debug[] = $order_id; // DEBUG TEMPORÁRIO
+
+
+			// Total do pedido (total final incluindo frete, descontos etc)
+			$total_raw = get_post_meta( $order_id, 'order_total', true );
+			if ( empty($total_raw) || $total_raw === '0' || $total_raw === '0,00' || $total_raw === '0.00' ) {
+				$total_raw = get_post_meta( $order_id, 'myd_order_total', true );
+			}
+			if ( empty($total_raw) || $total_raw === '0' || $total_raw === '0,00' || $total_raw === '0.00' ) {
+				$total_raw = get_post_meta( $order_id, 'fdm_order_total', true );
+			}
+			// Parse: se tem vírgula e ponto, ponto é milhar (BR: 1.500,00)
+			$raw_str = (string) $total_raw;
+			if ( strpos($raw_str, ',') !== false && strpos($raw_str, '.') !== false ) {
+				$total_num = floatval( str_replace( ',', '.', str_replace( '.', '', $raw_str ) ) );
+			} elseif ( strpos($raw_str, ',') !== false ) {
+				$total_num = floatval( str_replace( ',', '.', $raw_str ) );
+			} else {
+				$total_num = floatval( $raw_str );
+			}
+			$grand_total += $total_num;
+
+			// Soma taxa de entrega deste pedido
+			$delivery_fee_raw = get_post_meta( $order_id, 'order_delivery_price', true );
+			if ( !empty($delivery_fee_raw) ) {
+				$df_str = (string) $delivery_fee_raw;
+				if ( strpos($df_str, ',') !== false && strpos($df_str, '.') !== false ) {
+					$total_delivery_fee += floatval( str_replace( ',', '.', str_replace( '.', '', $df_str ) ) );
+				} elseif ( strpos($df_str, ',') !== false ) {
+					$total_delivery_fee += floatval( str_replace( ',', '.', $df_str ) );
+				} else {
+					$total_delivery_fee += floatval( $df_str );
+				}
+			}
+
+			// Soma desconto de cupom deste pedido
+			$coupon_discount_raw = get_post_meta( $order_id, 'order_coupon_discount', true );
+			if ( !empty($coupon_discount_raw) ) {
+				$cd_str = (string) $coupon_discount_raw;
+				if ( strpos($cd_str, ',') !== false && strpos($cd_str, '.') !== false ) {
+					$total_coupon_discount += floatval( str_replace( ',', '.', str_replace( '.', '', $cd_str ) ) );
+				} elseif ( strpos($cd_str, ',') !== false ) {
+					$total_coupon_discount += floatval( str_replace( ',', '.', $cd_str ) );
+				} else {
+					$total_coupon_discount += floatval( $cd_str );
+				}
+			}
+
+			// Soma desconto de fidelidade deste pedido
+			$fidelity_discount_raw = get_post_meta( $order_id, 'order_fidelity_discount', true );
+			if ( !empty($fidelity_discount_raw) ) {
+				$fd_str = (string) $fidelity_discount_raw;
+				if ( strpos($fd_str, ',') !== false && strpos($fd_str, '.') !== false ) {
+					$total_fidelity_discount += floatval( str_replace( ',', '.', str_replace( '.', '', $fd_str ) ) );
+				} elseif ( strpos($fd_str, ',') !== false ) {
+					$total_fidelity_discount += floatval( str_replace( ',', '.', $fd_str ) );
+				} else {
+					$total_fidelity_discount += floatval( $fd_str );
+				}
+			}
+
+			// Método de pagamento
+			$pm = get_post_meta( $order_id, 'order_payment_method', true );
+			$pm_lower = strtolower( trim( (string) $pm ) );
+			$pm_key = 'Outros'; // fallback seguro — não categoriza errado
+
+			// 1. Mapeamento exato (cobre abreviações como DEB, CRED, PIX, etc.)
+			$exact_map = [
+				// PIX
+				'pix'               => 'PIX (Online)',
+				// Débito
+				'deb'               => 'Débito',
+				'debito'            => 'Débito',
+				'débito'            => 'Débito',
+				'debit'             => 'Débito',
+				'cartao debito'     => 'Débito',
+				'cartão debito'     => 'Débito',
+				'cartao débito'     => 'Débito',
+				'cartão débito'     => 'Débito',
+				// Crédito
+				'crd'               => 'Crédito',
+				'cred'              => 'Crédito',
+				'credito'           => 'Crédito',
+				'crédito'           => 'Crédito',
+				'credit'            => 'Crédito',
+				'cartao credito'    => 'Crédito',
+				'cartão credito'    => 'Crédito',
+				'cartao crédito'    => 'Crédito',
+				'cartão crédito'    => 'Crédito',
+				// VR / VA
+				'vr'                => 'VR',
+				'vrf'               => 'VR',
+				'va'                => 'VR',
+				'vale refeicao'     => 'VR',
+				'vale refeição'     => 'VR',
+				'vale alimentacao'  => 'VR',
+				'vale alimentação'  => 'VR',
+				// Dinheiro
+				'din'               => 'Dinheiro',
+				'dinh'              => 'Dinheiro',
+				'dinheiro'          => 'Dinheiro',
+				'cash'              => 'Dinheiro',
+				'money'             => 'Dinheiro',
+				// Cartão Online / Bandeiras
+				'online'            => 'Cartão (Online)',
+				'mercado pago'      => 'Cartão (Online)',
+				'payment-integration' => 'Cartão (Online)',
+				'visa'              => 'Cartão (Online)',
+				'master'            => 'Cartão (Online)',
+				'mastercard'        => 'Cartão (Online)',
+				'amex'              => 'Cartão (Online)',
+				'american express'  => 'Cartão (Online)',
+				'elo'               => 'Cartão (Online)',
+				'diners'            => 'Cartão (Online)',
+				'diners club'       => 'Cartão (Online)',
+				'hipercard'         => 'Cartão (Online)',
+				'discover'          => 'Cartão (Online)',
+				'debit_card'        => 'Cartão (Online)',
+				'credit_card'       => 'Cartão (Online)',
+			];
+
+			if ( isset( $exact_map[ $pm_lower ] ) ) {
+				$pm_key = $exact_map[ $pm_lower ];
+			} else {
+				// 2. Busca por substring (ordem importa: mais específicos primeiro)
+				if ( strpos($pm_lower, 'pix') !== false ) {
+					$pm_key = 'PIX (Online)';
+				} elseif ( strpos($pm_lower, 'cred') !== false || strpos($pm_lower, 'credit') !== false ) {
+					$pm_key = 'Crédito';
+				} elseif ( strpos($pm_lower, 'deb') !== false || strpos($pm_lower, 'debit') !== false ) {
+					$pm_key = 'Débito';
+				} elseif ( strpos($pm_lower, 'vr') !== false || strpos($pm_lower, 'vale') !== false || strpos($pm_lower, 'refeic') !== false || strpos($pm_lower, 'aliment') !== false ) {
+					$pm_key = 'VR';
+				} elseif ( strpos($pm_lower, 'online') !== false || strpos($pm_lower, 'mercado') !== false || strpos($pm_lower, 'payment-integration') !== false ) {
+					$pm_key = 'Cartão (Online)';
+				} elseif ( strpos($pm_lower, 'dinh') !== false || strpos($pm_lower, 'cash') !== false || strpos($pm_lower, 'money') !== false || strpos($pm_lower, 'din') !== false ) {
+					$pm_key = 'Dinheiro';
+				}
+			}
+
+			// 3. Override: se order_payment_type for 'payment-integration', sempre é Online
+			$pt = get_post_meta( $order_id, 'order_payment_type', true );
+			if ( $pt === 'payment-integration' ) {
+				$pm_key = 'Cartão (Online)';
+			}
+
+			// Garantir que a chave existe no array
+			if ( !isset( $payment_totals[ $pm_key ] ) ) {
+				$payment_totals[ $pm_key ] = 0;
+			}
+
+			$payment_totals[ $pm_key ] += $total_num;
+
+			// 4. Integração Mercado Pago: extrair taxa do pagamento e salvar cache local
+			if ( $pm_key === 'Cartão (Online)' || $pm_key === 'PIX (Online)' ) {
+				$saved_fee = get_post_meta( $order_id, 'order_mercadopago_fee', true );
+				if ( $saved_fee !== '' ) {
+					$total_mercadopago_fee += floatval( $saved_fee );
+				} else {
+					$payment_dataid = get_post_meta( $order_id, 'order_payment_dataid', true );
+					if ( ! empty( $payment_dataid ) ) {
+						$access_token = get_option('mercadopago_access_token', '');
+						if ( ! empty( $access_token ) ) {
+							$response = wp_remote_get('https://api.mercadopago.com/v1/payments/' . rawurlencode($payment_dataid), [
+								'headers' => [
+									'Authorization' => 'Bearer ' . $access_token
+								],
+								'timeout' => 10
+							]);
+							if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+								$body = json_decode( wp_remote_retrieve_body( $response ), true );
+								if ( ! empty( $body['fee_details'] ) && is_array( $body['fee_details'] ) ) {
+									$fee_sum = 0;
+									foreach ( $body['fee_details'] as $fee_item ) {
+										if ( isset( $fee_item['amount'] ) ) {
+											$fee_sum += floatval( $fee_item['amount'] );
+										}
+									}
+									update_post_meta( $order_id, 'order_mercadopago_fee', $fee_sum );
+									$total_mercadopago_fee += $fee_sum;
+								} else {
+									update_post_meta( $order_id, 'order_mercadopago_fee', 0 );
+								}
+							} else {
+								// Evita que a integracao faça WP ficar lento salvando 0 se a API de erro. Ex: payment ID invalido.
+								if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 404 ) {
+									update_post_meta( $order_id, 'order_mercadopago_fee', 0 );
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// ── Itens e Extras: query direta no banco ───────────────────────────
+			global $wpdb;
+			$raw_items_meta = $wpdb->get_var( $wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = 'myd_order_items' LIMIT 1",
+				$order_id
+			) );
+
+			// Desserializar: tenta PHP unserialize primeiro (formato padrão do WP ao salvar arrays)
+			// depois JSON (formato alternativo)
+			$items_db = null;
+			if ( ! empty( $raw_items_meta ) ) {
+				if ( $raw_items_meta[0] === 'a' || $raw_items_meta[0] === 'O' ) {
+					// Parece PHP serialized
+					$items_db = @unserialize( $raw_items_meta );
+				}
+				if ( ! is_array( $items_db ) ) {
+					$items_db = json_decode( $raw_items_meta, true );
+				}
+			}
+
+			if ( is_array( $items_db ) ) {
+				// DEBUG TEMPORÁRIO — remover depois
+				if ( defined('WP_DEBUG') && WP_DEBUG ) {
+					error_log('[MYD-CAIXA DEBUG] order_id=' . $order_id . ' | raw=' . substr((string)$raw_items_meta, 0, 500));
+					foreach ($items_db as $_dbg_i => $_dbg_item) {
+						error_log('[MYD-CAIXA DEBUG] item[' . $_dbg_i . '][extras]=' . print_r($_dbg_item['extras'] ?? 'NOT SET', true));
+					}
+				}
+
+				foreach ( $items_db as $item ) {
+					$name = isset($item['product_name']) ? trim($item['product_name']) : '';
+					// Extrair quantidade do nome (ex: "2 x Frango Frito")
+					$qty = 1;
+					if ( preg_match('/^(\d+)\s*x\s*/i', $name, $m) ) {
+						$qty  = intval($m[1]);
+						$name = trim(preg_replace('/^\d+\s*x\s*/i', '', $name));
+					}
+					if ( empty($name) ) continue;
+
+					$price_raw = isset($item['product_price']) ? $item['product_price'] : '0';
+					$price = floatval( str_replace(',', '.', preg_replace('/[^\d,.]/', '', (string) $price_raw)) );
+
+					if ( !isset($products[$name]) ) {
+						$products[$name] = ['name' => $name, 'qty' => 0, 'unit_price' => $price, 'subtotal' => 0];
+					}
+					$products[$name]['qty']      += $qty;
+					$products[$name]['subtotal'] += $price * $qty;
+
+					// ── Soma extras via dados do banco ──────────────────────────
+					$extras_data = isset($item['extras']) ? $item['extras'] : null;
+
+					// Garantir que é array (pode ser string JSON residual ou stdClass)
+					if ( is_string($extras_data) && strlen($extras_data) > 2 ) {
+						$try = json_decode($extras_data, true);
+						if ( json_last_error() === JSON_ERROR_NONE ) $extras_data = $try;
+					}
+					if ( is_object($extras_data) ) {
+						$extras_data = json_decode( json_encode($extras_data), true );
+					}
+
+					if ( !is_array($extras_data) ) continue;
+
+					$groups = isset($extras_data['groups']) ? $extras_data['groups'] : [];
+					foreach ( $groups as $group ) {
+						if ( is_object($group) ) $group = (array) $group;
+						if ( !is_array($group) ) continue;
+
+						$g_items = isset($group['items']) ? $group['items'] : [];
+						foreach ( $g_items as $ei ) {
+							if ( is_object($ei) ) $ei = (array) $ei;
+							if ( !is_array($ei) ) continue;
+
+							// Quantidade
+							$eqty = 0;
+							foreach ( ['quantity', 'qty', 'amount'] as $qk ) {
+								if ( isset($ei[$qk]) && intval($ei[$qk]) > 0 ) {
+									$eqty = intval($ei[$qk]);
+									break;
+								}
+							}
+							if ( $eqty <= 0 ) continue;
+
+							// Preço
+							$eprice = 0.0;
+							foreach ( ['price', 'value', 'unit_price'] as $pk ) {
+								if ( isset($ei[$pk]) ) {
+									$ep_str = preg_replace('/[^\d,.]/', '', (string) $ei[$pk]);
+									if ( strpos($ep_str, ',') !== false && strpos($ep_str, '.') !== false ) {
+										$eprice = floatval( str_replace(',', '.', str_replace('.', '', $ep_str)) );
+									} elseif ( strpos($ep_str, ',') !== false ) {
+										$eprice = floatval( str_replace(',', '.', $ep_str) );
+									} else {
+										$eprice = floatval( $ep_str );
+									}
+									if ( $eprice > 0 ) break;
+								}
+							}
+
+							if ( $eprice > 0 ) {
+								$total_extras_fee += ($eqty * $eprice);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Ordenar produtos por quantidade (desc)
+		usort($products, function($a, $b) { return $b['qty'] - $a['qty']; });
+
+		// Formatar valores
+		$products_out = array_values(array_map(function($p) {
+			return [
+				'name'       => $p['name'],
+				'qty'        => $p['qty'],
+				'unit_price' => number_format($p['unit_price'], 2, ',', '.'),
+				'subtotal'   => number_format($p['subtotal'], 2, ',', '.'),
+			];
+		}, $products));
+
+		$payment_out = [];
+		foreach ($payment_totals as $k => $v) {
+			$payment_out[$k] = number_format($v, 2, ',', '.');
+		}
+
+		return new \WP_REST_Response([
+			'products'               => $products_out,
+			'payment_totals'         => $payment_out,
+			'total'                  => number_format($grand_total, 2, ',', '.'),
+			'total_raw'              => $grand_total,
+			'delivery_cost'          => number_format($delivery_cost, 2, ',', '.'),
+			'total_delivery_fee_raw' => $total_delivery_fee,
+			'total_delivery_fee'     => number_format($total_delivery_fee, 2, ',', '.'),
+			'total_extras_fee_raw'   => $total_extras_fee,
+			'total_extras_fee'       => number_format($total_extras_fee, 2, ',', '.'),
+			'total_coupon_discount_raw' => $total_coupon_discount,
+			'total_coupon_discount'     => number_format($total_coupon_discount, 2, ',', '.'),
+			'total_fidelity_discount_raw'=> $total_fidelity_discount,
+			'total_fidelity_discount'   => number_format($total_fidelity_discount, 2, ',', '.'),
+			'total_mercadopago_fee_raw' => $total_mercadopago_fee,
+			'total_mercadopago_fee'     => number_format($total_mercadopago_fee, 2, ',', '.'),
+			'order_count'            => $order_count,
+			'period'                 => ['open' => $open_time, 'close' => $close_time],
+		], 200);
+
+	}
+
+	/**
+	 * Register caixa endpoints.
+	 */
+	public function register_caixa_routes() {
+		// GET /caixa/status
+		register_rest_route( 'myd-delivery/v1', '/caixa/status', [
+			'methods' => 'GET',
+			'callback' => [ $this, 'caixa_status' ],
+			'permission_callback' => function() {
+				return myd_user_is_allowed_admin();
+			}
+		]);
+		
+		// POST /caixa/open
+		register_rest_route( 'myd-delivery/v1', '/caixa/open', [
+			'methods' => 'POST',
+			'callback' => [ $this, 'caixa_open' ],
+			'permission_callback' => function() {
+				return myd_user_is_allowed_admin();
+			}
+		]);
+
+		// POST /caixa/movement
+		register_rest_route( 'myd-delivery/v1', '/caixa/movement', [
+			'methods' => 'POST',
+			'callback' => [ $this, 'caixa_movement' ],
+			'permission_callback' => function() {
+				return myd_user_is_allowed_admin();
+			}
+		]);
+
+		// POST /caixa/close
+		register_rest_route( 'myd-delivery/v1', '/caixa/close', [
+			'methods' => 'POST',
+			'callback' => [ $this, 'caixa_close' ],
+			'permission_callback' => function() {
+				return myd_user_is_allowed_admin();
+			}
+		]);
+
+		// GET /caixa/search?id=XXX ou ?date=YYYY-MM-DD
+		register_rest_route( 'myd-delivery/v1', '/caixa/search', [
+			'methods' => 'GET',
+			'callback' => [ $this, 'caixa_search' ],
+			'permission_callback' => function() {
+				return myd_user_is_allowed_admin();
+			}
+		]);
+
+		// POST /caixa/retro-close
+		register_rest_route( 'myd-delivery/v1', '/caixa/retro-close', [
+			'methods' => 'POST',
+			'callback' => [ $this, 'caixa_retro_close' ],
+			'permission_callback' => function() {
+				return myd_user_is_allowed_admin();
+			}
+		]);
+
+	}
+	
+	public function caixa_status( \WP_REST_Request $request ) {
+		// Busca histórico dos últimos 10 caixas fechados
+		$history = [];
+		$history_args = [
+			'post_type' => 'myd_caixa',
+			'post_status' => 'publish',
+			'posts_per_page' => 10,
+			'meta_query' => [
+				[
+					'key' => 'status',
+					'value' => 'closed',
+					'compare' => '='
+				]
+			],
+			'orderby' => 'ID',
+			'order' => 'DESC'
+		];
+		$history_query = new \WP_Query( $history_args );
+		if ( $history_query->have_posts() ) {
+			foreach ( $history_query->posts as $h_post ) {
+				$h_open = get_post_meta( $h_post->ID, 'opening_time', true );
+				$h_close = get_post_meta( $h_post->ID, 'closing_time', true );
+				$h_closure = get_post_meta( $h_post->ID, 'closure_data', true );
+				$h_movements = get_post_meta( $h_post->ID, 'movements', true );
+				if ( ! is_array( $h_movements ) ) {
+					$h_movements = [];
+				}
+
+				$history[] = [
+					'id' => $h_post->ID,
+					'openingTime' => (int)$h_open,
+					'closingTime' => (int)$h_close,
+					'closureData' => is_array($h_closure) ? $h_closure : null,
+					'movements' => $h_movements
+				];
+			}
+		}
+
+		// Find the last opened caixa
+		$args = [
+			'post_type' => 'myd_caixa',
+			'post_status' => 'publish',
+			'posts_per_page' => 1,
+			'meta_query' => [
+				[
+					'key' => 'status',
+					'value' => 'open',
+					'compare' => '='
+				]
+			]
+		];
+		$query = new \WP_Query( $args );
+		if ( $query->have_posts() ) {
+			$post_id = $query->posts[0]->ID;
+			$opening_time = get_post_meta( $post_id, 'opening_time', true );
+			$initial_value = get_post_meta( $post_id, 'initial_value', true );
+			$movements = get_post_meta( $post_id, 'movements', true );
+			if ( ! is_array( $movements ) ) {
+				$movements = [];
+			}
+			return new \WP_REST_Response([
+				'status' => 'open',
+				'caixa_id' => $post_id,
+				'openingTime' => (int)$opening_time,
+				'initialValue' => (float)$initial_value,
+				'movements' => $movements,
+				'history' => $history
+			], 200);
+		}
+		
+		return new \WP_REST_Response([
+			'status' => 'closed',
+			'initialValue' => 0,
+			'history' => $history
+		], 200);
+	}
+	
+	public function caixa_open( \WP_REST_Request $request ) {
+		$params = $request->get_json_params();
+		$initial_value = isset($params['initialValue']) ? (float)$params['initialValue'] : 0;
+		$opening_time = isset($params['openingTime']) ? (int)$params['openingTime'] : time();
+		
+		// Create the post
+		$post_id = wp_insert_post([
+			'post_type' => 'myd_caixa',
+			'post_status' => 'publish',
+			'post_title' => 'Caixa - ' . wp_date('d/m/Y H:i', $opening_time),
+		]);
+		
+		if ( is_wp_error( $post_id ) ) {
+			return new \WP_REST_Response([ 'error' => 'Failed to open caixa' ], 500);
+		}
+		
+		update_post_meta( $post_id, 'status', 'open' );
+		update_post_meta( $post_id, 'initial_value', $initial_value );
+		update_post_meta( $post_id, 'opening_time', $opening_time );
+		update_post_meta( $post_id, 'movements', [] );
+		
+		return new \WP_REST_Response([
+			'success' => true,
+			'caixa_id' => $post_id,
+			'status' => 'open',
+		], 200);
+	}
+	
+	public function caixa_movement( \WP_REST_Request $request ) {
+		$params = $request->get_json_params();
+		$caixa_id = isset($params['caixa_id']) ? intval($params['caixa_id']) : 0;
+		$type = isset($params['type']) ? $params['type'] : ''; // retirada or suprimento
+		$amount = isset($params['amount']) ? (float)$params['amount'] : 0;
+		$description = isset($params['description']) ? $params['description'] : '';
+		$timestamp = isset($params['timestamp']) ? (int)$params['timestamp'] : current_time('timestamp');
+
+		if ( ! $caixa_id ) {
+			return new \WP_REST_Response([ 'error' => 'No caixa_id provided' ], 400);
+		}
+
+		$status = get_post_meta( $caixa_id, 'status', true );
+		if ( $status !== 'open' ) {
+			return new \WP_REST_Response([ 'error' => 'Caixa is not open' ], 400);
+		}
+
+		$movements = get_post_meta( $caixa_id, 'movements', true );
+		if ( ! is_array( $movements ) ) {
+			$movements = [];
+		}
+
+		$movements[] = [
+			'type' => $type,
+			'amount' => $amount,
+			'description' => $description,
+			'timestamp' => $timestamp,
+		];
+
+		update_post_meta( $caixa_id, 'movements', $movements );
+
+		return new \WP_REST_Response([
+			'success' => true,
+			'movements' => $movements,
+		], 200);
+	}
+	
+	public function caixa_close( \WP_REST_Request $request ) {
+		$params = $request->get_json_params();
+		$caixa_id = isset($params['caixa_id']) ? intval($params['caixa_id']) : 0;
+		$closing_time = isset($params['closingTime']) ? (int)$params['closingTime'] : time();
+		$closure_data = isset($params['closureData']) ? $params['closureData'] : [];
+
+		if ( ! $caixa_id ) {
+			return new \WP_REST_Response([ 'error' => 'No caixa_id provided' ], 400);
+		}
+
+		$status = get_post_meta( $caixa_id, 'status', true );
+		if ( $status !== 'open' ) {
+			return new \WP_REST_Response([ 'error' => 'Caixa is already closed or invalid' ], 400);
+		}
+
+		update_post_meta( $caixa_id, 'status', 'closed' );
+		update_post_meta( $caixa_id, 'closing_time', $closing_time );
+		update_post_meta( $caixa_id, 'closure_data', $closure_data );
+
+		wp_update_post([
+			'ID' => $caixa_id,
+			'post_title' => get_the_title($caixa_id) . ' - Fechado ' . wp_date('d/m/Y H:i', $closing_time),
+		]);
+
+		return new \WP_REST_Response([
+			'success' => true,
+			'status' => 'closed',
+		], 200);
+	}
+
+	/**
+	 * Busca caixa por ID ou por data de abertura
+	 * GET /caixa/search?id=XXX ou ?date=YYYY-MM-DD
+	 */
+	public function caixa_search( \WP_REST_Request $request ) {
+		$id   = intval( $request->get_param('id') );
+		$date = sanitize_text_field( $request->get_param('date') );
+
+		if ( $id ) {
+			$post = get_post( $id );
+			if ( ! $post || $post->post_type !== 'myd_caixa' ) {
+				return new \WP_REST_Response([ 'error' => 'Caixa não encontrado' ], 404);
+			}
+			return new \WP_REST_Response([ 'results' => [ $this->_build_caixa_item( $post ) ] ], 200);
+		}
+
+		if ( $date && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ) {
+			$ts_start = strtotime( $date . ' 00:00:00' );
+			$ts_end   = strtotime( $date . ' 23:59:59' );
+			$args = [
+				'post_type'      => 'myd_caixa',
+				'post_status'    => 'publish',
+				'posts_per_page' => 20,
+				'orderby'        => 'ID',
+				'order'          => 'DESC',
+				'meta_query'     => [[
+					'key'     => 'opening_time',
+					'value'   => [ $ts_start, $ts_end ],
+					'compare' => 'BETWEEN',
+					'type'    => 'NUMERIC',
+				]],
+			];
+			$query   = new \WP_Query( $args );
+			$results = [];
+			foreach ( $query->posts as $p ) {
+				$results[] = $this->_build_caixa_item( $p );
+			}
+			return new \WP_REST_Response([ 'results' => $results ], 200);
+		}
+
+		return new \WP_REST_Response([ 'error' => 'Informe id ou date' ], 400);
+	}
+
+	private function _build_caixa_item( $post ) {
+		$movements = get_post_meta( $post->ID, 'movements', true );
+		if ( ! is_array( $movements ) ) $movements = [];
+		$closure   = get_post_meta( $post->ID, 'closure_data', true );
+		return [
+			'id'          => $post->ID,
+			'openingTime' => (int) get_post_meta( $post->ID, 'opening_time', true ),
+			'closingTime' => (int) get_post_meta( $post->ID, 'closing_time', true ),
+			'status'      => get_post_meta( $post->ID, 'status', true ),
+			'closureData' => is_array( $closure ) ? $closure : null,
+			'movements'   => $movements,
+		];
+	}
+
+	/**
+	 * Fecha um caixa retroativamente (máx 7 dias passados)
+	 * POST /caixa/retro-close
+	 */
+	public function caixa_retro_close( \WP_REST_Request $request ) {
+		$params      = $request->get_json_params();
+		$date        = isset($params['date'])         ? sanitize_text_field($params['date'])      : '';
+		$open_time   = isset($params['open_time'])    ? sanitize_text_field($params['open_time']) : '00:00';
+		$close_time  = isset($params['close_time'])   ? sanitize_text_field($params['close_time']): '23:59';
+		$initial     = isset($params['initialValue']) ? (float)$params['initialValue']            : 0;
+		$final_cash  = isset($params['finalCash'])    ? (float)$params['finalCash']               : 0;
+		$ifood_liq   = isset($params['ifoodLiquid'])  ? (float)$params['ifoodLiquid']             : 0;
+		$motoboy_fee = isset($params['motoboyFee'])   ? (float)$params['motoboyFee']              : 0;
+
+		if ( ! $date || ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ) {
+			return new \WP_REST_Response([ 'error' => 'Data inválida.' ], 400);
+		}
+		$ts_date  = strtotime( $date );
+		$ts_limit = strtotime( '-7 days midnight', current_time('timestamp') );
+		if ( $ts_date < $ts_limit ) {
+			return new \WP_REST_Response([ 'error' => 'Só é possível fechar caixas dos últimos 7 dias.' ], 400);
+		}
+		if ( $ts_date > current_time('timestamp') ) {
+			return new \WP_REST_Response([ 'error' => 'A data não pode ser no futuro.' ], 400);
+		}
+
+		$ts_open  = strtotime( $date . ' ' . $open_time  . ':00' );
+		$ts_close = strtotime( $date . ' ' . $close_time . ':59' );
+
+		// Buscar relatório de pedidos do período
+		$fake_req = new \WP_REST_Request( 'GET', '/myd-delivery/v1/cashier/report' );
+		$fake_req->set_param( 'date',         $date );
+		$fake_req->set_param( 'open_time',    $open_time );
+		$fake_req->set_param( 'close_time',   $close_time );
+		$fake_req->set_param( 'delivery_cost', 0 );
+		$report_resp = $this->cashier_report( $fake_req );
+		$report_data = $report_resp->get_data();
+		$report_data['ifoodLiquid'] = $ifood_liq;
+		$report_data['motoboyFee']  = $motoboy_fee;
+
+		$cash_sales = 0;
+		if ( isset($report_data['payment_totals']['Dinheiro']) ) {
+			$v = $report_data['payment_totals']['Dinheiro'];
+			$cash_sales = floatval( str_replace(',', '.', str_replace('.', '', (string)$v)) );
+		}
+		$expected = $initial + $cash_sales;
+		$diff     = $final_cash - $expected;
+
+		$closure_data = [
+			'report'       => $report_data,
+			'initialCash'  => $initial,
+			'finalCash'    => $final_cash,
+			'ifoodLiquid'  => $ifood_liq,
+			'motoboyFee'   => $motoboy_fee,
+			'diff'         => $diff,
+		];
+
+		$post_id = wp_insert_post([
+			'post_type'   => 'myd_caixa',
+			'post_status' => 'publish',
+			'post_title'  => 'Caixa - ' . wp_date('d/m/Y', $ts_open) . ' [Retroativo] - Fechado ' . wp_date('H:i', $ts_close),
+		]);
+
+		if ( is_wp_error( $post_id ) ) {
+			return new \WP_REST_Response([ 'error' => 'Erro ao criar caixa retroativo' ], 500);
+		}
+
+		update_post_meta( $post_id, 'status',        'closed' );
+		update_post_meta( $post_id, 'opening_time',  $ts_open );
+		update_post_meta( $post_id, 'closing_time',  $ts_close );
+		update_post_meta( $post_id, 'initial_value', $initial );
+		update_post_meta( $post_id, 'closure_data',  $closure_data );
+		update_post_meta( $post_id, 'movements',     [] );
+
+		return new \WP_REST_Response([
+			'success'    => true,
+			'caixa_id'   => $post_id,
+			'reportData' => $report_data,
+			'closureData'=> $closure_data,
+		], 200);
 	}
 }
 

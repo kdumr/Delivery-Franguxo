@@ -145,6 +145,13 @@
     // Full auto-print implementation
     function triggerAutoPrint(orderId) {
         if (!orderId) { console.warn('[Orders Panel] auto-print skipped: missing order id'); return; }
+        window.__myd_printed_orders = window.__myd_printed_orders || new Set();
+        if (window.__myd_printed_orders.has(String(orderId))) {
+            console.log('[Orders Panel] auto-print dedup skipped for order', orderId);
+            return;
+        }
+        window.__myd_printed_orders.add(String(orderId));
+
         try { window.triggerAutoPrint = triggerAutoPrint; } catch (_) { /* noop */ }
         if (typeof fetch !== 'function') { console.error('[Orders Panel] auto-print requires fetch API'); return; }
         console.log('[Orders Panel] auto-print triggered for order', orderId);
@@ -165,16 +172,21 @@
 
                         function sendCopyAttempt(n) {
                             if (n > copies) return Promise.resolve();
-                            return sendToLocalPrintServer(payload).then(function (res) {
-                                console.log('[Orders Panel] local print server acknowledged copy ' + n + ' for order', orderId);
-                                return new Promise(function (resolve) { setTimeout(resolve, 180); }).then(function () { return sendCopyAttempt(n + 1); });
-                            }).catch(function (err) {
-                                console.error('[Orders Panel] failed sending copy ' + n + ' to local print server', err);
-                                return sendCopyAttempt(n + 1);
-                            });
+                            return sendToLocalPrintServer(payload)
+                                .then(function () {
+                                    console.log('[Orders Panel] local print server acknowledged auto-print copy ' + n + ' for order', orderId);
+                                    return new Promise(function (resolve) { setTimeout(resolve, 800); })
+                                        .then(function () { return sendCopyAttempt(n + 1); });
+                                })
+                                .catch(function (err) {
+                                    console.error('[Orders Panel] failed sending copy ' + n + ' to local print server', err);
+                                    // Continues to the next copy anyway
+                                    return new Promise(function (resolve) { setTimeout(resolve, 800); })
+                                        .then(function () { return sendCopyAttempt(n + 1); });
+                                });
                         }
 
-                        return sendCopyAttempt(1).then(function () { console.log('[Orders Panel] completed print attempts for order', orderId); }).catch(function (err) { console.error('[Orders Panel] error during multi-copy print attempts for order ' + orderId, err); });
+                        return sendCopyAttempt(1).then(function () { console.log('[Orders Panel] completed auto-print attempts for order', orderId); }).catch(function (err) { console.error('[Orders Panel] error during auto-print attempts for order', orderId, err); });
                     }
                     throw new Error('missing_order_data_for_print');
                 }).catch(function (err) { console.error('[Orders Panel] auto-print flow failed for order ' + orderId, err); });
@@ -201,10 +213,17 @@
 
                         function sendLocalCopy(n) {
                             if (n > copies) return Promise.resolve();
-                            return fetch('http://127.0.0.1:3420/print', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body })
-                                .catch(function () { return fetch('http://localhost:3420/print', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body }); })
-                                .then(function (res) { if (!res || !res.ok) throw new Error('local_print_failed'); console.log('[Orders Panel] manual local print acknowledged for order ' + orderId + ' (copy ' + n + ')'); return new Promise(function (resolve) { setTimeout(resolve, 180); }).then(function () { return sendLocalCopy(n + 1); }); })
-                                .catch(function (err) { console.error('[Orders Panel] manual local print failed for copy ' + n + ' for order ' + orderId, err); return sendLocalCopy(n + 1); });
+                            return sendToLocalPrintServer(payload)
+                                .then(function () {
+                                    console.log('[Orders Panel] manual print acknowledged copy ' + n + ' for order', orderId);
+                                    return new Promise(function (resolve) { setTimeout(resolve, 800); })
+                                        .then(function () { return sendLocalCopy(n + 1); });
+                                })
+                                .catch(function (err) {
+                                    console.error('[Orders Panel] failed sending copy ' + n + ' to local print server', err);
+                                    return new Promise(function (resolve) { setTimeout(resolve, 800); })
+                                        .then(function () { return sendLocalCopy(n + 1); });
+                                });
                         }
 
                         return sendLocalCopy(1);

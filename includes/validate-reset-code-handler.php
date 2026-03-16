@@ -5,6 +5,10 @@ add_action('wp_ajax_nopriv_myd_validate_reset_code', 'myd_validate_reset_code_ha
 add_action('wp_ajax_myd_validate_reset_code', 'myd_validate_reset_code_handler');
 
 function myd_validate_reset_code_handler() {
+    if ( function_exists('myd_check_ip_rate_limit') && myd_check_ip_rate_limit( 'validate_reset_code', 10, 3600 ) ) {
+        wp_send_json_error(['message' => 'Muitas tentativas. Tente novamente mais tarde.']);
+    }
+
     $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
     $code = isset($_POST['code']) ? sanitize_text_field($_POST['code']) : '';
     $new_password = isset($_POST['new_password']) ? $_POST['new_password'] : '';

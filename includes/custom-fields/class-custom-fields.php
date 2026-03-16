@@ -171,6 +171,29 @@ class Myd_Custom_Fields {
 						exit;
 					}
 				}
+
+				// Preservar a chave 'extras' em pedidos que são editados pelo wp-admin
+				// O metabox não submete o array complexo 'extras', então nós recuperamos do banco de dados antes da sobrescrita.
+				if ( $field_name === 'myd_order_items' && is_array( $value ) ) {
+					$old_value = get_post_meta( $post_id, 'myd_order_items', true );
+					if ( is_string( $old_value ) && ! empty( $old_value ) ) {
+						$_decoded = json_decode( $old_value, true );
+						if ( is_array( $_decoded ) ) $old_value = $_decoded;
+					}
+
+					if ( is_array( $old_value ) && ! empty( $old_value ) ) {
+						foreach ( $value as $index => &$new_item ) {
+							// Se o item antigo existir no mesmo índice e tiver a chave 'extras', nós copiamos ela de volta
+							if ( isset( $old_value[ $index ] ) && is_array( $old_value[ $index ] ) ) {
+								if ( isset( $old_value[ $index ]['extras'] ) ) {
+									$new_item['extras'] = $old_value[ $index ]['extras'];
+								}
+							}
+						}
+						unset($new_item);
+					}
+				}
+
 				update_post_meta( $post_id, $field_name, $value );
 			}
 		}

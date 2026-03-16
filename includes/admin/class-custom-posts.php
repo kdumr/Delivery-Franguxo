@@ -202,6 +202,45 @@ class Custom_Posts {
 						'title'
 					]
 				]
+			],
+			'myd_caixa' => [
+				'condition' => true,
+				'args' => [
+					'label' => __('Caixa MyDelivery', 'myd-delivery-pro'),
+					'labels' => [
+						'name' => __('Histórico de Caixas', 'myd-delivery-pro'),
+						'singular_name' => __('Caixa', 'myd-delivery-pro'),
+						'menu_name' => __('Caixa', 'myd-delivery-pro'),
+						'all_items' => __('Histórico de Caixas', 'myd-delivery-pro'),
+						'add_new' => __('Novo Turno', 'myd-delivery-pro'),
+						'add_new_item' => __('Novo Turno de Caixa', 'myd-delivery-pro'),
+						'edit_item' => __('Detalhes do Caixa', 'myd-delivery-pro'),
+						'new_item' => __('Novo Caixa', 'myd-delivery-pro'),
+						'view_item' => __('Ver Caixa', 'myd-delivery-pro'),
+						'view_items' => __('Ver Fechamentos', 'myd-delivery-pro'),
+						'search_items' => __('Buscar Fechamentos', 'myd-delivery-pro'),
+					],
+					'description' => 'Histórico e registro de turnos do Caixa',
+					'public' => false,
+					'publicly_queryable' => false,
+					'show_ui' => true,
+					'delete_with_user' => false,
+					'show_in_rest' => true,
+					'rest_base' => 'myd_caixa',
+					'rest_controller_class' => 'WP_REST_Posts_Controller',
+					'has_archive' => false,
+					'show_in_menu' => 'myd-delivery-dashoboard',
+					'show_in_nav_menus' => false,
+					'exclude_from_search' => true,
+					'capability_type' => 'post',
+					'map_meta_cap' => true,
+					'hierarchical' => false,
+					'rewrite' => false,
+					'query_var' => false,
+					'supports' => [
+						'title'
+					]
+				]
 			]
 		];
 	}

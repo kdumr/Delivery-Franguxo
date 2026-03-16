@@ -6,12 +6,27 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execFile } = require('child_process');
+const { PNG } = require('pngjs');
 // obter versão do app a partir do package.json
 let APP_VERSION = '';
 try {
   var pkg = require('./package.json');
   APP_VERSION = pkg && pkg.version ? String(pkg.version) : '';
 } catch (e) { APP_VERSION = ''; }
+
+// Pré-carregar a imagem da logo para impressão ESC/POS
+let LETTER_IMG_BASE64 = null;
+try {
+  const letterImgPath = path.join(__dirname, '..', 'assets', 'img', 'franguxoletter.png');
+  if (fs.existsSync(letterImgPath)) {
+    LETTER_IMG_BASE64 = 'data:image/png;base64,' + fs.readFileSync(letterImgPath).toString('base64');
+    console.log('[print-server] Logo carregada:', letterImgPath);
+  } else {
+    console.warn('[print-server] Logo não encontrada em:', letterImgPath);
+  }
+} catch (e) {
+  console.warn('[print-server] Erro ao carregar logo:', e && e.message ? e.message : e);
+}
 
 let printer = null;
 try {
@@ -23,7 +38,29 @@ try {
 }
 
 const app = express();
-app.use(cors());
+
+// ─── CORS: aceita apenas origens conhecidas ───────────────────────────────
+const ALLOWED_ORIGINS = [
+  'https://franguxo.app.br',
+  'http://franguxo.app.br',
+  'https://dev.franguxo.app.br',
+  'http://dev.franguxo.app.br',
+  'http://localhost',
+  'http://127.0.0.1',
+  'app://.', // Electron renderer
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Requisições sem origin (ex: curl local, Electron main) são permitidas
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.some(function (o) { return origin === o || origin.startsWith(o); })) {
+      return callback(null, true);
+    }
+    callback(new Error('CORS bloqueado para origem: ' + origin));
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(bodyParser.json({ limit: '1mb' }));
 
 function normalizeText(text) {
@@ -96,13 +133,88 @@ function formatMoney(n) {
   return Number(n || 0).toFixed(2).replace('.', ',');
 }
 
-function formatReceipt(o, width = 32) {
+/**
+ * Converte um Buffer PNG em bytes ESC/POS raster (GS v 0).
+ * maxWidthPx: largura máxima em pixels (384 para 58mm, 576 para 80mm).
+ * Retorna um Buffer com os comandos ESC/POS ou null em caso de erro.
+ */
+function pngToEscPosRaster(pngBuffer, maxWidthPx) {
+  maxWidthPx = maxWidthPx || 384;
+  try {
+    const png = PNG.sync.read(pngBuffer);
+    const srcW = png.width;
+    const srcH = png.height;
+
+    // Escalar para caber na largura máxima mantendo proporção
+    let dstW = srcW;
+    let dstH = srcH;
+    if (dstW > maxWidthPx) {
+      const ratio = maxWidthPx / dstW;
+      dstW = maxWidthPx;
+      dstH = Math.round(srcH * ratio);
+    }
+
+    // Largura em bytes deve ser múltiplo de 1 byte (8 pixels por byte)
+    // Arredondar dstW para múltiplo de 8
+    const printW = Math.ceil(dstW / 8) * 8;
+    const widthBytes = printW / 8;
+
+    // Criar bitmap monocromático escalado
+    const monoRows = [];
+    for (let y = 0; y < dstH; y++) {
+      const row = new Uint8Array(widthBytes);
+      for (let x = 0; x < printW; x++) {
+        // Coordenada na imagem original (nearest-neighbor)
+        const srcX = Math.min(Math.round(x * srcW / dstW), srcW - 1);
+        const srcY = Math.min(Math.round(y * srcH / dstH), srcH - 1);
+        const idx = (srcY * srcW + srcX) * 4;
+        const r = png.data[idx];
+        const g = png.data[idx + 1];
+        const b = png.data[idx + 2];
+        const a = png.data[idx + 3];
+        // Compor sobre fundo branco (alfa)
+        const rr = Math.round(r * a / 255 + 255 * (1 - a / 255));
+        const gg = Math.round(g * a / 255 + 255 * (1 - a / 255));
+        const bb = Math.round(b * a / 255 + 255 * (1 - a / 255));
+        // Luminância (gray)
+        const lum = 0.299 * rr + 0.587 * gg + 0.114 * bb;
+        if (lum < 128) {
+          // Pixel escuro: bit = 1 (imprime)
+          const byteIdx = Math.floor(x / 8);
+          const bitIdx = 7 - (x % 8);
+          row[byteIdx] |= (1 << bitIdx);
+        }
+      }
+      monoRows.push(Buffer.from(row));
+    }
+
+    // Montar comando GS v 0 (raster bit image)
+    // GS v 0 m xL xH yL yH d1...dk
+    // m=0 (normal density), xL/xH = widthBytes, yL/yH = dstH
+    const header = Buffer.from([
+      0x1D, 0x76, 0x30, 0x00,           // GS v 0 m=0
+      widthBytes & 0xFF,                 // xL
+      (widthBytes >> 8) & 0xFF,          // xH
+      dstH & 0xFF,                       // yL
+      (dstH >> 8) & 0xFF                 // yH
+    ]);
+
+    const parts = [header, ...monoRows];
+    return Buffer.concat(parts);
+  } catch (e) {
+    console.error('[print-server] pngToEscPosRaster error:', e);
+    return null;
+  }
+}
+
+function formatReceipt(o, width = 33) {
   // Builds the receipt exactly in the user's requested layout
   const lines = [];
   function push(line) { lines.push(line); }
   function pushSep() { push('--------------------------------'); }
 
   // *CARDÁPIO PRÓPRIO*
+  push('')
   push(centerText('* CARDÁPIO PRÓPRIO *', width));
   // Nome da loja
   if (o.store_name) push(centerText(o.store_name, width));
@@ -197,32 +309,36 @@ function formatReceipt(o, width = 32) {
   push('ITENS DO PEDIDO (' + totalItems + ')');
 
   // helper for aligned price at right with name wrapping
-  function formatItemLines(name, price) {
-    var p = 'R$ ' + formatMoney(price);
+  function formatItemLines(name, priceOrValue, width) {
+    width = width || 32;
+    var p = String(priceOrValue || '');
     name = String(name || '');
-    var maxNameLen = 22; // reserve 10 chars for values
-    var valueSpace = 10;
-    var lines = [];
+
+    var linesArray = [];
+    var valueSpace = p.length + 3; // O valor sempre terá 3 espaços no minimo antes
+    var maxNameLen = width - valueSpace;
+    if (maxNameLen < 1) maxNameLen = 1;
+
     if (name.length <= maxNameLen) {
-      var space = Math.max(1, width - name.length - p.length);
-      lines.push(name + ' '.repeat(space) + p);
+      var space = Math.max(3, width - name.length - p.length);
+      linesArray.push(name + ' '.repeat(space) + p);
     } else {
-      // first line with price
       var firstPart = name.substring(0, maxNameLen);
-      var space = Math.max(1, width - maxNameLen - p.length);
-      lines.push(firstPart + ' '.repeat(space) + p);
-      // subsequent lines
-      var remaining = name.substring(maxNameLen);
-      var indent = name.startsWith('  ') ? '  ' : ''; // for extras, keep indent
+      var space = width - firstPart.length - p.length;
+      linesArray.push(firstPart + ' '.repeat(space) + p);
+
+      var remaining = name.substring(maxNameLen).trim();
+      var indent = name.startsWith(' ') ? name.match(/^ +/)[0] : '';
+      if (name.startsWith('(') || name.startsWith('- ')) indent = '  ';
+
       while (remaining.length > 0) {
-        var partLen = maxNameLen - indent.length;
+        var partLen = width - indent.length;
         var part = remaining.substring(0, partLen);
-        var line = indent + part + ' '.repeat(valueSpace);
-        lines.push(line);
-        remaining = remaining.substring(part.length);
+        linesArray.push(indent + part.trim());
+        remaining = remaining.substring(part.length).trim();
       }
     }
-    return lines;
+    return linesArray;
   }
 
   if (o.items && o.items.length) {
@@ -240,13 +356,13 @@ function formatReceipt(o, width = 32) {
       var unitPrice = parseMoney(it.product_price || it.price || it.total || 0);
       // if item has total price field, use it; else unitPrice * qty
       var itemTotal = it.total ? parseMoney(it.total) : (unitPrice * qty);
-      formatItemLines(lineName, itemTotal).forEach(push);
+      formatItemLines(lineName, 'R$ ' + formatMoney(itemTotal)).forEach(push);
       // extras if any
       if (it.extras && it.extras.groups && it.extras.groups.length > 0) {
-        push('');
         it.extras.groups.forEach(group => {
           // Nome do grupo: exibir se houver pelo menos 1 extra no grupo
           if (group.group && group.group.trim() !== '' && group.items && group.items.length > 0) {
+            push('');
             push('    ' + group.group.trim());
           }
           // Itens do grupo (se houver)
@@ -254,18 +370,38 @@ function formatReceipt(o, width = 32) {
             group.items.forEach(extraItem => {
               if (parseInt(extraItem.quantity) > 0) {
                 const extraTotal = parseFloat(extraItem.price) * parseInt(extraItem.quantity);
-                let extraNome = extraItem.quantity + 'x ' + extraItem.name;
-                let extraPreco = 'R$' + formatMoney(extraTotal);
-                let extraEspacos = width - 4 - extraNome.length - extraPreco.length; // 4 = indent
-                push('    ' + extraNome + ' '.repeat(Math.max(1, extraEspacos)) + extraPreco);
+                let extraNome = '    ' + extraItem.quantity + 'x ' + extraItem.name;
+                let extraPreco = extraTotal > 0 ? '+R$ ' + formatMoney(extraTotal) : '';
+                formatItemLines(extraNome, extraPreco).forEach(push);
               }
             });
           }
         });
       }
-      // No notes as per user spec
+      // Observação individual do item
+      var itemNote = it.product_note || it.note || '';
+      if (itemNote && String(itemNote).trim() !== '') {
+        push('');
+        push('    Obs: ' + String(itemNote).trim());
+      }
     });
   }
+
+  // Observação Geral do Pedido
+  var orderNote = o.customer_note || o.order_customer_note || o.observacao || o.note || '';
+  if (orderNote && String(orderNote).trim() !== '') {
+    push('');
+    push('OBS DO PEDIDO:');
+    var obsLines = String(orderNote).trim().split(/\r?\n/);
+    obsLines.forEach(function (line) {
+      var remaining = line;
+      while (remaining.length > 0) {
+        push(remaining.substring(0, width));
+        remaining = remaining.substring(width);
+      }
+    });
+  }
+
   push('')
   pushSep();
 
@@ -311,20 +447,24 @@ function formatReceipt(o, width = 32) {
   var subtotal = parseMoney(o.subtotal || o.sub_total || 0);
   var delivery = parseMoney(o.delivery_price || o.shipping || o.shipping_total || 0);
   var couponDiscount = parseMoney(o.coupon_discount || o.coupon_discount_value || 0);
-  var total = parseMoney(o.total || o.order_total || (subtotal + delivery - couponDiscount));
+  var fidelityDiscount = parseMoney(o.fidelity_discount || o.order_fidelity_discount || 0);
+  var total = parseMoney(o.total || o.order_total || (subtotal + delivery - couponDiscount - fidelityDiscount));
 
-  push('Valor total do'.padEnd(24) + 'R$ ' + formatMoney(subtotal));
-  push('pedido:');
-  push('Taxa de entrega:'.padEnd(24) + 'R$ ' + formatMoney(delivery));
-  if (o.coupon_name) { push('Cupom:'.padEnd(22) + (o.coupon_name || '')); }
-  if (couponDiscount > 0) { push('Desconto cupom'.padEnd(22) + 'R$ ' + formatMoney(couponDiscount)); }
+  formatItemLines('Valor total do', 'R$ ' + formatMoney(subtotal)).forEach(push);
+  formatItemLines('pedido', '').forEach(push);
+  formatItemLines('Taxa de entrega:', 'R$ ' + formatMoney(delivery)).forEach(push);
+
+  if (fidelityDiscount > 0) { formatItemLines('Desc. de fidelidade:', '-R$ ' + formatMoney(fidelityDiscount)).forEach(push); }
+  if (o.coupon_name) { formatItemLines('Cupom (' + (o.coupon_name || '') + '):', '').forEach(push); }
+  if (couponDiscount > 0) { formatItemLines('Desconto cupom:', '-R$ ' + formatMoney(couponDiscount)).forEach(push); }
+  formatItemLines('Total:', 'R$ ' + formatMoney(total)).forEach(push);
   pushSep();
 
   // Cobrar do cliente logic
 
   if (ps === 'paid') cobrar = 0;
   else cobrar = total;
-  push('Cobrar do cliente:'.padEnd(24) + 'R$ ' + formatMoney(cobrar));
+  push('Cobrar do cliente:'.padEnd(23) + 'R$ ' + formatMoney(cobrar));
   pushSep();
   // Versão do aplicativo (no final do recibo)
   try {
@@ -341,7 +481,7 @@ function formatReceipt(o, width = 32) {
 app.post('/print', (req, res) => {
   try {
     const payload = req.body || {};
-    console.log('[print-server] Received print request:', { hasOrderData: !!payload.orderData, hasText: !!payload.text, printer: payload.printer });
+    console.log('[print-server] Received print request:', { hasOrderData: !!payload.orderData, hasText: !!payload.text, hasImage: !!payload.imageBase64, printer: payload.printer });
     // se vier orderData (mesmo formato do main.js), construir recibo detalhado
     let text = payload.text || '';
     if (payload.orderData) {
@@ -353,15 +493,43 @@ app.post('/print', (req, res) => {
 
     const targetPrinter = payload.printer || process.env.PRINT_PRINTER || undefined;
 
+    if (!targetPrinter || String(targetPrinter).trim() === '') {
+      console.warn('[print-server] Operação abortada: Nenhuma impressora especificada e sem impressora via process.env. Descarte de fallback para impressora padrao do SO.');
+      return res.json({ ok: false, error: 'Nenhuma impressora selecionada no aplicativo.' });
+    }
+
     // detecta impressora POS (nome contém pos/star/epson) ou flag escpos no payload
     const isPosPrinter = (targetPrinter && /pos|star|epson|thermal|tm-/i.test(String(targetPrinter))) || payload.escpos === true;
 
-    // preparar dados: para POS enviamos Buffer com comandos ESC/POS (init + texto + corte)
+    // preparar dados: para POS enviamos Buffer com comandos ESC/POS (init + imagem + texto + corte)
     let dataToSend = normalized;
     if (isPosPrinter) {
       try {
         // init escpos
         const init = Buffer.from([0x1B, 0x40]); // ESC @
+
+        // --- Imagem no topo (payload ou pré-carregada) ---
+        let imgBuf = Buffer.alloc(0);
+        const imgSrc = payload.imageBase64 || LETTER_IMG_BASE64;
+        if (imgSrc) {
+          try {
+            // remover prefixo data:image/...;base64, se houver
+            const b64 = imgSrc.replace(/^data:image\/[a-z]+;base64,/i, '');
+            const pngBuffer = Buffer.from(b64, 'base64');
+            const raster = pngToEscPosRaster(pngBuffer, payload.imagePrintWidth || 280);
+            if (raster) {
+              // centralizar: ESC a 1 (centro), depois imagem, depois ESC a 0 (esquerda)
+              const alignCenter = Buffer.from([0x1B, 0x61, 0x01]);
+              const alignLeft = Buffer.from([0x1B, 0x61, 0x00]);
+              const lineFeed = Buffer.from([0x0A]); // LF após imagem
+              imgBuf = Buffer.concat([alignCenter, raster, lineFeed, alignLeft]);
+              console.log('[print-server] Imagem ESC/POS gerada, bytes:', imgBuf.length);
+            }
+          } catch (imgErr) {
+            console.warn('[print-server] Erro ao processar imageBase64, continuando sem imagem:', imgErr);
+          }
+        }
+
         // tentar codificar em CP850 (muitas térmicas usam), senão CP437
         let textBuf;
         try {
@@ -371,7 +539,7 @@ app.post('/print', (req, res) => {
           textBuf = iconv.encode(normalized + '\n\n', 'cp437');
         }
         const cut = Buffer.from([0x1D, 0x56, 0x00]); // GS V 0 (full cut)
-        dataToSend = Buffer.concat([init, textBuf, cut]);
+        dataToSend = Buffer.concat([init, imgBuf, textBuf, cut]);
         console.log('Using ESC/POS mode for printer:', targetPrinter, 'bufferLength:', dataToSend.length);
       } catch (e) {
         console.warn('Failed to build ESC/POS buffer, falling back to text', e);
@@ -402,6 +570,9 @@ app.post('/print', (req, res) => {
     }
 
     function doPrint(type, data, cb) {
+      if (!targetPrinter || String(targetPrinter).trim() === '' || String(targetPrinter).toLowerCase() === 'null' || String(targetPrinter).toLowerCase() === 'undefined') {
+        return cb(new Error('Impressora em branco ou nula. Descartado pelo App para nao imprimir na padrao.'));
+      }
       printer.printDirect({
         data: data,
         type: type,
@@ -414,7 +585,7 @@ app.post('/print', (req, res) => {
     // Primeiro tenta RAW (com nome da impressora se enviado), senão tenta TEXT
     doPrint('RAW', dataToSend, function (err, jobID) {
       if (!err) {
-        console.log('Impressão enviada (RAW), JobID:', jobID, 'printer:', targetPrinter);
+        console.log('[print-server] Impressão enviada (RAW), JobID:', jobID, 'printer:', targetPrinter);
         return res.json({ ok: true, jobID, printer: targetPrinter, type: 'RAW' });
       }
       console.warn('RAW print failed, trying TEXT fallback', err);

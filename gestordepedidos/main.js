@@ -159,7 +159,22 @@ function normalizeText(text) {
     .replace(/[^\x00-\x7F]/g, '');
 }
 
-// Função para imprimir recibo de teste
+// Carregar imagem da logo para impressão ESC/POS (Base64)
+function getLetterImageBase64() {
+  try {
+    // Caminho relativo ao gestordepedidos: ../assets/img/franguxoletter.png
+    const imgPath = path.join(__dirname, '..', 'assets', 'img', 'franguxoletter.png');
+    if (fs.existsSync(imgPath)) {
+      const buf = fs.readFileSync(imgPath);
+      return 'data:image/png;base64,' + buf.toString('base64');
+    }
+  } catch (e) {
+    console.warn('[main] Não foi possível carregar franguxoletter.png:', e && e.message ? e.message : e);
+  }
+  return null;
+}
+
+
 function printTestReceipt() {
   const texto = normalizeText('Recibo de Teste\nValor: R$ 123,45\nObrigado pela preferência!');
   const savedPrinter = getSavedPrinter();
@@ -344,12 +359,20 @@ function printOrderReceipt(orderData) {
     texto += 'Taxa de entrega:'.padEnd(22) + 'R$ ' + orderData.delivery_price + '\n';
   }
 
+  // Fidelidade
+  let fdRaw = parseFloat(orderData.fidelity_discount || orderData.order_fidelity_discount || 0);
+  if (fdRaw > 0) {
+    let fdStr = fdRaw.toFixed(2).replace('.', ',');
+    texto += 'Desc. de fidelidade: '.padEnd(21) + '-R$ ' + fdStr + '\n';
+  }
+
   // Cupom e desconto
   if (orderData.coupon_name) {
-    texto += 'Cupom: ' + orderData.coupon_name + '\n';
+    texto += 'Cupom (' + orderData.coupon_name + '):\n';
   }
   if (orderData.coupon_discount && parseFloat(orderData.coupon_discount) > 0) {
-    texto += 'Desconto cupom: '.padEnd(21) + '-R$ ' + orderData.coupon_discount + '\n';
+    let cpnStr = parseFloat(orderData.coupon_discount).toFixed(2).replace('.', ',');
+    texto += 'Desconto cupom: '.padEnd(21) + '-R$ ' + cpnStr + '\n';
   }
 
   // Total final
@@ -378,16 +401,22 @@ function printOrderReceipt(orderData) {
 
   const textoNormalizado = normalizeText(texto);
   const savedPrinter = getSavedPrinter();
-  if (printer) {
-    printer.printDirect({ data: textoNormalizado, type: 'RAW', printer: savedPrinter, success: function (jobID) { console.log('Impressão do pedido enviada, JobID:', jobID); console.log('ADICIONAR CORTE DE PAPEL NO FINAL') }, error: function (err) { console.error('Erro ao imprimir pedido:', err); } });
-  } else {
-    // forward the structured order to the local print server (server will format)
-    sendToLocalPrintServer({ orderData: orderData, escpos: true, printer: savedPrinter }).then(res => {
-      console.log('Encaminhado para print-server:', res);
-    }).catch(err => {
-      console.error('Erro ao encaminhar pedido para print-server:', err);
-    });
-  }
+
+  // Sempre encaminhar ao print-server para incluir a imagem via ESC/POS raster
+  const imgBase64 = getLetterImageBase64();
+  const payload = { orderData: orderData, escpos: true, printer: savedPrinter };
+  if (imgBase64) payload.imageBase64 = imgBase64;
+  payload.imagePrintWidth = 280;
+
+  sendToLocalPrintServer(payload).then(res => {
+    console.log('Encaminhado para print-server (com imagem):', res);
+  }).catch(err => {
+    console.error('Erro ao encaminhar pedido para print-server:', err);
+    // Fallback: tentar imprimir só o texto via nativo
+    if (printer) {
+      printer.printDirect({ data: textoNormalizado, type: 'RAW', printer: savedPrinter, success: function (jobID) { console.log('Fallback nativo OK, JobID:', jobID); }, error: function (err2) { console.error('Fallback nativo falhou:', err2); } });
+    }
+  });
 }
 
 function sendToLocalPrintServer(payload) {
@@ -580,6 +609,91 @@ function createWindow() {
     }
   });
 
+  function checkInternetConnection() {
+    return new Promise((resolve) => {
+      const proto = WP_URL.startsWith('https') ? require('https') : require('http');
+      const options = {
+        timeout: 3000,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': 0
+        }
+      };
+      const req = proto.get(WP_URL + '?ping=' + Date.now(), options, (res) => {
+        // Se bateu na porta, tá vivo
+        res.resume(); // esvazia o buffer
+        resolve(true);
+      });
+
+      req.on('timeout', () => {
+        req.destroy();
+        resolve(false);
+      });
+
+      req.on('error', (err) => {
+        resolve(false);
+      });
+    });
+  }
+
+  let isDisplayingOffline = false;
+
+  function showOfflineScreen(retryLocation) {
+    if (isDisplayingOffline) return;
+    isDisplayingOffline = true;
+    const offlineHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Sem Conexão</title>
+          <style>
+            body { background: #2C2D3E; color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+            h1 { font-size: 24px; font-weight: 600; margin-bottom: 10px; }
+            p { color: #aaa; margin-bottom: 30px; }
+            .loader { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #f39c12; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <svg viewBox="0 0 24 24" fill="none" style="width: 64px; height: 64px; margin-bottom: 20px;">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3.96973 5.03039L18.9697 20.0304L20.0304 18.9697L5.03039 3.96973L3.96973 5.03039ZM2.92454 9.67478C3.71079 8.88852 4.57369 8.2256 5.48917 7.68602L6.58987 8.78672C5.86769 9.17925 5.17917 9.65606 4.53875 10.2172L11.9999 17.5283L13.6826 15.8795L14.7433 16.9402L11.9999 19.6284L2.38879 10.2105L2.92454 9.67478ZM19.4611 10.2172L15.8255 13.7797L16.8862 14.8404L21.611 10.2105L21.0753 9.67478C17.6588 6.25827 12.7953 5.17059 8.45752 6.41173L9.69662 7.65083C13.0757 6.95288 16.7117 7.80832 19.4611 10.2172Z" fill="#f39c12"></path>
+          </svg>
+          <h1>Conexão Perdida</h1>
+          <p>Aguardando retorno da rede para reconectar o painel...</p>
+          <div class="loader"></div>
+          <script>
+            let retryUrl = '${retryLocation}';
+            let checkInterval = setInterval(() => {
+              fetch('${WP_URL}?t=' + Date.now(), { mode: 'no-cors' }).then(() => {
+                clearInterval(checkInterval);
+                window.location.href = retryUrl;
+              }).catch(() => {});
+            }, 5000);
+            window.addEventListener('online', () => {
+               setTimeout(() => {
+                 clearInterval(checkInterval);
+                 window.location.href = retryUrl;
+               }, 1000);
+            });
+          </script>
+        </body>
+        </html>
+      `;
+    mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(offlineHtml)}`);
+  }
+
+  setInterval(async () => {
+    if (mainWindow && !isDisplayingOffline) {
+      const isOnline = await checkInternetConnection();
+      if (!isOnline) {
+        console.log('[Ping] Falha de comunicação. Ativando painel offline...');
+        showOfflineScreen(WP_URL + appConfig.wordpress.loginPath);
+      }
+    }
+  }, 30000);
+
   mainWindow.on('resize', () => {
     // Atualiza dimensões se a BrowserView estiver anexada
     if (mainWindow && waView && mainWindow.getBrowserViews().includes(waView)) {
@@ -613,8 +727,13 @@ function createWindow() {
     console.log('[DEBUG] did-navigate:', navigationUrl);
   });
 
-  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL, isMainFrame) => {
     console.log('[DEBUG] did-fail-load:', validatedURL, errorCode, errorDescription);
+    // Erros de conexão ou timeout (-105 NAME_NOT_RESOLVED, -106 INTERNET_DISCONNECTED, -102 CONNECTION_REFUSED, etc)
+    // -3 é ERR_ABORTED (redirecionamentos intencionais abortados), ignoramos.
+    if (isMainFrame && errorCode !== -3) {
+      showOfflineScreen(validatedURL);
+    }
   });
 
   // Forçar retenção dos cookies de autenticação do WordPress
@@ -645,7 +764,10 @@ function createWindow() {
       mainWindow.show();
     }
 
-    // O comportamento dos botões agora roda de forma segura no preload.js
+    // Flag para sabermos que a tela principal não é mais offline HTML (foi resetado com sucesso pela reconexão)
+    if (!mainWindow.webContents.getURL().startsWith('data:text/html')) {
+      isDisplayingOffline = false;
+    }
   });
 
   // Salvar cookies no disco quando a janela for fechada
@@ -853,7 +975,7 @@ function createMenu() {
               type: 'info',
               title: 'Sobre',
               message: 'Franguxo Gestor de Pedidos',
-              detail: `Versão ${app.getVersion()}\n\nAplicativo para acessar o sistema Franguxo de gestão de pedidos.`,
+              detail: `Versão ${app.getVersion()} \n\nAplicativo para acessar o sistema Franguxo de gestão de pedidos.`,
               buttons: ['OK']
             });
           }
@@ -870,7 +992,7 @@ function createMenu() {
 function registerAutoUpdaterEvents() {
   autoUpdater.on('update-available', (info) => {
     const title = 'Atualização disponível';
-    const body = `Versão ${info.version} encontrada. Baixando atualização...`;
+    const body = `Versão ${info.version} encontrada.Baixando atualização...`;
     if (manualUpdateCheck) {
       dialog.showMessageBox(mainWindow, {
         type: 'info', title, message: body, buttons: ['OK']
@@ -902,7 +1024,7 @@ function registerAutoUpdaterEvents() {
       buttons: ['Reiniciar agora', 'Mais tarde'],
       defaultId: 0,
       cancelId: 1,
-      message: `A nova versão ${info.version} foi baixada. Deseja reiniciar e aplicar agora?`
+      message: `A nova versão ${info.version} foi baixada.Deseja reiniciar e aplicar agora ? `
     }).then(({ response }) => {
       if (response === 0) autoUpdater.quitAndInstall();
     });
@@ -972,7 +1094,7 @@ async function startLocalPrintServer() {
   try {
     const open = await isPortOpen(port);
     if (open) {
-      console.log(`Local print-server já está escutando em http://127.0.0.1:${port} — não irei spawnar uma nova instância.`);
+      console.log(`Local print - server já está escutando em http://127.0.0.1:${port} — não irei spawnar uma nova instância.`);
       return;
     }
 

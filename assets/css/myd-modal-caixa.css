@@ -1,0 +1,1009 @@
+/* ── Caixa — Modal (Popup) ── */
+.myd-caixa-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+}
+
+.myd-caixa-container {
+    background: #fff;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.myd-caixa-content-scroll {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.myd-cashier-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.myd-cashier-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+/* ── Status do caixa ── */
+.myd-caixa-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 22px;
+}
+
+.myd-caixa-status-open {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+}
+
+.myd-caixa-status-closed {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+}
+
+.myd-caixa-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.myd-caixa-dot-open {
+    background: #4caf50;
+    box-shadow: 0 0 6px rgba(76, 175, 80, .5);
+    animation: myd-pulse 2s ease-in-out infinite;
+}
+
+/* ── Botão Superior do Caixa ── */
+.myd-top-cashier-btn {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 30px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.myd-top-cashier-btn:hover {
+    background: #ebebeb;
+}
+
+.myd-top-cashier-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myd-top-cashier-texts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.myd-top-cashier-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: #333;
+}
+
+.myd-top-cashier-status {
+    font-size: 11px;
+    color: #888;
+}
+
+.myd-caixa-dot-closed {
+    background: #bbb;
+}
+
+@keyframes myd-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .5;
+    }
+}
+
+/* ── Botões Abrir/Fechar ── */
+.myd-caixa-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.myd-caixa-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    border: none;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    transition: transform .15s, opacity .2s;
+}
+
+.myd-caixa-btn:active:not(:disabled) {
+    transform: scale(.97);
+}
+
+.myd-caixa-btn:disabled {
+    cursor: not-allowed;
+}
+
+.myd-caixa-btn-open {
+    background: linear-gradient(135deg, #43a047, #66bb6a);
+}
+
+.myd-caixa-btn-open:hover:not(:disabled) {
+    background: linear-gradient(135deg, #388e3c, #43a047);
+}
+
+.myd-caixa-btn-close {
+    background: linear-gradient(135deg, #e53935, #ef5350);
+}
+
+.myd-caixa-btn-close:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c62828, #e53935);
+}
+
+.myd-caixa-btn-close-confirm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 0;
+    background: linear-gradient(135deg, #c62828, #e53935);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+}
+
+.myd-caixa-btn-close-confirm:hover {
+    background: linear-gradient(135deg, #b71c1c, #c62828);
+}
+
+.myd-caixa-btn-close-confirm:active {
+    transform: scale(.98);
+}
+
+/* ── Diferença de dinheiro ── */
+.myd-caixa-cash-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.myd-caixa-diff {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    flex: 1;
+    min-width: 200px;
+}
+
+.myd-caixa-diff-ok {
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    color: #2e7d32;
+}
+
+.myd-caixa-diff-more {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    color: #f57f17;
+}
+
+.myd-caixa-diff-less {
+    background: #fce4ec;
+    border: 1px solid #ef9a9a;
+    color: #c62828;
+}
+
+/* ── Diferença no resultado final ── */
+.myd-caixa-diff-result {
+    margin-bottom: 24px;
+}
+
+/* ── Utilitários ── */
+.myd-hidden {
+    display: none !important;
+}
+
+.myd-caixa-diff-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #444;
+}
+
+.myd-caixa-diff-summary strong {
+    color: #1a1a1a;
+}
+
+/* ─── Form ─── */
+.myd-cashier-form {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+}
+
+.myd-cashier-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.myd-cashier-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.myd-cashier-field input {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 14px;
+    border: 1.5px solid #dde1e6;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a1a1a;
+    transition: border-color .2s;
+    box-sizing: border-box;
+}
+
+.myd-cashier-field input:focus {
+    border-color: #e8530e;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(232, 83, 14, .12);
+}
+
+.myd-cashier-btn-generate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    padding: 11px 0;
+    background: #e8530e;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+}
+
+.myd-cashier-btn-generate:hover {
+    background: #d14a0c;
+}
+
+.myd-cashier-btn-generate:active {
+    transform: scale(.98);
+}
+
+/* ─── Loading ─── */
+.myd-cashier-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 32px 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.myd-cashier-spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #e8530e;
+    border-radius: 50%;
+    animation: myd-cashier-spin .7s linear infinite;
+}
+
+@keyframes myd-cashier-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ─── Period ─── */
+.myd-cashier-period {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #f0f4f8;
+    border: 1px solid #e0e5eb;
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #444;
+}
+
+.myd-cashier-period strong {
+    color: #1a1a1a;
+}
+
+.myd-cashier-period-sep {
+    color: #ccc;
+    font-weight: 300;
+}
+
+/* ─── Summary cards ─── */
+.myd-cashier-summary-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.myd-cashier-card {
+    background: #f4f6f8;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+}
+
+.myd-cashier-card-highlight {
+    background: linear-gradient(135deg, #e8530e, #ff7b3a);
+    color: #fff;
+}
+
+.myd-cashier-card-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    opacity: .7;
+    margin-bottom: 4px;
+}
+
+.myd-cashier-card-highlight .myd-cashier-card-label {
+    opacity: .85;
+    color: #fff;
+}
+
+.myd-cashier-card-value {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a1a;
+}
+
+.myd-cashier-card-highlight .myd-cashier-card-value {
+    color: #fff;
+}
+
+/* ─── Section titles ─── */
+.myd-cashier-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* ─── Payment grid ─── */
+.myd-cashier-payment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.myd-cashier-payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+.myd-cashier-payment-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.myd-cashier-payment-value {
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+/* ─── Products table ─── */
+.myd-cashier-table-wrap {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.myd-cashier-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.myd-cashier-table thead th {
+    background: #f4f6f8;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.myd-cashier-table tbody td {
+    padding: 9px 14px;
+    border-top: 1px solid #f0f0f0;
+    color: #333;
+}
+
+.myd-cashier-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.myd-cashier-total-row {
+    background: #f4f6f8 !important;
+    border-top: 2px solid #e0e0e0 !important;
+}
+
+.myd-cashier-total-row td {
+    font-size: 15px !important;
+    color: #1a1a1a !important;
+}
+
+.myd-cashier-table td:nth-child(2),
+.myd-cashier-table th:nth-child(2) {
+    text-align: center;
+    font-weight: 700;
+}
+
+.myd-cashier-table td:nth-child(3),
+.myd-cashier-table td:nth-child(4),
+.myd-cashier-table th:nth-child(3),
+.myd-cashier-table th:nth-child(4) {
+    text-align: right;
+}
+
+/* ─── Movimentações (Retirada / Suprimento) ─── */
+.myd-caixa-mov-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+/* Quando oculto pela classe myd-hidden, o display:none prevalece */
+
+.myd-caixa-mov-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: 2px solid;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    background: #fff;
+}
+
+.myd-caixa-mov-retirada {
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.myd-caixa-mov-retirada:hover {
+    background: #fdecea;
+}
+
+.myd-caixa-mov-suprimento {
+    border-color: #27ae60;
+    color: #27ae60;
+}
+
+.myd-caixa-mov-suprimento:hover {
+    background: #eafaf1;
+}
+
+/* Lista de movimentações */
+.myd-caixa-mov-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.myd-caixa-mov-list span {
+    color: #1a1a1a;
+}
+
+.myd-caixa-mov-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.myd-mov-ret {
+    background: #fdecea;
+}
+
+.myd-mov-sup {
+    background: #eafaf1;
+}
+
+.myd-mov-time {
+    color: #777;
+    font-size: 11px;
+}
+
+.myd-mov-val {
+    font-weight: 700;
+}
+
+.myd-mov-neg {
+    color: #e74c3c;
+}
+
+.myd-mov-pos {
+    color: #27ae60;
+}
+
+/* ── Histórico Recente de Fechamentos ── */
+.myd-caixa-recent-history {
+    margin-top: 24px;
+}
+
+.myd-caixa-recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.myd-caixa-recent-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 15px;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #eaeaea;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #333;
+}
+
+.myd-caixa-recent-icon {
+    font-size: 16px;
+}
+
+.myd-caixa-recent-info strong {
+    color: #1a1a1a;
+}
+
+.myd-caixa-recent-info span {
+    display: block;
+    color: #777;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.myd-caixa-recent-diff {
+    font-weight: 700;
+}
+
+.myd-recent-pos {
+    color: #27ae60;
+}
+
+.myd-recent-neg {
+    color: #e74c3c;
+}
+
+.myd-recent-zero {
+    color: #777;
+}
+
+/* ─── Actions ─── */
+.myd-cashier-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ── Barra de cabeçalho do modal ── */
+.myd-caixa-header-bar {
+    padding: 16px 24px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.myd-caixa-header-title {
+    font-weight: 700;
+    color: #333;
+    font-size: 18px;
+}
+
+.myd-caixa-x-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: background .15s;
+}
+
+.myd-caixa-x-btn:hover {
+    background: #f0f0f0;
+}
+
+/* ── Botões extras (Buscar / Retroativo) ── */
+.myd-caixa-extra-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.myd-btn-search {
+    flex: 1;
+    background: #f0f4ff;
+    color: #3a5bd9;
+    border-color: #c5d0f8;
+}
+
+.myd-btn-search:hover {
+    background: #e3eaff;
+}
+
+.myd-btn-retro {
+    flex: 1;
+    background: #fff8e1;
+    color: #b06000;
+    border-color: #ffe082;
+}
+
+.myd-btn-retro:hover {
+    background: #fff3cd;
+}
+
+/* ── Campos de formulário com larguras variadas ── */
+.myd-field-sm {
+    max-width: 300px;
+}
+
+.myd-field-md {
+    max-width: 400px;
+}
+
+.myd-field-flex {
+    flex: 1;
+    min-width: 120px;
+}
+
+.myd-field-mt {
+    margin-top: 12px;
+}
+
+.myd-field-open-cash {
+    max-width: 300px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.myd-field-open-cash label {
+    text-align: center;
+}
+
+/* ── Inputs ── */
+.myd-input-money {
+    font-size: 18px;
+    font-weight: 700;
+    padding: 10px;
+}
+
+.myd-input-open-cash {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 12px;
+}
+
+/* ── Margem superior em botões ── */
+.myd-btn-mt {
+    margin-top: 14px;
+}
+
+/* ── Rows flexíveis (retro / busca) ── */
+.myd-flex-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.myd-flex-row-mt {
+    margin-top: 10px;
+}
+
+/* ── Linha de busca (ID ou Data) ── */
+.myd-search-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    align-items: flex-end;
+}
+
+.myd-search-or {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 2px;
+    color: #999;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ── Mensagem de status (busca / retro) ── */
+.myd-status-msg {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+}
+
+/* ── Resultados de busca ── */
+.myd-search-results {
+    margin-top: 14px;
+}
+
+/* ── Hint retro ── */
+.myd-retro-hint {
+    color: #888;
+    font-size: 13px;
+    margin: 0 0 14px 0;
+}
+
+/* ── Primeiro th da tabela (alinhado à esquerda) ── */
+.myd-th-left {
+    text-align: left;
+}
+
+.myd-td-empty {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+/* ── Tabelas de Bruto / Líquido (feesHtml) ── */
+.myd-fees-wrap {
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    overflow: hidden;
+}
+
+.myd-fees-wrap-mt {
+    margin-top: 16px;
+}
+
+.myd-fees-title {
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 14px;
+
+}
+
+.myd-fees-title {
+    color: #1a1a1a;
+    background: #e2e2e2;
+    border-bottom-color: #c9c9c9;
+}
+
+/* ── Células da tabela de resumo ── */
+.myd-td-label {
+    text-align: left;
+    color: #555;
+}
+
+.myd-td-val {
+    font-weight: 700;
+    text-align: right;
+}
+
+.myd-td-val-red {
+    color: #e74c3c;
+}
+
+.myd-td-val-gray {
+    color: #888;
+}
+
+/* ── Linha de total (cells) ── */
+.myd-td-total-label {
+    text-align: right;
+    font-weight: 700;
+    padding: 12px 14px;
+    font-size: 15px;
+}
+
+.myd-td-total-val {
+    font-weight: 700;
+    padding: 12px 14px;
+    font-size: 15px;
+    text-align: right;
+}
+
+.myd-td-total-green {
+    color: #2e7d32;
+}
+
+.myd-cashier-btn-print {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: #2c3e50;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.myd-cashier-btn-print:hover {
+    background: #1a252f;
+}
+
+/* ─── Print ─── */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    #myd-caixa-panel,
+    #myd-caixa-panel * {
+        visibility: visible !important;
+    }
+
+    #myd-caixa-panel {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: auto !important;
+        background: #fff !important;
+        z-index: 999999 !important;
+    }
+
+    .myd-caixa-container {
+        max-width: 100% !important;
+    }
+
+    .myd-cashier-form,
+    .myd-cashier-actions,
+    .myd-caixa-buttons,
+    #myd-caixa-home {
+        display: none !important;
+    }
+
+    .myd-cashier-table-wrap {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 540px) {
+    .myd-cashier-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .myd-cashier-summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .myd-cashier-payment-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .myd-caixa-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .myd-caixa-cash-row {
+        flex-direction: column;
+    }
+
+    .myd-caixa-diff-summary {
+        grid-template-columns: 1fr;
+    }
+}

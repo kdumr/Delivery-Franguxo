@@ -14,43 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) {
             <!-- Titles per step: email title shown by default, register title shown when register step is active -->
 
             <!-- Etapa 1: Email -->
-        <div id="step-email" data-login-mode="cpf">
+        <div id="step-email" data-login-mode="phone">
             <h2 class="simple-auth-title simple-auth-title-email" style="margin-bottom: 12px;">Login</h2>
-            <div style="background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 10px 12px; border-radius: 6px; font-size: 13px; text-align: center; margin-bottom: 20px; font-weight: 500; line-height: 1.4;">
-                <strong>Atenção cliente:</strong> a partir do dia 10/03/2026 o login da plataforma será feito por meio do número de WhatsApp cadastrado.
-            </div>
             <div class="simple-auth-form-group-6mb">
-                <label id="login-identifier-label" class="simple-auth-label">CPF:</label>
-                <input type="text" id="user-email" placeholder="000.000.000-00" maxlength="14" class="simple-auth-input">
+                <label id="login-identifier-label" class="simple-auth-label">Telefone (Whatsapp):</label>
+                <input type="tel" id="user-email" placeholder="(22) 99999-9999" maxlength="17" class="simple-auth-input" oninput="maskPhoneInput(this)">
                     <div id="email-check-error" class="simple-auth-error-msg" style="display:none;margin-top:12px"></div>
             </div>
-            <button type="button" id="simple-auth-toggle-mode-btn" onclick="toggleLoginMode()" class="simple-auth-btn-secondary" style="margin-top: 0;">Entrar com telefone</button>
             <button type="button" id="simple-auth-continue-btn" onclick="SimpleAuth.checkEmail()" class="simple-auth-btn-primary" aria-live="polite" aria-busy="false" style="margin-bottom: 12px;">Continuar</button>
-            <script>
-            function toggleLoginMode() {
-                var stepEmail = document.getElementById('step-email');
-                var currentMode = stepEmail.getAttribute('data-login-mode');
-                var label = document.getElementById('login-identifier-label');
-                var input = document.getElementById('user-email');
-                var btn = document.getElementById('simple-auth-toggle-mode-btn');
-                var newMode = currentMode === 'cpf' ? 'phone' : 'cpf';
-                
-                stepEmail.setAttribute('data-login-mode', newMode);
-                input.value = ''; // clear input on switch
-                
-                if (newMode === 'phone') {
-                    label.innerText = 'Telefone (Whatsapp):';
-                    input.placeholder = '(22) 99999-9999';
-                    input.maxLength = 17;
-                    btn.innerText = 'Entrar com CPF';
-                } else {
-                    label.innerText = 'CPF:';
-                    input.placeholder = '000.000.000-00';
-                    input.maxLength = 14;
-                    btn.innerText = 'Entrar com telefone';
-                }
-            }
-            </script>
         </div>
 
         <!-- Etapa 2: Login (oculta inicialmente) -->

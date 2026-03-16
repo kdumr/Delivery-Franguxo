@@ -91,6 +91,7 @@ require_once dirname(__DIR__, 2) . '/includes/myd-save-delivery-time-handler.php
 				</svg>
 			</a>
 
+
 		</nav>
 		
 		<div class="myd-sidebar-footer">
@@ -107,7 +108,8 @@ require_once dirname(__DIR__, 2) . '/includes/myd-save-delivery-time-handler.php
 		<div class="top-bar">
 		<div class="myd-row-between">
 
-			<!-- Botão de status-card-button -->
+			<div style="display:flex; gap:20px; align-items:center;">
+				<!-- Botão de status-card-button -->
 						<div class="status-card-button skeleton" id="myd-status-card-btn">
 							<div class="status-card-content" style="display: flex; align-items: center; gap: 6px;">
 								<span class="status-ellipse">
@@ -140,8 +142,23 @@ require_once dirname(__DIR__, 2) . '/includes/myd-save-delivery-time-handler.php
 								</svg>
 							</span>
 						</div>
+
+				<!-- Botão de Caixa -->
+				<div class="myd-top-cashier-btn" id="myd-cashier-btn">
+					<span class="myd-top-cashier-icon">
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+							<path d="M4 6h16v2H4V6zm0 4h16v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8zm2 3a1 1 0 100 2h2a1 1 0 100-2H6zm5 0a1 1 0 100 2h2a1 1 0 100-2h-2zm5 0a1 1 0 100 2h2a1 1 0 100-2h-2zM7 2h10a1 1 0 011 1v2H6V3a1 1 0 011-1z" fill="#888888"/>
+						</svg>
+					</span>
+					<div class="myd-top-cashier-texts">
+						<span class="myd-top-cashier-title">Caixa</span>
+						<span class="myd-top-cashier-status" id="myd-cashier-btn-status">Carregando...</span>
+					</div>
+				</div>
+			</div>
 <script>
 const MYD_REST_NONCE = "<?php echo wp_create_nonce( 'wp_rest' ); ?>";
+const MYD_LETTER_IMG_URL = "<?php echo esc_url( defined('MYD_PLUGN_URL') ? MYD_PLUGN_URL . 'assets/img/franguxoletter.png' : plugins_url('assets/img/franguxoletter.png', dirname(__FILE__, 3) . '/myd-delivery-pro.php') ); ?>";
 // Polling para status da loja e atualização do botão status-card-button
 document.addEventListener('DOMContentLoaded', function() {
 	const btn = document.getElementById('myd-status-card-btn');
@@ -645,6 +662,11 @@ document.addEventListener('DOMContentLoaded', function(){
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
 <script src="<?php echo plugins_url('assets/js/myd-modal-horarios.js', dirname(__FILE__, 3) . '/myd-delivery-pro.php'); ?>?v=<?php echo time(); ?>"></script>
+
+<!-- Painel Fechamento de Caixa -->
+<?php include __DIR__ . '/modal-caixa.php'; ?>
+<link rel="stylesheet" href="<?php echo plugins_url('assets/css/myd-modal-caixa.css', dirname(__FILE__, 3) . '/myd-delivery-pro.php'); ?>?v=<?php echo time(); ?>">
+<script src="<?php echo plugins_url('assets/js/myd-modal-caixa.js', dirname(__FILE__, 3) . '/myd-delivery-pro.php'); ?>?v=<?php echo time(); ?>"></script>
 
 			<!-- Status WhatsApp -->
 			<div id="myd-whatsapp-widget" role="button" tabindex="0" aria-pressed="false" style="margin-left:auto;padding:8px 12px;border:1px solid #eef0f2;border-radius:6px;background:#F5F5F5;display:flex;align-items:center;gap:8px;">
@@ -1524,6 +1546,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	// Initial state
+	try { window.updateActionVisibility = updateActionVisibility; } catch(_){ }
 	updateActionVisibility();
 
 	// When an order item is clicked, existing handlers will toggle .fdm-active — call update after a short delay
@@ -2224,9 +2247,20 @@ window.printOrderSingle = function(orderId){
 
 	function connectSocketWithToken(token){
 		try {
+			// Guard: desconectar socket anterior para evitar listeners duplicados
+			try {
+				if (window.mydPushSocket && typeof window.mydPushSocket.disconnect === 'function') {
+					window.mydPushSocket.disconnect();
+					window.mydPushSocket = null;
+					console.log('[Orders Panel][DEBUG] socket anterior desconectado antes de reconectar');
+				}
+			} catch(_) { }
 			var socket = io(pushUrl, { auth: { token: token } });
 			// expose socket so other code can emit/listen if needed
 			try { window.mydPushSocket = socket; } catch(_){ }
+			// Sinaliza ao frontend.min.js (fallback) que o panel.php assumiu o socket
+			// assim o fallback não cria uma segunda conexão paralela com listeners duplicados
+			try { window._mydPanelSocketRegistered = true; } catch(_){ }
 			console.log('[Orders Panel][DEBUG] tentando conectar socket para', pushUrl);
 
 			// helpers to place orders in correct section and update counts
@@ -2542,7 +2576,13 @@ window.printOrderSingle = function(orderId){
 					var item = document.querySelector('.fdm-orders-items#' + CSS.escape(id));
 					if (!item) {
 						// Try to fetch the card and insert it without a full reload
-						return void fetchAndInsertOrderCard(id);
+						fetchAndInsertOrderCard(id);
+						// Disparar auto-print se o pedido chegou como confirmed e não existia no DOM
+						if (status === 'confirmed') {
+							// Aguardar inserção do card antes de imprimir (dedup feita internamente pelo triggerAutoPrint)
+							setTimeout(function(){ try { triggerAutoPrint(id); } catch(e){ console.error('[Orders Panel] auto-print after insert failed', e); } }, 1500);
+						}
+						return;
 					}
 					// map status to label and color (same mapping as PHP)
 					var map = {
@@ -2627,6 +2667,14 @@ window.printOrderSingle = function(orderId){
 					// move item to the correct section if needed
 					try {
 						var target = getTargetContainerByStatus(status);
+						if (target && item.parentElement !== target) {
+							if (item.parentElement) item.parentElement.removeChild(item);
+							target.insertBefore(item, target.firstElementChild || null);
+							if (typeof window.updateActionVisibility === 'function') window.updateActionVisibility();
+						}
+					} catch(e){ console.error(e); }
+
+					try {
 						   if (badge) {
 							   // Hide badge for terminal statuses
 							   if (["done", "finished", "canceled", "refunded"].indexOf(status) !== -1) {
@@ -2640,11 +2688,12 @@ window.printOrderSingle = function(orderId){
 								   badge.setAttribute('title', data.text);
 							   }
 						   }
-							triggerAutoPrint(id);
+						   if (status === 'confirmed') {
+						   triggerAutoPrint(id);
+					   }
 						} catch(err) {
-							console.error('[Orders Panel] auto-print trigger failed for order ' + id, err);
+							console.error('[Orders Panel] badge/auto-print update failed for order ' + id, err);
 						}
-					}
 
 					// If order became done (finished/completed), play check sound and ensure it is removed from pending alerts
 					// Note: normalizeStatus() converts 'finished' -> 'done', so we check both
@@ -2663,6 +2712,10 @@ window.printOrderSingle = function(orderId){
 			});
 		} catch(e) { console.error('[Orders Panel] socket error', e); }
 	}
+
+	// Sinalizar ANTES do fetch (síncronamente) para que o frontend.min.js
+	// (fallback) não crie uma segunda conexão de socket paralela
+	try { window._mydPanelSocketRegistered = true; } catch(_){ }
 
 	// request anonymous token (customer_id 0) from WP
 	fetch('/wp-json/myd-delivery/v1/push/auth', {
@@ -2980,6 +3033,13 @@ document.addEventListener('DOMContentLoaded', function(){
 						<div id="myd-printers-list" style="min-height:40px;">
 							<!-- printers will be injected here -->
 						</div>
+						<div style="margin-top:16px;padding-top:16px;border-top:1px solid #eef0f2;">
+							<button type="button" id="myd-test-print-btn" style="display:flex;align-items:center;gap:8px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;padding:10px 16px;cursor:pointer;font-size:14px;color:#333;transition:background .15s;"
+								onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'">
+								🖨️ <span id="myd-test-print-label">Testar Impressão</span>
+							</button>
+							<div id="myd-test-print-status" style="margin-top:8px;font-size:13px;color:#666;display:none;"></div>
+						</div>
 						<div style="margin-top:12px;">
 							<span id="myd-printer-status" style="margin-left:8px;color:green;display:none"></span>
 						</div>
@@ -3075,6 +3135,86 @@ document.addEventListener('DOMContentLoaded', function(){
 
     if (!settingsBtn || !modal) return;
 
+	var testPrintBtn = document.getElementById('myd-test-print-btn');
+	var testPrintLabel = document.getElementById('myd-test-print-label');
+	var testPrintStatus = document.getElementById('myd-test-print-status');
+
+	if (testPrintBtn) {
+		testPrintBtn.addEventListener('click', function() {
+			var savedPrinter = (typeof window.electron !== 'undefined' && window.electron && window.electron.ipcRenderer)
+				? null : null; // será lido pelo server via config
+
+			testPrintLabel.textContent = 'Imprimindo...';
+			testPrintBtn.disabled = true;
+			testPrintStatus.style.display = 'none';
+
+			var fakePrinter = pendingPrinter || currentSaved || undefined;
+
+			var fakeOrder = {
+				id: '1234',
+				store_name: 'Franguxo',
+				date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}),
+				localizador: 'ABCD1234',
+				customer_name: 'Cliente Teste',
+				customer_phone: '(47) 99999-9999',
+				address: 'Rua das Flores',
+				address_number: '123',
+				neighborhood: 'Centro',
+				city: 'Jaraguá do Sul',
+				state: 'SC',
+				items: [
+					{
+						product_name: 'Frango Grelhado',
+						quantity: '2',
+						product_price: '25,90',
+						total: 51.80,
+						extras: { groups: [{ group: 'Acompanhamento', items: [{ name: 'Fritas', quantity: '1', price: '5.00' }] }] },
+						product_note: 'Sem cebola'
+					},
+					{
+						product_name: 'Refrigerante Lata',
+						quantity: '1',
+						product_price: '6,00',
+						total: 6.00,
+						extras: { groups: [] }
+					}
+				],
+				subtotal: '57,80',
+				delivery_price: '5,00',
+				total: '62,80',
+				payment_status: 'waiting',
+				order_payment_method: 'DIN',
+				order_change: '70.00'
+			};
+
+			fetch('http://127.0.0.1:3420/print', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ orderData: fakeOrder, escpos: true, printer: fakePrinter })
+			})
+			.then(function(r) { return r.json(); })
+			.then(function(data) {
+				testPrintStatus.style.display = 'block';
+				if (data.ok) {
+					testPrintStatus.style.color = 'green';
+					testPrintStatus.textContent = '✅ Impressão enviada com sucesso!';
+				} else {
+					testPrintStatus.style.color = '#c00';
+					testPrintStatus.textContent = '❌ Erro: ' + (data.error || 'Desconhecido');
+				}
+			})
+			.catch(function() {
+				testPrintStatus.style.display = 'block';
+				testPrintStatus.style.color = '#c00';
+				testPrintStatus.textContent = '❌ Servidor de impressão não encontrado (porta 3420)';
+			})
+			.finally(function() {
+				testPrintLabel.textContent = 'Testar Impressão';
+				testPrintBtn.disabled = false;
+			});
+		});
+	}
+
 	function openModal(){
 		modal.style.display = 'flex';
 		// Detecta se está rodando no Electron usando a mesma lógica aplicada no order-list
@@ -3159,8 +3299,56 @@ document.addEventListener('DOMContentLoaded', function(){
 
 		if (!statusEl || !indicator) return;
 
+		function handleOfflineModal(isOffline) {
+			var modalId = 'myd-offline-modal';
+			var modal = document.getElementById(modalId);
+			if (isOffline) {
+				if (!modal) {
+					modal = document.createElement('div');
+					modal.id = modalId;
+					modal.style.position = 'fixed';
+					modal.style.top = '0';
+					modal.style.left = '0';
+					modal.style.width = '100vw';
+					modal.style.height = '100vh';
+					modal.style.backgroundColor = 'rgba(0,0,0,0.85)';
+					modal.style.zIndex = '999999';
+					modal.style.display = 'flex';
+					modal.style.flexDirection = 'column';
+					modal.style.alignItems = 'center';
+					modal.style.justifyContent = 'center';
+					modal.style.color = '#fff';
+					modal.style.fontFamily = 'Inter, sans-serif';
+					modal.innerHTML = `
+						<div style="background: #2C2D3E; padding: 40px; border-radius: 12px; text-align: center; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+							<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 64px; height: 64px; margin-bottom: 20px;"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.96973 5.03039L18.9697 20.0304L20.0304 18.9697L5.03039 3.96973L3.96973 5.03039ZM2.92454 9.67478C3.71079 8.88852 4.57369 8.2256 5.48917 7.68602L6.58987 8.78672C5.86769 9.17925 5.17917 9.65606 4.53875 10.2172L11.9999 17.5283L13.6826 15.8795L14.7433 16.9402L11.9999 19.6284L2.38879 10.2105L2.92454 9.67478ZM19.4611 10.2172L15.8255 13.7797L16.8862 14.8404L21.611 10.2105L21.0753 9.67478C17.6588 6.25827 12.7953 5.17059 8.45752 6.41173L9.69662 7.65083C13.0757 6.95288 16.7117 7.80832 19.4611 10.2172Z" fill="#f39c12"></path> </g></svg>
+							<h2 style="margin: 0 0 15px 0; font-size: 24px; font-weight: 600;">Sem Conexão</h2>
+							<p style="margin: 0; font-size: 16px; color: #aaa; line-height: 1.5;">O painel perdeu a conexão com a internet. Aguardando reconexão...</p>
+						</div>
+					`;
+					document.body.appendChild(modal);
+				}
+				modal.style.display = 'flex';
+			} else {
+				if (modal) {
+					modal.style.display = 'none';
+				}
+			}
+		}
+
 		function updateUi(state){
 			try {
+				if (!navigator.onLine && (!state || state === 'disconnected')) {
+					statusEl.textContent = 'Sem Internet';
+					indicator.style.background = '#f39c12'; // Laranja
+					handleOfflineModal(true);
+					// Não dar return aqui, vamos limpar a última variável
+					lastState = 'offline';
+					return;
+				} else {
+					handleOfflineModal(false);
+				}
+
 				var st = state ? String(state).toLowerCase() : null;
 				if (st === lastState) return;
 				lastState = st;
@@ -3179,6 +3367,15 @@ document.addEventListener('DOMContentLoaded', function(){
 				}
 			} catch(e) { console.error('[WhatsApp Status] updateUi error:', e); }
 		}
+
+		// Listener global para status de rede
+		window.addEventListener('online', function() {
+			handleOfflineModal(false);
+			fetchStatusOnce();
+		});
+		window.addEventListener('offline', function(){ 
+			updateUi(null); 
+		});
 
 		function fetchStatusOnce(){
 			var restUrl = (window.location && window.location.origin ? window.location.origin : '') + '/wp-json/myd-delivery/v1/evolution/whatsapp_status';

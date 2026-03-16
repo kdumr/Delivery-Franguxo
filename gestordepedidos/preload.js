@@ -3,7 +3,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 // Expor IPC seguro para o Front-end
 contextBridge.exposeInMainWorld('electronAPI', {
     showWhatsApp: () => ipcRenderer.send('show-whatsapp'),
-    hideWhatsApp: () => ipcRenderer.send('hide-whatsapp')
+    hideWhatsApp: () => ipcRenderer.send('hide-whatsapp'),
+    savePrinter: (data) => ipcRenderer.invoke('savePrinter', data),
+    loadConfig: () => ipcRenderer.invoke('loadConfig')
 });
 
 // Listener injetado diretamente pelo preload

@@ -26,6 +26,15 @@ class Create_Draft_Order {
 			die( \esc_html__( 'Ops! Security check failed.', 'my-delivey-wordpress' ) );
 		}
 
+		if ( function_exists('myd_check_ip_rate_limit') && myd_check_ip_rate_limit( 'create_draft_order', 30, 60 ) ) {
+			wp_send_json_error( array(
+				'success' => false,
+				'error'   => true,
+				'message' => __( 'Muitas requisições. Tente novamente em alguns segundos.', 'myd-delivery-pro' )
+			) );
+			wp_die();
+		}
+
 		$data = json_decode( stripslashes( $_POST['data'] ), true );
 
 		$cart = new Cart( $data['cart']['items'] ?? array() );

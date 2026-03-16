@@ -172,6 +172,11 @@ class Customer_Authentication {
             return;
         }
 
+        if ( function_exists('myd_check_ip_rate_limit') && myd_check_ip_rate_limit( 'customer_register', 10, 3600 ) ) {
+            wp_send_json_error( array( 'message' => __( 'Muitas tentativas. Tente novamente mais tarde.', 'myd-delivery-pro' ) ) );
+            return;
+        }
+
         $name = sanitize_text_field( $_POST['name'] );
         $email = sanitize_email( $_POST['email'] );
         $phone = sanitize_text_field( $_POST['phone'] );
@@ -300,6 +305,11 @@ class Customer_Authentication {
         // Verify nonce
         if ( ! wp_verify_nonce( $_POST['nonce'], 'myd_customer_auth' ) ) {
             wp_send_json_error( array( 'message' => __( 'Erro de segurança.', 'myd-delivery-pro' ) ) );
+            return;
+        }
+
+        if ( function_exists('myd_check_ip_rate_limit') && myd_check_ip_rate_limit( 'customer_login', 15, 1800 ) ) {
+            wp_send_json_error( array( 'message' => __( 'Muitas tentativas. Tente novamente em 30 minutos.', 'myd-delivery-pro' ) ) );
             return;
         }
 

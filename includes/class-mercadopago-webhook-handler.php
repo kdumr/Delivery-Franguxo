@@ -117,8 +117,13 @@ class Mercadopago_Webhook_Handler {
 			}
 			\update_post_meta( $order_id, 'order_payment_type', 'payment-integration' );
 
-			// Publish order
-			\wp_update_post( array( 'ID' => $order_id, 'post_status' => 'publish' ) );
+			// Publish order and update time to match the real moment of publishing
+			\wp_update_post( array(
+				'ID'            => $order_id,
+				'post_status'   => 'publish',
+				'post_date'     => \current_time('mysql'),
+				'post_date_gmt' => \current_time('mysql', 1)
+			) );
 
 			// Ensure an 8-digit order locator exists (compat with auto-generation in Plugin)
 			$locator = \get_post_meta( $order_id, 'order_locator', true );
@@ -194,12 +199,9 @@ class Mercadopago_Webhook_Handler {
 				}
 			}
 
-				// Notify push server (if configured)
-			try {
-				if ( \class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
-					\MydPro\Includes\Push\Push_Notifier::notify( \get_post_meta( $order_id, 'myd_customer_id', true ), $order_id, \get_post_meta($order_id, 'order_status', true) );
-				}
-			} catch(\Exception $e) {}
+				// Nota: a notificacao push e feita automaticamente pelo hook updated_post_meta
+				// em class-plugin.php (com deduplicacao). Nao chamar Push_Notifier::notify() aqui
+				// para evitar notificacoes duplicadas ao servidor push.
 
 			if ( \defined( 'WP_DEBUG' ) && \WP_DEBUG ) {
 				\error_log( '[MYD][MP Webhook Handler] Order ' . $order_id . ' published due to MP payment ' . $payment_id );

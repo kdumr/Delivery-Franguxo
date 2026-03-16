@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  push-server:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./key.pem:/app/key.pem
+      - ./cert.pem:/app/cert.pem
+    restart: unless-stopped

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push Server Test Page</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Push Server Test</h1>
+
+    <div>
+        <label for="customerId">MyD Customer ID:</label>
+        <input type="text" id="customerId" value="12345" />
+        <button onclick="getToken()">Get Token</button>
+    </div>
+
+    <div>
+        <p>Token: <span id="tokenDisplay">None</span></p>
+    </div>
+
+    <div>
+        <label for="orderId">Order ID:</label>
+        <input type="text" id="orderId" value="67890" />
+        <label for="status">Status:</label>
+        <input type="text" id="status" value="confirmed" />
+        <button onclick="sendNotification()">Send Notification</button>
+    </div>
+
+    <div>
+        <h2>Events Log</h2>
+        <div id="eventsLog" style="border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll;"></div>
+    </div>
+
+    <script>
+        let socket;
+        let token = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('eventsLog');
+            logDiv.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function getToken() {
+            const customerId = document.getElementById('customerId').value;
+            try {
+                const response = await fetch('/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ myd_customer_id: customerId })
+                });
+                const data = await response.json();
+                if (data.token) {
+                    token = data.token;
+                    document.getElementById('tokenDisplay').textContent = token;
+                    log('Token obtained: ' + token);
+                    connectSocket();
+                } else {
+                    log('Error getting token: ' + data.error);
+                }
+            } catch (error) {
+                log('Error: ' + error.message);
+            }
+        }
+
+        async function sendNotification() {
+            if (!token) {
+                log('No token available. Get token first.');
+                return;
+            }
+            const orderId = document.getElementById('orderId').value;
+            const status = document.getElementById('status').value;
+            const customerId = document.getElementById('customerId').value;
+            try {
+                const response = await fetch('/notify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ myd_customer_id: customerId, order_id: orderId, status: status })
+                });
+                const data = await response.json();
+                log('Notification sent: ' + JSON.stringify(data));
+            } catch (error) {
+                log('Error sending notification: ' + error.message);
+            }
+        }
+
+        function connectSocket() {
+            if (socket) socket.disconnect();
+            socket = io({
+                auth: { token: token }
+            });
+
+            socket.on('connect', () => {
+                log('Connected to Socket.IO');
+            });
+
+            socket.on('order.updated', (data) => {
+                log('Order updated: ' + JSON.stringify(data));
+            });
+
+            socket.on('disconnect', () => {
+                log('Disconnected from Socket.IO');
+            });
+
+            socket.on('connect_error', (error) => {
+                log('Connection error: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">e:\Meus Documentos\Desktop\DevDeliveryFranguxo\push-server\test.html

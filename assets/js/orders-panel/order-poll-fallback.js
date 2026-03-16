@@ -139,6 +139,20 @@
 
                 // Inserir apenas os pedidos novos
                 newIds.forEach(function (id) {
+                    // Guard: evita inserção se o card já existe no DOM (pode ter sido inserido pelo Socket.IO)
+                    if (document.getElementById(String(id))) {
+                        console.log(LOG_PREFIX, 'Card #' + id + ' já existe no DOM — pulando inserção (dedup)');
+                        return;
+                    }
+
+                    // Guard: evita inserção concorrente com Socket.IO usando Set global
+                    if (!window.__mydInsertingIds) window.__mydInsertingIds = new Set();
+                    if (window.__mydInsertingIds.has(String(id))) {
+                        console.log(LOG_PREFIX, 'Card #' + id + ' já está sendo inserido por outro processo — pulando (dedup)');
+                        return;
+                    }
+                    window.__mydInsertingIds.add(String(id));
+
                     var found = null;
                     try { found = parsed.querySelector('.fdm-orders-items#' + CSS.escape(id)); } catch (_) { found = null; }
                     if (!found) {
@@ -150,7 +164,15 @@
                     }
 
                     if (!found) {
+                        window.__mydInsertingIds.delete(String(id));
                         console.warn(LOG_PREFIX, 'Card #' + id + ' não encontrado no HTML retornado');
+                        return;
+                    }
+
+                    // Guard final: verifica novamente no DOM antes de inserir (janela de tempo)
+                    if (document.getElementById(String(id))) {
+                        window.__mydInsertingIds.delete(String(id));
+                        console.log(LOG_PREFIX, 'Card #' + id + ' apareceu no DOM durante busca — pulando (dedup)');
                         return;
                     }
 
@@ -164,6 +186,7 @@
                         } catch (_) {
                             try { container.appendChild(found); } catch (__) { }
                         }
+                        window.__mydInsertingIds.delete(String(id));
 
                         // Animação de destaque
                         try {
@@ -188,6 +211,8 @@
                         } catch (_) { }
 
                         console.log(LOG_PREFIX, 'Pedido #' + id + ' inserido com sucesso (status: ' + ns + ')');
+                    } else {
+                        window.__mydInsertingIds.delete(String(id));
                     }
                 });
 
@@ -200,7 +225,7 @@
                             newIds.forEach(function (id) {
                                 try {
                                     var fullEl = parsedFull.querySelector('#content-' + CSS.escape(id));
-                                    if (fullEl && !document.querySelector('#content-' + CSS.escape(id))) {
+                                    if (fullEl && !document.getElementById('content-' + id)) {
                                         fullEl.style.display = 'none';
                                         host.appendChild(fullEl);
                                     }
@@ -260,6 +285,58 @@
         }, INITIAL_DELAY);
     }
 
+    // ──────────────────────────── Deduplicação ────────────────────────────
+
+    /**
+     * Remove cards duplicados do DOM.
+     * Um card é considerado duplicado quando há mais de um .fdm-orders-items com o mesmo id no DOM.
+     * Mantém apenas o primeiro; remove os demais.
+     */
+    function dedupeOrderCards() {
+        try {
+            var seen = {};
+            var all = document.querySelectorAll('.fdm-orders-items');
+            var removed = 0;
+            all.forEach(function (el) {
+                var id = el.id;
+                if (!id) return;
+                if (seen[id]) {
+                    // Duplicata encontrada — remover
+                    try { el.parentNode && el.parentNode.removeChild(el); removed++; } catch (_) { }
+                } else {
+                    seen[id] = true;
+                }
+            });
+
+            // Deduplicar detalhes (.fdm-orders-full > #content-XXXX)
+            var seenContent = {};
+            var allContent = document.querySelectorAll('.fdm-orders-full [id^="content-"]');
+            allContent.forEach(function (el) {
+                var id = el.id;
+                if (!id) return;
+                if (seenContent[id]) {
+                    try { el.parentNode && el.parentNode.removeChild(el); removed++; } catch (_) { }
+                } else {
+                    seenContent[id] = true;
+                }
+            });
+
+            if (removed > 0) {
+                console.warn(LOG_PREFIX, 'MydDedupeOrders: ' + removed + ' card(s) duplicado(s) removido(s) do DOM');
+                // Atualizar contadores após limpeza
+                try {
+                    if (window.MydRefreshOrderCounts && typeof window.MydRefreshOrderCounts === 'function') {
+                        window.MydRefreshOrderCounts();
+                    }
+                } catch (_) { }
+            }
+            return removed;
+        } catch (e) {
+            console.warn(LOG_PREFIX, 'MydDedupeOrders: erro ao deduplicar', e);
+            return 0;
+        }
+    }
+
     // Inicializa quando o DOM estiver pronto
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
@@ -267,13 +344,20 @@
         init();
     }
 
-    // Expor globalmente para debug
+    // Rodar deduplicação automaticamente 1s após a carga (captura duplicatas pré-existentes)
+    setTimeout(dedupeOrderCards, 1000);
+    // Rodar novamente após 5s para cobrir chegadas tardias do Socket.IO
+    setTimeout(dedupeOrderCards, 5000);
+
+    // Expor globalmente para debug e chamada manual
+    window.MydDedupeOrders = dedupeOrderCards;
     window.MydOrderPollFallback = {
         start: startPolling,
         stop: stopPolling,
         poll: poll,
         isPolling: function () { return isPolling; },
-        isSocketConnected: isSocketConnected
+        isSocketConnected: isSocketConnected,
+        dedupe: dedupeOrderCards
     };
 
 })();

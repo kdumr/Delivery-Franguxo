@@ -15,3 +15,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Configuração local (pode conter URLs e dados sensíveis)
+gestordepedidos/app-config.json
+
+# Cache interno do SSE (gerado em runtime)
+includes/sse-order-status-cache.json
