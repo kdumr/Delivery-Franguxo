@@ -14,18 +14,18 @@ const crypto = require('crypto');
 const { pollEvents, acknowledgeEvents, processEvent } = require('./ifood-orders');
 
 // ─── Config ─────────────────────────────────────────────────────────────────
-const SECRET_KEY       = process.env.SECRET_KEY || 'your-super-secret-key-change-this-in-production';
-const BACKEND_SECRET   = process.env.BACKEND_SECRET || 'backend-config-secret-change-me'; // WP → backend
-const PORT             = process.env.PORT || 80;
-const USE_HTTPS        = process.env.USE_HTTPS === 'true';
-const CORS_ORIGIN      = process.env.CORS_ORIGIN || '*';
+const SECRET_KEY = process.env.SECRET_KEY || 'your-super-secret-key-change-this-in-production';
+const BACKEND_SECRET = process.env.BACKEND_SECRET || 'backend-config-secret-change-me'; // WP → backend
+const PORT = process.env.PORT || 80;
+const USE_HTTPS = process.env.USE_HTTPS === 'true';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
 // iFood credentials from env (base values; can be overridden by WordPress push)
-let IFOOD_CLIENT_ID     = process.env.IFOOD_CLIENT_ID || '';
+let IFOOD_CLIENT_ID = process.env.IFOOD_CLIENT_ID || '';
 let IFOOD_CLIENT_SECRET = process.env.IFOOD_CLIENT_SECRET || '';
 
 // WordPress destination
-let WP_BASE_URL  = process.env.WP_WEBHOOK_URL || '';  // e.g. https://franguxo.app.br
+let WP_BASE_URL = process.env.WP_WEBHOOK_URL || '';  // e.g. https://franguxo.app.br
 let WP_API_SECRET = process.env.WP_API_SECRET || '';
 
 // iFood Merchant ID — pushed by WordPress when settings are saved
@@ -39,11 +39,11 @@ function loadConfig() {
     if (fs.existsSync(CONFIG_PATH)) {
       const raw = fs.readFileSync(CONFIG_PATH, 'utf8');
       const cfg = JSON.parse(raw);
-      if (cfg.merchantId)    IFOOD_MERCHANT_ID  = cfg.merchantId;
-      if (cfg.wpApiSecret)   WP_API_SECRET      = cfg.wpApiSecret;
-      if (cfg.wpBaseUrl)     WP_BASE_URL        = cfg.wpBaseUrl;
-      if (cfg.clientId)      IFOOD_CLIENT_ID    = cfg.clientId;
-      if (cfg.clientSecret)  IFOOD_CLIENT_SECRET = cfg.clientSecret;
+      if (cfg.merchantId) IFOOD_MERCHANT_ID = cfg.merchantId;
+      if (cfg.wpApiSecret) WP_API_SECRET = cfg.wpApiSecret;
+      if (cfg.wpBaseUrl) WP_BASE_URL = cfg.wpBaseUrl;
+      if (cfg.clientId) IFOOD_CLIENT_ID = cfg.clientId;
+      if (cfg.clientSecret) IFOOD_CLIENT_SECRET = cfg.clientSecret;
       console.log('[Config] Loaded from config.json');
     }
   } catch (e) {
@@ -54,10 +54,10 @@ function loadConfig() {
 function saveConfig() {
   try {
     const cfg = {
-      merchantId:   IFOOD_MERCHANT_ID,
-      wpApiSecret:  WP_API_SECRET,
-      wpBaseUrl:    WP_BASE_URL,
-      clientId:     IFOOD_CLIENT_ID,
+      merchantId: IFOOD_MERCHANT_ID,
+      wpApiSecret: WP_API_SECRET,
+      wpBaseUrl: WP_BASE_URL,
+      clientId: IFOOD_CLIENT_ID,
       clientSecret: IFOOD_CLIENT_SECRET,
     };
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
@@ -183,11 +183,11 @@ app.post('/config', (req, res) => {
 
   const { merchantId, wpApiSecret, wpBaseUrl, clientId, clientSecret } = req.body || {};
 
-  if (merchantId)    IFOOD_MERCHANT_ID   = merchantId;
-  if (wpApiSecret)   WP_API_SECRET       = wpApiSecret;
-  if (wpBaseUrl)     WP_BASE_URL         = wpBaseUrl;
-  if (clientId)      IFOOD_CLIENT_ID     = clientId;
-  if (clientSecret)  IFOOD_CLIENT_SECRET = clientSecret;
+  if (merchantId) IFOOD_MERCHANT_ID = merchantId;
+  if (wpApiSecret) WP_API_SECRET = wpApiSecret;
+  if (wpBaseUrl) WP_BASE_URL = wpBaseUrl;
+  if (clientId) IFOOD_CLIENT_ID = clientId;
+  if (clientSecret) IFOOD_CLIENT_SECRET = clientSecret;
 
   saveConfig();
 
@@ -199,7 +199,7 @@ app.post('/config', (req, res) => {
 app.get('/ifood/status', verifyToken, (req, res) => {
   res.json({
     merchantId: IFOOD_MERCHANT_ID || null,
-    wpBaseUrl:  WP_BASE_URL || null,
+    wpBaseUrl: WP_BASE_URL || null,
     polling: {
       active: !!pollingTimer,
       lastPollAt: lastPollAt ? new Date(lastPollAt).toISOString() : null,
@@ -212,11 +212,11 @@ app.get('/ifood/status', verifyToken, (req, res) => {
 // ┌────────────────────────────────────────────────────────────────────────────┐
 // │ iFood Polling (fallback)                                                   │
 // └────────────────────────────────────────────────────────────────────────────┘
-const POLL_INTERVAL_MS   = 30 * 1000; // 30 seconds
+const POLL_INTERVAL_MS = 30 * 1000; // 30 seconds
 const WEBHOOK_TIMEOUT_MS = 60 * 1000; // consider webhooks "working" if received in last 60s
 
-let pollingTimer  = null;
-let lastPollAt    = 0;
+let pollingTimer = null;
+let lastPollAt = 0;
 let lastWebhookAt = 0;
 
 async function runPollCycle() {
@@ -265,7 +265,7 @@ function initIfoodPolling() {
 }
 
 // Misc routes
-app.get('/test',   (req, res) => res.sendFile(__dirname + '/test.html'));
+app.get('/test', (req, res) => res.sendFile(__dirname + '/test.html'));
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // ─── HTTP / HTTPS Server ─────────────────────────────────────────────────────
@@ -275,12 +275,12 @@ const io = new Server(server, {
 });
 
 // ─── Loyalty cleanup (DB) ────────────────────────────────────────────────────
-const DB_HOST     = process.env.DB_HOST     || '187.110.167.98';
-const DB_PORT     = process.env.DB_PORT     || '3306';
-const DB_USER     = process.env.DB_USER     || process.env.MYSQL_USER || 'franguxo_backend';
-const DB_PASS     = process.env.DB_PASS     || process.env.MYSQL_PASS || 'z}H.i)fI-(Yajr?t';
-const DB_NAME     = process.env.DB_NAME     || process.env.MYSQL_DATABASE || 'franguxo_wp_naktw';
-const DB_PREFIX   = process.env.DB_PREFIX   || 'Fgz5Ggu_';
+const DB_HOST = process.env.DB_HOST || '187.110.167.98';
+const DB_PORT = process.env.DB_PORT || '3306';
+const DB_USER = process.env.DB_USER || process.env.MYSQL_USER || 'franguxo_backend';
+const DB_PASS = process.env.DB_PASS || process.env.MYSQL_PASS || 'z}H.i)fI-(Yajr?t';
+const DB_NAME = process.env.DB_NAME || process.env.MYSQL_DATABASE || 'franguxo_wp_naktw';
+const DB_PREFIX = process.env.DB_PREFIX || 'Fgz5Ggu_';
 const LOYALTY_INTERVAL = process.env.LOYALTY_CLEAN_INTERVAL ? parseInt(process.env.LOYALTY_CLEAN_INTERVAL, 10) : 10;
 
 let dbPool = null;
@@ -303,9 +303,9 @@ async function initDbPool() {
           });
           hostToUse = a;
           break;
-        } catch (_) {}
+        } catch (_) { }
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   dbPool = mysql.createPool({
@@ -356,9 +356,9 @@ async function cleanupExpiredLoyaltyPointsOnce() {
 }
 
 const BASE_INTERVAL = Math.max(1, LOYALTY_INTERVAL);
-const MAX_INTERVAL  = Math.max(BASE_INTERVAL, parseInt(process.env.LOYALTY_MAX_INTERVAL || '3600', 10));
+const MAX_INTERVAL = Math.max(BASE_INTERVAL, parseInt(process.env.LOYALTY_MAX_INTERVAL || '3600', 10));
 let currentInterval = BASE_INTERVAL;
-let lastErrorLog    = 0;
+let lastErrorLog = 0;
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 (async () => {
@@ -441,4 +441,4 @@ if (USE_HTTPS && (!fs.existsSync('key.pem') || !fs.existsSync('cert.pem'))) {
 
 process.on('unhandledRejection', (reason) => {
   console.error('[UnhandledRejection]', reason?.stack || reason);
-});
+n);

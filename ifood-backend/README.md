@@ -1,72 +1,72 @@
 # iFood Backend
 
-Serviço Node.js dedicado à integração do iFood com o WordPress.
+Backend Node.js intermediário entre iFood e WordPress, implantado via Docker no EasyPanel.
 
-## Arquitetura
+## Fluxo
 
 ```
-iFood
-  ├── Webhook → POST /ifood/webhook  (primário)
-  └── Polling ← events:polling       (fallback a cada 30s)
-         ↓
-  iFood Backend (este serviço)
-  ├── Valida HMAC, processa eventos
-  ├── Busca detalhes do pedido (PLACED)
-  ├── Acknowledgment automático
-  └── POST /wp-json/myd-delivery/v1/ifood/create-order
-         ↓
-  WordPress → cria myd_order
+iFood → POST /ifood/webhook → (processa evento) → WordPress REST API
+         └── Polling 30s (fallback se webhook silent > 60s)
 ```
 
 ## Configuração
 
-### 1. Copie o `.env.example`
+### 1. Clone / faça upload para o EasyPanel
 
-```bash
-cp .env.example .env
-```
+No EasyPanel, crie um novo app de tipo **Docker** apontando para este diretório.
 
-Edite o `.env` com suas credenciais.
+### 2. Variáveis de Ambiente
 
-### 2. Rodar com Docker Compose
-
-```bash
-docker compose up -d
-```
-
-### 3. Rodar manualmente
-
-```bash
-npm install
-node server.js
-```
-
-## Variáveis de Ambiente
+Copie `.env.example` como `.env` e preencha:
 
 | Variável | Descrição |
 |---|---|
-| `PORT` | Porta do servidor (padrão: `3001`) |
-| `BACKEND_SECRET` | Segredo para autenticar o WordPress ao fazer push de config |
-| `WP_BASE_URL` | URL base do WordPress (ex: `https://seusite.com.br`) |
-| `WP_API_SECRET` | Segredo usado no header `X-MyD-Secret` ao criar pedidos no WP |
-| `IFOOD_CLIENT_ID` | Client ID iFood (opcional se usar push via WP) |
-| `IFOOD_CLIENT_SECRET` | Client Secret iFood (opcional se usar push via WP) |
-| `IFOOD_MERCHANT_ID` | Merchant ID iFood (opcional se usar push via WP) |
+| `PORT` | Porta do servidor (padrão: `3000`) |
+| `BACKEND_SECRET` | Segredo compartilhado com o WordPress |
+| `IFOOD_CLIENT_ID` | Client ID gerado no portal iFood |
+| `IFOOD_CLIENT_SECRET` | Client Secret do portal iFood |
+| `IFOOD_MERCHANT_ID` | ID do restaurante no iFood |
+| `WP_BASE_URL` | URL do WordPress (ex: `https://franguxo.app.br`) |
+| `WP_API_SECRET` | Segredo para validar o recebimento no WordPress |
+
+> As variáveis iFood e WordPress também podem ser configuradas dinamicamente via push do WordPress (endpoint `/config`).
+
+### 3. Webhook URL no Portal iFood
+
+No [Portal do Desenvolvedor iFood](https://developer.ifood.com.br), cadastre como URL de Webhook:
+
+```
+https://SEU-BACKEND.easypanel.host/ifood/webhook
+```
+
+### 4. Configurar o WordPress
+
+No painel de Settings → iFood, preencha:
+- Client ID / Client Secret
+- Merchant ID
+- URL do Backend + Backend Secret
+
+O WordPress fará automaticamente um push de configurações para este backend.
 
 ## Endpoints
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `POST` | `/ifood/webhook` | Recebe eventos do iFood (webhook) |
-| `POST` | `/config` | WordPress envia config `{ merchantId, clientId, ... }` |
-| `GET` | `/ifood/status` | Status atual do serviço |
-| `GET` | `/health` | Health check |
+| `GET` | `/health` | Status e informações do backend |
+| `POST` | `/ifood/webhook` | Recebe eventos do iFood |
+| `POST` | `/config` | Push de configurações do WordPress |
 
-## EasyPanel / Deploy
+## Desenvolvimento Local
 
-Configure as variáveis de ambiente no painel e aponte o build para este diretório.
-
-**Webhook URL para configurar no portal iFood:**
+```bash
+cp .env.example .env
+# edite o .env
+npm install
+npm run dev
 ```
-https://SEU-DOMINIO/ifood/webhook
+
+Ou via Docker:
+
+```bash
+docker-compose up
 ```

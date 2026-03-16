@@ -1,15 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-$ifood_client_id       = get_option('ifood_client_id', '');
-$ifood_client_secret   = get_option('ifood_client_secret', '');
-$ifood_access_token    = get_option('ifood_access_token', '');
-$ifood_token_expiry    = get_option('ifood_token_expiry', '');
-$ifood_merchant_id     = get_option('ifood_merchant_id', '');
-$wp_ifood_api_secret   = get_option('wp_ifood_api_secret', '');
-$myd_backend_push_secret = get_option('myd_backend_push_secret', '');
-$myd_backend_url       = get_option('myd_backend_url', '');
-$ifood_last_push       = get_option('ifood_last_config_push', '');
+$ifood_client_id     = get_option('ifood_client_id', '');
+$ifood_client_secret = get_option('ifood_client_secret', '');
+$ifood_access_token  = get_option('ifood_access_token', '');
+$ifood_token_expiry  = get_option('ifood_token_expiry', '');
 ?>
 
 <style>
@@ -55,13 +50,12 @@ $ifood_last_push       = get_option('ifood_last_config_push', '');
 <div id="tab-ifood-content" class="myd-tabs-content">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
         <img src="https://logospng.org/download/ifood/logo-ifood-1024.png" alt="iFood" style="height:36px;" />
-        <h2 style="margin:0;">Integracao iFood</h2>
+        <h2 style="margin:0;">Integração iFood</h2>
     </div>
 
-    <!-- Secao de Autenticacao -->
     <div class="ifood-section">
         <div class="ifood-section-header" onclick="ifoodToggleSection(this)">
-            <h3><span class="dashicons dashicons-lock"></span> Autenticacao</h3>
+            <h3><span class="dashicons dashicons-lock"></span> Autenticação</h3>
             <span class="dashicons dashicons-arrow-down-alt2"></span>
         </div>
         <div class="ifood-section-body">
@@ -73,60 +67,22 @@ $ifood_last_push       = get_option('ifood_last_config_push', '');
                 <label for="ifood_client_secret">Client Secret</label>
                 <input type="password" name="ifood_client_secret" id="ifood_client_secret" value="<?php echo esc_attr($ifood_client_secret); ?>" />
             </div>
+            
             <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+
             <div class="ifood-field">
                 <label for="ifood_access_token">Access Token</label>
                 <input type="text" name="ifood_access_token" id="ifood_access_token" value="<?php echo esc_attr($ifood_access_token); ?>" readonly style="background:#f0f0f1;" />
             </div>
+
             <div id="ifood_token_expiry_info" style="margin-bottom: 15px;">
-                <label>Expiracao do Token:</label>
+                <label>Expiração do Token:</label>
                 <span id="ifood_token_expiry_label" style="font-weight:bold;"><?php echo $ifood_token_expiry ? esc_html($ifood_token_expiry) : 'Nenhum token gerado'; ?></span>
                 <input type="hidden" name="ifood_token_expiry" id="ifood_token_expiry" value="<?php echo esc_attr($ifood_token_expiry); ?>" />
             </div>
+
             <button type="button" class="button button-primary" id="ifood_authenticate_btn">Autenticar com iFood</button>
             <span id="ifood_auth_status" style="margin-left: 10px; font-weight: 500;"></span>
-        </div>
-    </div>
-
-    <!-- Secao de Integracao de Pedidos -->
-    <div class="ifood-section">
-        <div class="ifood-section-header" onclick="ifoodToggleSection(this)">
-            <h3><span class="dashicons dashicons-cart"></span> Integracao de Pedidos (Backend)</h3>
-            <span class="dashicons dashicons-arrow-down-alt2"></span>
-        </div>
-        <div class="ifood-section-body">
-            <p style="color:#555;margin-top:0;">Para receber pedidos do iFood no sistema, configure e salve. O WordPress enviara as configuracoes ao backend automaticamente.</p>
-            <div class="ifood-field">
-                <label for="ifood_merchant_id">Merchant ID <span style="color:#888;font-weight:normal;">(ID do restaurante no iFood)</span></label>
-                <input type="text" name="ifood_merchant_id" id="ifood_merchant_id" value="<?php echo esc_attr($ifood_merchant_id); ?>" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
-                <p class="description">Encontrado no portal iFood &rarr; Configuracoes &rarr; API.</p>
-            </div>
-            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-            <h4 style="margin:0 0 10px;">Seguranca entre WordPress e Backend</h4>
-            <div class="ifood-field">
-                <label for="wp_ifood_api_secret">WP API Secret</label>
-                <input type="password" name="wp_ifood_api_secret" id="wp_ifood_api_secret" value="<?php echo esc_attr($wp_ifood_api_secret); ?>" placeholder="Segredo que o backend usa para autenticar" />
-                <p class="description">O backend envia este segredo no header <code>X-MyD-Secret</code> ao criar pedidos.</p>
-            </div>
-            <div class="ifood-field">
-                <label for="myd_backend_push_secret">Backend Push Secret</label>
-                <input type="password" name="myd_backend_push_secret" id="myd_backend_push_secret" value="<?php echo esc_attr($myd_backend_push_secret); ?>" placeholder="Segredo que o WordPress usa para enviar config ao Backend" />
-                <p class="description">Deve ser igual a <code>BACKEND_SECRET</code> no <code>.env</code> do backend.</p>
-            </div>
-            <?php if ($ifood_last_push) : ?>
-            <div style="background:#f0f7ff;border:1px solid #c7d9f4;border-radius:6px;padding:10px 14px;margin-top:12px;">
-                <span style="color:#0a4a8a;">&#10003; Configuracao enviada ao backend em: <strong><?php echo esc_html($ifood_last_push); ?></strong></span>
-            </div>
-            <?php elseif ($myd_backend_url) : ?>
-            <div style="background:#fff8e1;border:1px solid #f0c36d;border-radius:6px;padding:10px 14px;margin-top:12px;">
-                <span style="color:#7a5900;">&#9888; Salve as configuracoes para enviar ao backend.</span>
-            </div>
-            <?php endif; ?>
-            <div style="margin-top:14px;">
-                <p class="description" style="font-size:12px;"><strong>URL do Webhook iFood:</strong><br>
-                <code><?php echo esc_url( ($myd_backend_url ?: 'http://SEU-BACKEND') . '/ifood/webhook' ); ?></code></p>
-                <p class="description" style="font-size:12px;">Configure essa URL no portal iFood para receber pedidos via webhook.</p>
-            </div>
         </div>
     </div>
 </div>

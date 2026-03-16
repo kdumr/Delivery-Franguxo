@@ -636,19 +636,18 @@ class Settings extends Admin_Settings {
 				'option_group' => self::CONFIG_GROUP,
 				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
 			],
-			// iFood Merchant / Integration
 			[
-				'name' => 'ifood_merchant_id',
+				'name' => 'ifood_wp_api_secret',
 				'option_group' => self::CONFIG_GROUP,
 				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
 			],
 			[
-				'name' => 'wp_ifood_api_secret',
+				'name' => 'ifood_backend_url',
 				'option_group' => self::CONFIG_GROUP,
 				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
 			],
 			[
-				'name' => 'myd_backend_push_secret',
+				'name' => 'ifood_backend_secret',
 				'option_group' => self::CONFIG_GROUP,
 				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
 			],

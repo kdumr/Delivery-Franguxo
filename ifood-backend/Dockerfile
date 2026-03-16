@@ -1,18 +1,17 @@
-# ─── Build stage ─────────────────────────────────────────────────────────────
 FROM node:20-alpine
 
 WORKDIR /app
 
+# Install dependencies first (layer cache)
 COPY package.json ./
 RUN npm install --omit=dev
 
-COPY server.js ifood-token.js ifood-orders.js ./
+# Copy source
+COPY . .
 
+# Create data directory for persisted config
 RUN mkdir -p /app/data
 
-EXPOSE 3001
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost:3001/health || exit 1
+EXPOSE 3000
 
 CMD ["node", "server.js"]

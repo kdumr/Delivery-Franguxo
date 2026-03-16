@@ -528,11 +528,6 @@ final class Plugin {
 			add_action( 'admin_menu', [ $this->admin_menu_pages, 'add_admin_pages' ] );
 		}
 
-		// REST API de integração iFood — instanciado fora do is_admin()
-		// pois requisições REST do backend não são admin
-		require_once(MYD_PLUGIN_PATH . '/includes/admin/class-ifood-rest-api.php');
-		new \MydPro\Includes\Admin\Ifood_REST_API();
-
 		$this->custom_posts = new Custom_Posts();
 		$this->custom_posts->register_custom_posts();
 

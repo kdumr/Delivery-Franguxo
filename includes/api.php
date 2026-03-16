@@ -51,6 +51,8 @@ class Myd_Api {
 		add_action( 'rest_api_init', [ $this, 'register_manual_order_routes' ] );
 		// Register caixa endpoints
 		add_action( 'rest_api_init', [ $this, 'register_caixa_routes' ] );
+		// Register iFood backend reception endpoints
+		add_action( 'rest_api_init', [ $this, 'register_ifood_routes' ] );
 		// Register create order page route
 		add_action( 'template_redirect', [ $this, 'handle_create_order_page' ] );
 
@@ -2747,6 +2749,165 @@ class Myd_Api {
 			'reportData' => $report_data,
 			'closureData'=> $closure_data,
 		], 200);
+	}
+
+	/**
+	 * Register iFood order reception routes.
+	 * Called by the ifood-backend Node.js service when an order event is received.
+	 * 
+	 * POST /wp-json/myd/v1/ifood/order
+	 * Header: X-WP-Secret: <value matching option myd_ifood_wp_secret>
+	 * Body: { event: {...}, order: {...|null} }
+	 */
+	public function register_ifood_routes() {
+		register_rest_route('myd/v1', '/ifood/order', [
+			'methods'             => 'POST',
+			'callback'            => [ $this, 'handle_ifood_order' ],
+			'permission_callback' => '__return_true', // secret validated inside
+		]);
+	}
+
+	/**
+	 * Handle incoming iFood order from the Node.js backend.
+	 */
+	public function handle_ifood_order( $request ) {
+		// Validate shared secret
+		$expected_secret = get_option('ifood_wp_api_secret', '');
+		$received_secret = $request->get_header('x_wp_secret');
+
+		if ( empty($expected_secret) || $received_secret !== $expected_secret ) {
+			return new \WP_REST_Response([ 'error' => 'Unauthorized' ], 401);
+		}
+
+		$body  = $request->get_json_params();
+		$event = isset($body['event']) ? $body['event'] : [];
+		$order = isset($body['order']) ? $body['order'] : null;
+
+		if ( empty($event['code']) ) {
+			return new \WP_REST_Response([ 'error' => 'Missing event code' ], 400);
+		}
+
+		$code     = sanitize_text_field( $event['code'] );
+		$order_id = isset($event['orderId']) ? sanitize_text_field( $event['orderId'] ) : '';
+
+		error_log('[MYD][iFood] Event received: code=' . $code . ' orderId=' . $order_id);
+
+		// Fire a WordPress action so other plugins/hooks can handle the event
+		do_action('myd_ifood_event', $event, $order);
+
+		// For PLACED events with order details, create a new order post
+		if ( $code === 'PLACED' && ! empty($order) ) {
+			$post_id = $this->create_ifood_order_post( $order, $event );
+			if ( $post_id && ! is_wp_error( $post_id ) ) {
+				do_action('myd_ifood_order_created', $post_id, $order, $event);
+				return new \WP_REST_Response([
+					'success'  => true,
+					'post_id'  => $post_id,
+					'event'    => $code,
+					'order_id' => $order_id,
+				], 200);
+			}
+		}
+
+		return new \WP_REST_Response([
+			'success'  => true,
+			'event'    => $code,
+			'order_id' => $order_id,
+		], 200);
+	}
+
+	/**
+	 * Create a WordPress post for an iFood order.
+	 *
+	 * @param array $order  Full iFood order object
+	 * @param array $event  iFood event object
+	 * @return int|WP_Error Post ID or WP_Error
+	 */
+	private function create_ifood_order_post( $order, $event ) {
+		$order_id    = isset($order['id']) ? sanitize_text_field($order['id']) : '';
+		$merchant_id = isset($order['merchant']['id']) ? sanitize_text_field($order['merchant']['id']) : '';
+
+		// Avoid duplicates: check if an order with this iFood order ID already exists
+		$existing = get_posts([
+			'post_type'   => 'mydelivery-orders',
+			'meta_key'    => 'ifood_order_id',
+			'meta_value'  => $order_id,
+			'numberposts' => 1,
+		]);
+		if ( ! empty($existing) ) {
+			error_log('[MYD][iFood] Duplicate order ignored: ' . $order_id);
+			return $existing[0]->ID;
+		}
+
+		// Build a readable title
+		$customer_name = isset($order['customer']['name']) ? $order['customer']['name'] : 'Cliente iFood';
+		$total         = isset($order['total']['orderAmount']) ? $order['total']['orderAmount'] : 0;
+		$title         = sprintf('[iFood] %s — R$ %.2f', $customer_name, $total);
+
+		// Build items list for storage
+		$items = [];
+		if ( ! empty($order['items']) && is_array($order['items']) ) {
+			foreach ( $order['items'] as $item ) {
+				$items[] = [
+					'product_name'  => isset($item['name']) ? $item['name'] : '',
+					'quantity'      => isset($item['quantity']) ? intval($item['quantity']) : 1,
+					'product_price' => isset($item['unitPrice']) ? $item['unitPrice'] : 0,
+					'product_extras'=> '',
+					'product_note'  => isset($item['observations']) ? $item['observations'] : '',
+				];
+			}
+		}
+
+		$post_id = wp_insert_post([
+			'post_type'   => 'mydelivery-orders',
+			'post_title'  => $title,
+			'post_status' => 'publish',
+		]);
+
+		if ( is_wp_error($post_id) || ! $post_id ) {
+			error_log('[MYD][iFood] Failed to create post: ' . (is_wp_error($post_id) ? $post_id->get_error_message() : 'unknown'));
+			return $post_id;
+		}
+
+		// Store all relevant meta
+		update_post_meta($post_id, 'ifood_order_id',   $order_id);
+		update_post_meta($post_id, 'ifood_event_code', sanitize_text_field($event['code'] ?? ''));
+		update_post_meta($post_id, 'ifood_raw_order',  wp_json_encode($order));
+		update_post_meta($post_id, 'order_origin',     'ifood');
+		update_post_meta($post_id, 'order_status',     'new');
+		update_post_meta($post_id, 'order_total',      floatval($total));
+		update_post_meta($post_id, 'order_items',      wp_json_encode($items));
+
+		// Customer info
+		if ( ! empty($order['customer']) ) {
+			$c = $order['customer'];
+			update_post_meta($post_id, 'order_customer_name',  sanitize_text_field($c['name'] ?? ''));
+			update_post_meta($post_id, 'order_customer_phone', sanitize_text_field($c['phone']['number'] ?? ''));
+		}
+
+		// Delivery address
+		if ( ! empty($order['delivery']['deliveryAddress']) ) {
+			$addr = $order['delivery']['deliveryAddress'];
+			$full_addr = implode(', ', array_filter([
+				$addr['streetName'] ?? '',
+				$addr['streetNumber'] ?? '',
+				$addr['complement'] ?? '',
+				$addr['neighborhood'] ?? '',
+				$addr['city'] ?? '',
+			]));
+			update_post_meta($post_id, 'order_address', sanitize_text_field($full_addr));
+		}
+
+		// Payment
+		if ( ! empty($order['payments']['methods'][0]) ) {
+			$payment = $order['payments']['methods'][0];
+			update_post_meta($post_id, 'order_payment_method', sanitize_text_field($payment['method'] ?? ''));
+			update_post_meta($post_id, 'order_payment_status', 'pending');
+		}
+
+		error_log('[MYD][iFood] Order post created: post_id=' . $post_id . ' ifood_order_id=' . $order_id);
+
+		return $post_id;
 	}
 }
 
