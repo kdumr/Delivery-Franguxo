@@ -483,6 +483,11 @@ final class Plugin {
 		}
 		add_action( 'myd_loyalty_expire_cleanup', [ $this, 'cleanup_expired_loyalty_points' ] );
 
+		// Schedule iFood token refresh check (every minute)
+		if ( ! call_user_func('wp_next_scheduled', 'myd_ifood_token_refresh_check') ) {
+			call_user_func('wp_schedule_event', time(), 'every_minute', 'myd_ifood_token_refresh_check');
+		}
+
 		new Update_Cart();
 		new Create_Draft_Order();
 		new Place_Payment();
@@ -513,6 +518,8 @@ final class Plugin {
 			   require_once(MYD_PLUGIN_PATH . '/includes/myd-update-customer-password-handler.php');
 			   // Inclui handler de validação de código de redefinição
 			   require_once(MYD_PLUGIN_PATH . '/includes/validate-reset-code-handler.php');
+			   // Inclui handler de autenticação iFood
+			   require_once(MYD_PLUGIN_PATH . '/includes/admin/ifood-auth-handler.php');
 
 			   $this->admin_menu_pages = new Admin_Page();
 			
@@ -520,6 +527,11 @@ final class Plugin {
 			new \MydPro\Includes\Admin\Customers_Manager();
 			add_action( 'admin_menu', [ $this->admin_menu_pages, 'add_admin_pages' ] );
 		}
+
+		// REST API de integração iFood — instanciado fora do is_admin()
+		// pois requisições REST do backend não são admin
+		require_once(MYD_PLUGIN_PATH . '/includes/admin/class-ifood-rest-api.php');
+		new \MydPro\Includes\Admin\Ifood_REST_API();
 
 		$this->custom_posts = new Custom_Posts();
 		$this->custom_posts->register_custom_posts();

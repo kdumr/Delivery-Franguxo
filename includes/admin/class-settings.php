@@ -610,6 +610,48 @@ class Settings extends Admin_Settings {
 					'sanitize_callback' => [self::class, 'validate_required_address'],
 				],
 			],
+			// iFood settings
+			[
+				'name' => 'ifood_client_id',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			[
+				'name' => 'ifood_client_secret',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			[
+				'name' => 'ifood_access_token',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			[
+				'name' => 'ifood_token_expiry',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			[
+				'name' => 'ifood_token_expiry_timestamp',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			// iFood Merchant / Integration
+			[
+				'name' => 'ifood_merchant_id',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			[
+				'name' => 'wp_ifood_api_secret',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
+			[
+				'name' => 'myd_backend_push_secret',
+				'option_group' => self::CONFIG_GROUP,
+				'args' => [ 'sanitize_callback' => 'sanitize_text_field' ],
+			],
 		];
 	}
 	/**

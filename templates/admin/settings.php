@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<a href="#tab_shortcodes" id="tab-shortcodes" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'Shortcodes', 'myd-delivery-pro' ); ?></a>
 		<a href="#tab_smtp" id="tab-smtp" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'SMTP', 'myd-delivery-pro' ); ?></a>
 		<a href="#tab_evolution" id="tab-evolution" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'Evolution', 'myd-delivery-pro' ); ?></a>
+		<a href="#tab_ifood" id="tab-ifood" class="nav-tab myd-tab" onclick="window.MydAdmin.mydChangeTab(event)"><?php esc_html_e( 'iFood', 'myd-delivery-pro' ); ?></a>
 	</nav>
 
 	<form method="post" action="options.php">
@@ -38,6 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php include_once MYD_PLUGIN_PATH . '/templates/admin/settings-tabs/shortcodes/tab-shortcodes.php'; ?>
 		<?php include_once MYD_PLUGIN_PATH . '/templates/admin/settings-tabs/smtp/tab-smtp.php'; ?>
 		<?php include_once MYD_PLUGIN_PATH . '/templates/admin/settings-tabs/evolution/tab-evolution.php'; ?>
+		<?php include_once MYD_PLUGIN_PATH . '/templates/admin/settings-tabs/ifood/tab-ifood.php'; ?>
 		<?php submit_button(); ?>
 	</form>
 

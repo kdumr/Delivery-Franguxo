@@ -1,0 +1,24 @@
+services:
+  ifood-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ifood-backend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3001}:3001"
+    env_file:
+      - .env
+    volumes:
+      # Persiste o config.json entre reinicializações do container
+      - ifood_config:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  ifood_config:
+    driver: local
