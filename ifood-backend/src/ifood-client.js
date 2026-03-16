@@ -67,9 +67,10 @@ async function acknowledgeEvents(events, clientId, clientSecret) {
  */
 async function getOrderDetails(orderId, clientId, clientSecret) {
   const token = await getToken(clientId, clientSecret);
+  const cleanOrderId = orderId.replace(/[^a-f0-9\-]/gi, ''); // remove any invisible chars
 
   try {
-    const url = `${IFOOD_BASE}/order/v1.0/orders/${orderId}`;
+    const url = `${IFOOD_BASE}/order/v1.0/orders/${cleanOrderId}`;
     console.log(`[iFood-Debug] GET Order Details URL: ${url}`);
     
     const response = await axios.get(url, {
@@ -80,7 +81,7 @@ async function getOrderDetails(orderId, clientId, clientSecret) {
     });
     return response.data;
   } catch (err) {
-    console.error(`[iFood] Get Order Details Failed (${orderId}):`, err.response?.data || err.message);
+    console.error(`[iFood] Get Order Details Failed (${cleanOrderId}):`, err.response?.data || err.message);
     throw err;
   }
 }
