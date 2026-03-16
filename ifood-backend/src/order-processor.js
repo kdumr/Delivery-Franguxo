@@ -57,7 +57,7 @@ async function processEvent(event, config) {
     try {
       orderDetails = await getOrderDetails(orderId, clientId, clientSecret);
     } catch (err) {
-      console.error(`[Processor] Failed to fetch order details for ${orderId}:`, err.message);
+      console.error(`[Processor] Failed to fetch order details for ${orderId}:`, err.response?.data || err.message);
     }
   }
 
