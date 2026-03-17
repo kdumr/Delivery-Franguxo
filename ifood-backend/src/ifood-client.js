@@ -73,7 +73,7 @@ async function getOrderDetails(orderId, clientId, clientSecret) {
   try {
     const url = `${IFOOD_BASE}/order/v1.0/orders/${cleanOrderId}`;
     console.log(`[iFood-Debug] GET Order Details URL: ${url}`);
-    
+
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -86,12 +86,13 @@ async function getOrderDetails(orderId, clientId, clientSecret) {
     throw err;
   }
 }
-
 /**
- * Confirm an order in iFood.
- * @param {string} orderId 
- * @param {string} clientId 
- * @param {string} clientSecret 
+ * Confirm an order on iFood.
+ * Called when the merchant confirms the order in WordPress.
+ * @param {string} orderId   iFood order UUID
+ * @param {string} clientId
+ * @param {string} clientSecret
+ * @returns {Promise<boolean>}
  */
 async function confirmOrder(orderId, clientId, clientSecret) {
   const token = await getToken(clientId, clientSecret);
@@ -99,18 +100,17 @@ async function confirmOrder(orderId, clientId, clientSecret) {
 
   try {
     const url = `${IFOOD_BASE}/order/v1.0/orders/${cleanOrderId}/confirm`;
-    console.log(`[iFood] Confirming Order: ${cleanOrderId}`);
-    
-    await axios.post(url, {}, {
+    console.log(`[iFood] Confirming order: ${cleanOrderId}`);
+    await axios.post(url, null, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       timeout: 15000,
     });
-    console.log(`[iFood] Order ${cleanOrderId} confirmed successfully!`);
+    console.log(`[iFood] Order confirmed successfully: ${cleanOrderId}`);
     return true;
   } catch (err) {
-    console.error(`[iFood] Confirm Order Failed (${cleanOrderId}):`, err.response?.data || err.message);
+    console.error(`[iFood] Confirm order failed (${cleanOrderId}):`, err.response?.data || err.message);
     throw err;
   }
 }

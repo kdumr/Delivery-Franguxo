@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { pollEvents, acknowledgeEvents } = require('./src/ifood-client');
+const { confirmOrder } = require('./src/ifood-client');
 const { processEvent } = require('./src/order-processor');
 
 // ─── Configuration ─────────────────────────────────────────────────────────
@@ -16,12 +17,12 @@ const PORT = process.env.PORT || 3000;
 const BACKEND_SECRET = process.env.BACKEND_SECRET || 'change-me-in-dotenv';
 
 // iFood credentials — set via env OR pushed by WordPress at runtime
-let IFOOD_CLIENT_ID     = process.env.IFOOD_CLIENT_ID || '';
+let IFOOD_CLIENT_ID = process.env.IFOOD_CLIENT_ID || '';
 let IFOOD_CLIENT_SECRET = process.env.IFOOD_CLIENT_SECRET || '';
-let IFOOD_MERCHANT_ID   = process.env.IFOOD_MERCHANT_ID || '';
+let IFOOD_MERCHANT_ID = process.env.IFOOD_MERCHANT_ID || '';
 
 // WordPress connection
-let WP_BASE_URL  = process.env.WP_BASE_URL || '';   // e.g. https://franguxo.app.br
+let WP_BASE_URL = process.env.WP_BASE_URL || '';   // e.g. https://franguxo.app.br
 let WP_API_SECRET = process.env.WP_API_SECRET || ''; // X-WP-Secret header value
 
 // ─── Persistent config (survives restarts) ──────────────────────────────────
@@ -31,11 +32,11 @@ function loadConfig() {
   try {
     if (fs.existsSync(CONFIG_PATH)) {
       const cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
-      if (cfg.clientId)      IFOOD_CLIENT_ID     = cfg.clientId;
-      if (cfg.clientSecret)  IFOOD_CLIENT_SECRET = cfg.clientSecret;
-      if (cfg.merchantId)    IFOOD_MERCHANT_ID   = cfg.merchantId;
-      if (cfg.wpBaseUrl)     WP_BASE_URL         = cfg.wpBaseUrl;
-      if (cfg.wpApiSecret)   WP_API_SECRET       = cfg.wpApiSecret;
+      if (cfg.clientId) IFOOD_CLIENT_ID = cfg.clientId;
+      if (cfg.clientSecret) IFOOD_CLIENT_SECRET = cfg.clientSecret;
+      if (cfg.merchantId) IFOOD_MERCHANT_ID = cfg.merchantId;
+      if (cfg.wpBaseUrl) WP_BASE_URL = cfg.wpBaseUrl;
+      if (cfg.wpApiSecret) WP_API_SECRET = cfg.wpApiSecret;
       console.log('[Config] Loaded from config.json:', Object.keys(cfg).filter(k => cfg[k]).join(', '));
     } else {
       console.log('[Config] No config.json found — starting with env variables only.');
@@ -101,15 +102,38 @@ app.post('/config', (req, res) => {
 
   const { clientId, clientSecret, merchantId, wpBaseUrl, wpApiSecret } = req.body || {};
 
-  if (clientId)      IFOOD_CLIENT_ID     = clientId;
-  if (clientSecret)  IFOOD_CLIENT_SECRET = clientSecret;
-  if (merchantId)    IFOOD_MERCHANT_ID   = merchantId;
-  if (wpBaseUrl)     WP_BASE_URL         = wpBaseUrl;
-  if (wpApiSecret)   WP_API_SECRET        = wpApiSecret;
+  if (clientId) IFOOD_CLIENT_ID = clientId;
+  if (clientSecret) IFOOD_CLIENT_SECRET = clientSecret;
+  if (merchantId) IFOOD_MERCHANT_ID = merchantId;
+  if (wpBaseUrl) WP_BASE_URL = wpBaseUrl;
+  if (wpApiSecret) WP_API_SECRET = wpApiSecret;
 
   saveConfig();
   console.log(`[Config] Updated: merchantId=${IFOOD_MERCHANT_ID} wpBaseUrl=${WP_BASE_URL}`);
   res.json({ success: true });
+});
+
+// ─── iFood Order Confirm (WordPress → Backend → iFood) ─────────────────────
+// WordPress calls this when order_status changes to 'confirmed' for an iFood order
+app.post('/ifood/confirm', async (req, res) => {
+  const secret = req.headers['x-backend-secret'];
+  if (!secret || secret !== BACKEND_SECRET) {
+    console.warn('[Confirm] Unauthorized attempt');
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { ifood_order_id } = req.body || {};
+  if (!ifood_order_id) {
+    return res.status(400).json({ error: 'Missing ifood_order_id' });
+  }
+
+  try {
+    await confirmOrder(ifood_order_id, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+    res.json({ success: true, confirmed: ifood_order_id });
+  } catch (err) {
+    console.error('[Confirm] Error:', err.response?.data || err.message);
+    res.status(502).json({ error: 'Failed to confirm on iFood', details: err.response?.data || err.message });
+  }
 });
 
 // ─── iFood Webhook (Primary method) ─────────────────────────────────────────
@@ -151,7 +175,7 @@ app.post('/ifood/webhook', async (req, res) => {
   for (const event of events) {
     try {
       const success = await processEvent(event, getIfoodConfig());
-      if (success !== false) { 
+      if (success !== false) {
         // We consider undefined (non-order events) or true as successfully handled
         successfulEvents.push(event);
       }
@@ -170,30 +194,6 @@ app.post('/ifood/webhook', async (req, res) => {
   }
 });
 
-// ─── Direct Confirm Order (WordPress → Backend → iFood) ─────────────────────
-app.post('/ifood/confirm', async (req, res) => {
-  const secret = req.headers['x-backend-secret'];
-  if (!secret || secret !== BACKEND_SECRET) {
-    console.warn('[Confirm] Unauthorized attempt');
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const { orderId } = req.body || {};
-  if (!orderId) {
-    return res.status(400).json({ error: 'Missing orderId parameter' });
-  }
-
-  try {
-    const { confirmOrder } = require('./src/ifood-client');
-    await confirmOrder(orderId, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
-    res.json({ success: true, message: `Order ${orderId} confirmed successfully.` });
-  } catch (err) {
-    const status = err.response ? err.response.status : 500;
-    const msg = err.response ? JSON.stringify(err.response.data) : err.message;
-    res.status(status).json({ success: false, error: msg });
-  }
-});
-
 // ─── Helper: build config object ────────────────────────────────────────────
 function getIfoodConfig() {
   return {
@@ -208,12 +208,12 @@ function getIfoodConfig() {
 // ─── Polling (Fallback) ──────────────────────────────────────────────────────
 // Runs every 30s. Also keeps the merchant ONLINE in iFood.
 // Only polls when webhooks have been silent for > 60 seconds.
-const POLL_INTERVAL_MS   = 30 * 1000;
+const POLL_INTERVAL_MS = 30 * 1000;
 const WEBHOOK_SILENCE_MS = 60 * 1000; // treat webhooks as "missing" after 60s silence
 
-let pollingTimer   = null;
-let lastPollAt     = 0;
-let lastWebhookAt  = 0;
+let pollingTimer = null;
+let lastPollAt = 0;
+let lastWebhookAt = 0;
 
 async function runPollCycle() {
   if (!IFOOD_CLIENT_ID || !IFOOD_CLIENT_SECRET || !IFOOD_MERCHANT_ID) return;

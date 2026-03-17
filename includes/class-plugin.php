@@ -651,6 +651,33 @@ final class Plugin {
 					}
 				}
 
+				// Se o status foi alterado para 'confirmed' e é pedido iFood, notifica o backend
+				if ( $_meta_value === 'confirmed' ) {
+					$channel = get_post_meta( $object_id, 'order_channel', true );
+					if ( $channel === 'IFD' ) {
+						$ifood_order_id  = get_post_meta( $object_id, 'ifood_order_id', true );
+						$backend_url     = get_option( 'ifood_backend_url', '' );
+						$backend_secret  = get_option( 'ifood_backend_secret', '' );
+
+						if ( ! empty( $ifood_order_id ) && ! empty( $backend_url ) ) {
+							$url = rtrim( $backend_url, '/' ) . '/ifood/confirm';
+							$response = wp_remote_post( $url, [
+								'headers' => [
+									'Content-Type'    => 'application/json',
+									'X-Backend-Secret' => $backend_secret,
+								],
+								'body'    => wp_json_encode([ 'ifood_order_id' => $ifood_order_id ]),
+								'timeout' => 15,
+							]);
+							if ( is_wp_error( $response ) ) {
+								error_log( '[MYD][iFood] Failed to send confirm to backend: ' . $response->get_error_message() );
+							} else {
+								error_log( '[MYD][iFood] Confirm sent to backend for order ' . $object_id . ' (iFood: ' . $ifood_order_id . ')' );
+							}
+						}
+					}
+				}
+
 			}, 10, 4 );
 
 			// Notify push server when store open/close settings change
