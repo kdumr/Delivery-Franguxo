@@ -119,6 +119,16 @@ app.post('/ifood/confirm', async (req, res) => {
   const body = req.body || {};
   const orderId = body.ifood_order_id || body.orderId;
 
+  // Auth: accept secret from body or headers
+  const bSecret = body.backend_secret || req.headers['x-backend-secret'];
+  const wSecret = body.wp_api_secret || req.headers['x-wp-secret'];
+  const isAuthorized = (bSecret && bSecret === BACKEND_SECRET) ||
+    (wSecret && wSecret === WP_API_SECRET);
+  if (!isAuthorized) {
+    console.warn('[Confirm] Unauthorized attempt — body keys:', Object.keys(body));
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   if (!orderId) {
     return res.status(400).json({ error: 'Missing orderId' });
   }
