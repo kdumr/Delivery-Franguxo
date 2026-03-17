@@ -116,20 +116,16 @@ app.post('/config', (req, res) => {
 // ─── iFood Order Confirm (WordPress → Backend → iFood) ─────────────────────
 // WordPress calls this when order_status changes to 'confirmed' for an iFood order
 app.post('/ifood/confirm', async (req, res) => {
-  const backendSecret = req.headers['x-backend-secret'];
-  const wpSecret = req.headers['x-wp-secret'];
+  const { ifood_order_id, backend_secret, wp_api_secret } = req.body || {};
 
-  // Debug temporário — remover depois
-  console.log('[Confirm Debug] ALL headers:', JSON.stringify(req.headers, null, 2));
-
-  const isAuthorized = (backendSecret && backendSecret === BACKEND_SECRET) ||
-    (wpSecret && wpSecret === WP_API_SECRET);
+  // Auth: check secret from body (headers get stripped when empty by WP/proxy)
+  const isAuthorized = (backend_secret && backend_secret === BACKEND_SECRET) ||
+    (wp_api_secret && wp_api_secret === WP_API_SECRET);
   if (!isAuthorized) {
     console.warn('[Confirm] Unauthorized attempt');
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { ifood_order_id } = req.body || {};
   if (!ifood_order_id) {
     return res.status(400).json({ error: 'Missing ifood_order_id' });
   }

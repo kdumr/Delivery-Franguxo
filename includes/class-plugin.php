@@ -658,18 +658,17 @@ final class Plugin {
 						$ifood_order_id  = get_post_meta( $object_id, 'ifood_order_id', true );
 						$backend_url     = get_option( 'ifood_backend_url', '' );
 						$backend_secret  = get_option( 'ifood_backend_secret', '' );
-
 						$wp_api_secret   = get_option( 'ifood_wp_api_secret', '' );
 
 						if ( ! empty( $ifood_order_id ) && ! empty( $backend_url ) ) {
 							$url = rtrim( $backend_url, '/' ) . '/ifood/confirm';
 							$response = wp_remote_post( $url, [
-								'headers' => [
-									'Content-Type'     => 'application/json',
-									'X-Backend-Secret' => $backend_secret,
-									'X-WP-Secret'      => $wp_api_secret,
-								],
-								'body'    => wp_json_encode([ 'ifood_order_id' => $ifood_order_id ]),
+								'headers' => [ 'Content-Type' => 'application/json' ],
+								'body'    => wp_json_encode([
+									'ifood_order_id' => $ifood_order_id,
+									'backend_secret' => $backend_secret,
+									'wp_api_secret'  => $wp_api_secret,
+								]),
 								'timeout' => 15,
 							]);
 							if ( is_wp_error( $response ) ) {
