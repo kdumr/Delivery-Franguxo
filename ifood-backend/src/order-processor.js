@@ -82,6 +82,7 @@ async function processEvent(event, config) {
       fullCode: event.fullCode || code,
       merchantId: event.merchantId || '',
       createdAt: event.createdAt || new Date().toISOString(),
+      orderId: orderId, // Crucial para o webhook buscar qual pedido deve ser modificado em eventos como o CAN
     },
     order: orderDetails || null,
   };

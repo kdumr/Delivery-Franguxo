@@ -2633,6 +2633,29 @@ class Myd_Dashboard_Shortcode {
                                         horarioEntrega.appendChild(valorHE);
                                         grid.appendChild(horarioEntrega);
 
+                                        // ID Pedido iFood
+                                        if (d.order_channel === 'IFD' && d.ifood_order_id) {
+                                            var ifoodIdContainer = document.createElement('div');
+                                            ifoodIdContainer.className = 'myd-order-detail-info';
+                                            ifoodIdContainer.style.gridColumn = '1 / -1'; // Ocupa a linha toda
+                                            
+                                            var labelIfoodId = document.createElement('div');
+                                            labelIfoodId.textContent = 'Original iFood ID';
+                                            labelIfoodId.style.fontWeight = '500';
+                                            labelIfoodId.style.marginBottom = '2px';
+                                            
+                                            var valorIfoodId = document.createElement('div');
+                                            valorIfoodId.className = 'myd-order-detail-info-value';
+                                            valorIfoodId.textContent = d.ifood_order_id;
+                                            valorIfoodId.style.fontSize = '12px';
+                                            valorIfoodId.style.color = '#666';
+                                            valorIfoodId.style.userSelect = 'all'; // Facilita a cópia do ID
+                                            
+                                            ifoodIdContainer.appendChild(labelIfoodId);
+                                            ifoodIdContainer.appendChild(valorIfoodId);
+                                            grid.appendChild(ifoodIdContainer);
+                                        }
+
                                         body.appendChild(grid);
 
                                         // Itens do Pedido
@@ -4982,6 +5005,9 @@ class Myd_Dashboard_Shortcode {
                 $order_channel = get_post_meta( $p->ID, 'order_chanel', true );
             }
             $out['order_channel'] = $order_channel;
+            
+            // iFood Order ID
+            $out['ifood_order_id'] = get_post_meta( $p->ID, 'ifood_order_id', true );
             // items stored as serialized meta? try common meta keys
             $items_meta = get_post_meta( $p->ID, 'order_items', true );
             // Fallbacks para outras chaves comuns

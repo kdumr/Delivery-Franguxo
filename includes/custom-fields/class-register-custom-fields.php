@@ -640,6 +640,23 @@ class Register_Custom_Fields {
 			]
 		];
 
+		self::$myd_fields['myd_order_ifood'] = [
+			'id' => 'myd_order_ifood',
+			'name' => __( 'iFood', 'myd-delivery-pro' ),
+			'screens' => 'mydelivery-orders',
+			'fields' => [
+				'ifood_order_id' => [
+					'type' => 'text',
+					'label' => __( 'ID Original do iFood', 'myd-delivery-pro' ),
+					'id' => 'ifood_order_id',
+					'name' => 'ifood_order_id', // Note: O custom class map saving usa o id/name. Se name == meta_key, funciona direto.
+					'custom_class' => '',
+					'required' => false,
+					'description' => __( 'Identificador original (UUID) importado do iFood.', 'myd-delivery-pro' ),
+				]
+			]
+		];
+
 		self::$myd_fields['myd_order_note'] = [
 			'id' => 'myd_order_note',
 			'name' => __( 'Notes', 'myd-delivery-pro' ),

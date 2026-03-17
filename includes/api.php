@@ -2791,6 +2791,7 @@ class Myd_Api {
 		$order_id = isset($event['orderId']) ? sanitize_text_field( $event['orderId'] ) : '';
 
 		error_log('[MYD][iFood] Event received: code=' . $code . ' orderId=' . $order_id);
+		error_log('[MYD][iFood] Is order empty? ' . (empty($order) ? 'YES' : 'NO'));
 
 		// Fire a WordPress action so other plugins/hooks can handle the event
 		do_action('myd_ifood_event', $event, $order);
@@ -2798,6 +2799,8 @@ class Myd_Api {
 		// For PLACED events with order details, create a new order post
 		if ( $code === 'PLC' && ! empty($order) ) {
 			$post_id = $this->create_ifood_order_post( $order, $event );
+			error_log('[MYD][iFood] create_ifood_order_post returned: ' . print_r($post_id, true));
+			
 			if ( $post_id && ! is_wp_error( $post_id ) ) {
 				do_action('myd_ifood_order_created', $post_id, $order, $event);
 				return new \WP_REST_Response([
@@ -2806,6 +2809,23 @@ class Myd_Api {
 					'event'    => $code,
 					'order_id' => $order_id,
 				], 200);
+			}
+		}
+
+		// Handle cancellation
+		if ( $code === 'CAN' && ! empty($order_id) ) {
+			$existing = get_posts([
+				'post_type'   => 'mydelivery-orders',
+				'meta_key'    => 'ifood_order_id',
+				'meta_value'  => $order_id,
+				'numberposts' => 1,
+			]);
+			if ( ! empty($existing) ) {
+				$post_id_to_cancel = $existing[0]->ID;
+				update_post_meta( $post_id_to_cancel, 'order_status', 'canceled' );
+				error_log('[MYD][iFood] Order ' . $post_id_to_cancel . ' marked as canceled due to CAN event. (iFood ID: ' . $order_id . ')');
+			} else {
+				error_log('[MYD][iFood] CAN event received for unknown orderId: ' . $order_id);
 			}
 		}
 
@@ -2839,10 +2859,11 @@ class Myd_Api {
 			return $existing[0]->ID;
 		}
 
-		// Build a readable title
-		$customer_name = isset($order['customer']['name']) ? $order['customer']['name'] : 'Cliente iFood';
-		$total         = isset($order['total']['orderAmount']) ? $order['total']['orderAmount'] : 0;
-		$title         = sprintf('[iFood] %s — R$ %.2f', $customer_name, $total);
+		// Build title using displayId
+		$display_id = isset($order['displayId']) ? sanitize_text_field($order['displayId']) : '';
+		$title      = ! empty($display_id) ? $display_id : 'Pedido iFood ' . uniqid();
+		
+		$total = isset($order['total']['orderAmount']) ? $order['total']['orderAmount'] : 0;
 
 		// Build items list for storage
 		$items = [];
@@ -2858,11 +2879,26 @@ class Myd_Api {
 			}
 		}
 
-		$post_id = wp_insert_post([
+		$created_at = isset($order['createdAt']) ? $order['createdAt'] : (isset($event['createdAt']) ? $event['createdAt'] : '');
+		$post_date  = '';
+		if ( ! empty($created_at) ) {
+			$timestamp = strtotime($created_at);
+			if ( $timestamp ) {
+				$post_date = get_date_from_gmt( gmdate( 'Y-m-d H:i:s', $timestamp ) );
+			}
+		}
+
+		$post_data = [
 			'post_type'   => 'mydelivery-orders',
 			'post_title'  => $title,
 			'post_status' => 'publish',
-		]);
+		];
+
+		if ( ! empty($post_date) ) {
+			$post_data['post_date'] = $post_date;
+		}
+
+		$post_id = wp_insert_post($post_data);
 
 		if ( is_wp_error($post_id) || ! $post_id ) {
 			error_log('[MYD][iFood] Failed to create post: ' . (is_wp_error($post_id) ? $post_id->get_error_message() : 'unknown'));
@@ -2873,10 +2909,19 @@ class Myd_Api {
 		update_post_meta($post_id, 'ifood_order_id',   $order_id);
 		update_post_meta($post_id, 'ifood_event_code', sanitize_text_field($event['code'] ?? ''));
 		update_post_meta($post_id, 'ifood_raw_order',  wp_json_encode($order));
-		update_post_meta($post_id, 'order_origin',     'ifood');
+		update_post_meta($post_id, 'order_channel',    'IFD');
 		update_post_meta($post_id, 'order_status',     'new');
 		update_post_meta($post_id, 'order_total',      floatval($total));
 		update_post_meta($post_id, 'order_items',      wp_json_encode($items));
+		
+		if ( ! empty($created_at) ) {
+			// Convert the iFood UTC ISO string to the requested format in the site's local time
+			$timestamp = strtotime($created_at);
+			if ( $timestamp ) {
+				$local_timestamp = $timestamp + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+				update_post_meta($post_id, 'order_date', gmdate('d-m-Y H:i', $local_timestamp) );
+			}
+		}
 
 		// Customer info
 		if ( ! empty($order['customer']) ) {

@@ -182,6 +182,8 @@ class Myd_Orders_Front_Panel {
 			'payment_method' => get_post_meta( $order_id, 'order_payment_method', true ),
 			'payment_change' => get_post_meta( $order_id, 'order_change', true ),
 			'customer_note' => get_post_meta( $order_id, 'order_customer_note', true ),
+			'order_channel' => get_post_meta( $order_id, 'order_channel', true ),
+			'ifood_order_id'=> get_post_meta( $order_id, 'ifood_order_id', true ),
 		);
 
 		echo wp_json_encode( array( 'success' => true, 'data' => $data ) );

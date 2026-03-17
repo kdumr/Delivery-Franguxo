@@ -271,6 +271,11 @@ function formatReceipt(o, width = 33) {
     push('Localizador: ' + parts.join(' '));
   }
 
+  // ID original do iFood (se for pedido ifood)
+  if (o.order_channel === 'IFD' && o.ifood_order_id) {
+    push('iFood ID   : ' + o.ifood_order_id);
+  }
+
   // {Nome cliente}
   push('')
   if (o.customer_name) push(o.customer_name);
