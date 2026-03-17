@@ -116,8 +116,11 @@ app.post('/config', (req, res) => {
 // ─── iFood Order Confirm (WordPress → Backend → iFood) ─────────────────────
 // WordPress calls this when order_status changes to 'confirmed' for an iFood order
 app.post('/ifood/confirm', async (req, res) => {
-  const secret = req.headers['x-backend-secret'];
-  if (!secret || secret !== BACKEND_SECRET) {
+  const backendSecret = req.headers['x-backend-secret'];
+  const wpSecret = req.headers['x-wp-secret'];
+  const isAuthorized = (backendSecret && backendSecret === BACKEND_SECRET) ||
+    (wpSecret && wpSecret === WP_API_SECRET);
+  if (!isAuthorized) {
     console.warn('[Confirm] Unauthorized attempt');
     return res.status(401).json({ error: 'Unauthorized' });
   }

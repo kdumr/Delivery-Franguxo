@@ -659,12 +659,15 @@ final class Plugin {
 						$backend_url     = get_option( 'ifood_backend_url', '' );
 						$backend_secret  = get_option( 'ifood_backend_secret', '' );
 
+						$wp_api_secret   = get_option( 'ifood_wp_api_secret', '' );
+
 						if ( ! empty( $ifood_order_id ) && ! empty( $backend_url ) ) {
 							$url = rtrim( $backend_url, '/' ) . '/ifood/confirm';
 							$response = wp_remote_post( $url, [
 								'headers' => [
-									'Content-Type'    => 'application/json',
+									'Content-Type'     => 'application/json',
 									'X-Backend-Secret' => $backend_secret,
+									'X-WP-Secret'      => $wp_api_secret,
 								],
 								'body'    => wp_json_encode([ 'ifood_order_id' => $ifood_order_id ]),
 								'timeout' => 15,
