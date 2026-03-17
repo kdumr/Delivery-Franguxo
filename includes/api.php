@@ -2914,6 +2914,16 @@ class Myd_Api {
 		update_post_meta($post_id, 'order_total',      floatval($total));
 		update_post_meta($post_id, 'order_items',      wp_json_encode($items));
 		
+		// Map iFood orderType to our order_ship_method
+		$order_type = isset($order['orderType']) ? $order['orderType'] : '';
+		if ( $order_type === 'DELIVERY' ) {
+			update_post_meta($post_id, 'order_ship_method', 'delivery');
+		} elseif ( $order_type === 'TAKEOUT' ) {
+			update_post_meta($post_id, 'order_ship_method', 'local');
+		} elseif ( $order_type === 'INDOOR' ) {
+			update_post_meta($post_id, 'order_ship_method', 'table');
+		}
+		
 		if ( ! empty($created_at) ) {
 			// Convert the iFood UTC ISO string to the requested format in the site's local time
 			$timestamp = strtotime($created_at);
@@ -2926,8 +2936,9 @@ class Myd_Api {
 		// Customer info
 		if ( ! empty($order['customer']) ) {
 			$c = $order['customer'];
-			update_post_meta($post_id, 'order_customer_name',  sanitize_text_field($c['name'] ?? ''));
-			update_post_meta($post_id, 'order_customer_phone', sanitize_text_field($c['phone']['number'] ?? ''));
+			update_post_meta($post_id, 'order_customer_name', sanitize_text_field($c['name'] ?? ''));
+			update_post_meta($post_id, 'customer_phone',      sanitize_text_field($c['phone']['number'] ?? ''));
+			update_post_meta($post_id, 'order_locator',       sanitize_text_field($c['phone']['localizer'] ?? ''));
 		}
 
 		// Delivery address

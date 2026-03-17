@@ -1395,8 +1395,37 @@ class Myd_Orders_Front_Panel {
 			];
 			file_put_contents($status_file, json_encode($order_data));
 
-			// Quando status mudou para 'confirmed', creditar pontos de fidelidade quando aplicável
+			// Quando status mudou para 'confirmed', disparar ações paralelas (fidelidade, iFood)
 			if ( strtolower( (string) $order_action ) === 'confirmed' ) {
+				// 1. iFood Confirmation Hook
+				$order_channel = get_post_meta( $order_id, 'order_channel', true );
+				$ifood_order_id = get_post_meta( $order_id, 'ifood_order_id', true );
+				
+				if ( $order_channel === 'IFD' && ! empty( $ifood_order_id ) ) {
+					// We'll call our local ifood-backend to relay the confirmation to iFood
+					// Assuming the user runs it on port 3000 by default (or fetching from option if we had one)
+					$backend_url = 'http://127.0.0.1:3000/ifood/confirm';
+					$backend_secret = get_option('myd_ifood_wp_secret', ''); // Could be shared secret if implemented bidirectionally
+					
+					$args = [
+						'headers' => [
+							'Content-Type' => 'application/json',
+							'x-backend-secret' => 'change-me-in-dotenv' // Default hardcoded in ifood-backend for now unless ENV provides
+						],
+						'body' => wp_json_encode([
+							'orderId' => $ifood_order_id
+						]),
+						'timeout' => 5
+					];
+					
+					// Fire and forget - don't block WordPress UI on success/fail of iFood API
+					wp_remote_post( $backend_url, $args );
+					if ( defined('WP_DEBUG') && WP_DEBUG ) {
+						error_log("[MYD][iFood] Pinged local backend to confirm order {$ifood_order_id}");
+					}
+				}
+
+				// 2. Fidelidade Hook
 				$cid_for_points = get_post_meta( $order_id, 'myd_customer_id', true );
 				if ( ! empty( $cid_for_points ) ) {
 					$cid_for_points = (int) $cid_for_points;

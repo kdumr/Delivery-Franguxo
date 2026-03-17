@@ -170,6 +170,30 @@ app.post('/ifood/webhook', async (req, res) => {
   }
 });
 
+// ─── Direct Confirm Order (WordPress → Backend → iFood) ─────────────────────
+app.post('/ifood/confirm', async (req, res) => {
+  const secret = req.headers['x-backend-secret'];
+  if (!secret || secret !== BACKEND_SECRET) {
+    console.warn('[Confirm] Unauthorized attempt');
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { orderId } = req.body || {};
+  if (!orderId) {
+    return res.status(400).json({ error: 'Missing orderId parameter' });
+  }
+
+  try {
+    const { confirmOrder } = require('./src/ifood-client');
+    await confirmOrder(orderId, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+    res.json({ success: true, message: `Order ${orderId} confirmed successfully.` });
+  } catch (err) {
+    const status = err.response ? err.response.status : 500;
+    const msg = err.response ? JSON.stringify(err.response.data) : err.message;
+    res.status(status).json({ success: false, error: msg });
+  }
+});
+
 // ─── Helper: build config object ────────────────────────────────────────────
 function getIfoodConfig() {
   return {

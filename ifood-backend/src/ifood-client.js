@@ -87,4 +87,32 @@ async function getOrderDetails(orderId, clientId, clientSecret) {
   }
 }
 
-module.exports = { pollEvents, acknowledgeEvents, getOrderDetails };
+/**
+ * Confirm an order in iFood.
+ * @param {string} orderId 
+ * @param {string} clientId 
+ * @param {string} clientSecret 
+ */
+async function confirmOrder(orderId, clientId, clientSecret) {
+  const token = await getToken(clientId, clientSecret);
+  const cleanOrderId = orderId.replace(/[^a-f0-9\-]/gi, '');
+
+  try {
+    const url = `${IFOOD_BASE}/order/v1.0/orders/${cleanOrderId}/confirm`;
+    console.log(`[iFood] Confirming Order: ${cleanOrderId}`);
+    
+    await axios.post(url, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 15000,
+    });
+    console.log(`[iFood] Order ${cleanOrderId} confirmed successfully!`);
+    return true;
+  } catch (err) {
+    console.error(`[iFood] Confirm Order Failed (${cleanOrderId}):`, err.response?.data || err.message);
+    throw err;
+  }
+}
+
+module.exports = { pollEvents, acknowledgeEvents, getOrderDetails, confirmOrder };
