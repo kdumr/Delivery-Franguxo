@@ -119,6 +119,9 @@ app.post('/ifood/confirm', async (req, res) => {
   const { ifood_order_id, backend_secret, wp_api_secret } = req.body || {};
 
   // Auth: check secret from body (headers get stripped when empty by WP/proxy)
+  console.log('[Confirm Debug] Body keys:', Object.keys(req.body || {}));
+  console.log('[Confirm Debug] Has backend_secret:', !!backend_secret, '| Has wp_api_secret:', !!wp_api_secret);
+  console.log('[Confirm Debug] ifood_order_id:', ifood_order_id ? ifood_order_id.substring(0, 8) + '...' : '(empty)');
   const isAuthorized = (backend_secret && backend_secret === BACKEND_SECRET) ||
     (wp_api_secret && wp_api_secret === WP_API_SECRET);
   if (!isAuthorized) {
