@@ -118,7 +118,6 @@ app.post('/config', (req, res) => {
 app.post('/ifood/confirm', async (req, res) => {
   const body = req.body || {};
   const orderId = body.ifood_order_id || body.orderId;
-  console.log('[Confirm] Received body:', JSON.stringify(body));
 
   if (!orderId) {
     return res.status(400).json({ error: 'Missing orderId' });
