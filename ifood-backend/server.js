@@ -116,26 +116,16 @@ app.post('/config', (req, res) => {
 // ─── iFood Order Confirm (WordPress → Backend → iFood) ─────────────────────
 // WordPress calls this when order_status changes to 'confirmed' for an iFood order
 app.post('/ifood/confirm', async (req, res) => {
-  const { ifood_order_id, backend_secret, wp_api_secret } = req.body || {};
+  const body = req.body || {};
+  const orderId = body.ifood_order_id || body.orderId;
 
-  // Auth: check secret from body (headers get stripped when empty by WP/proxy)
-  console.log('[Confirm Debug] Body keys:', Object.keys(req.body || {}));
-  console.log('[Confirm Debug] Has backend_secret:', !!backend_secret, '| Has wp_api_secret:', !!wp_api_secret);
-  console.log('[Confirm Debug] ifood_order_id:', ifood_order_id ? ifood_order_id.substring(0, 8) + '...' : '(empty)');
-  const isAuthorized = (backend_secret && backend_secret === BACKEND_SECRET) ||
-    (wp_api_secret && wp_api_secret === WP_API_SECRET);
-  if (!isAuthorized) {
-    console.warn('[Confirm] Unauthorized attempt');
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  if (!ifood_order_id) {
-    return res.status(400).json({ error: 'Missing ifood_order_id' });
+  if (!orderId) {
+    return res.status(400).json({ error: 'Missing orderId' });
   }
 
   try {
-    await confirmOrder(ifood_order_id, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
-    res.json({ success: true, confirmed: ifood_order_id });
+    await confirmOrder(orderId, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+    res.json({ success: true, confirmed: orderId });
   } catch (err) {
     console.error('[Confirm] Error:', err.response?.data || err.message);
     res.status(502).json({ error: 'Failed to confirm on iFood', details: err.response?.data || err.message });
