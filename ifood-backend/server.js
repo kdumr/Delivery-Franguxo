@@ -120,10 +120,7 @@ app.post('/ifood/confirm', async (req, res) => {
   const wpSecret = req.headers['x-wp-secret'];
 
   // Debug temporário — remover depois
-  console.log('[Confirm Debug] Received X-Backend-Secret:', backendSecret ? backendSecret.substring(0, 8) + '...' : '(empty)');
-  console.log('[Confirm Debug] Expected BACKEND_SECRET:', BACKEND_SECRET ? BACKEND_SECRET.substring(0, 8) + '...' : '(empty)');
-  console.log('[Confirm Debug] Received X-WP-Secret:', wpSecret ? wpSecret.substring(0, 8) + '...' : '(empty)');
-  console.log('[Confirm Debug] Expected WP_API_SECRET:', WP_API_SECRET ? WP_API_SECRET.substring(0, 8) + '...' : '(empty)');
+  console.log('[Confirm Debug] ALL headers:', JSON.stringify(req.headers, null, 2));
 
   const isAuthorized = (backendSecret && backendSecret === BACKEND_SECRET) ||
     (wpSecret && wpSecret === WP_API_SECRET);
