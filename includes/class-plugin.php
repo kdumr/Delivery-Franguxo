@@ -654,17 +654,21 @@ final class Plugin {
 				// Se o status foi alterado para 'confirmed' e é pedido iFood, notifica o backend
 				if ( $_meta_value === 'confirmed' ) {
 					$channel = get_post_meta( $object_id, 'order_channel', true );
+					error_log( '[MYD][iFood] Status changed to confirmed for post ' . $object_id . ' channel=' . $channel );
 					if ( $channel === 'IFD' ) {
 						$ifood_order_id  = get_post_meta( $object_id, 'ifood_order_id', true );
 						$backend_url     = get_option( 'ifood_backend_url', '' );
 						$backend_secret  = get_option( 'ifood_backend_secret', '' );
 						$wp_api_secret   = get_option( 'ifood_wp_api_secret', '' );
 
+						error_log( '[MYD][iFood] ifood_order_id=' . $ifood_order_id . ' backend_url=' . $backend_url . ' has_backend_secret=' . ( !empty($backend_secret) ? 'yes' : 'no' ) . ' has_wp_api_secret=' . ( !empty($wp_api_secret) ? 'yes' : 'no' ) );
+
 						if ( ! empty( $ifood_order_id ) && ! empty( $backend_url ) ) {
 							$url = rtrim( $backend_url, '/' ) . '/ifood/confirm';
 							$response = wp_remote_post( $url, [
 								'headers' => [ 'Content-Type' => 'application/json' ],
 								'body'    => wp_json_encode([
+									'orderId'        => $ifood_order_id,
 									'ifood_order_id' => $ifood_order_id,
 									'backend_secret' => $backend_secret,
 									'wp_api_secret'  => $wp_api_secret,
@@ -674,7 +678,7 @@ final class Plugin {
 							if ( is_wp_error( $response ) ) {
 								error_log( '[MYD][iFood] Failed to send confirm to backend: ' . $response->get_error_message() );
 							} else {
-								error_log( '[MYD][iFood] Confirm sent to backend for order ' . $object_id . ' (iFood: ' . $ifood_order_id . ')' );
+								error_log( '[MYD][iFood] Confirm sent to backend for order ' . $object_id . ' (iFood: ' . $ifood_order_id . ') HTTP=' . wp_remote_retrieve_response_code( $response ) );
 							}
 						}
 					}
