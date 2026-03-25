@@ -2159,11 +2159,17 @@ body .fdm-orders-full-details.fdm-orders-full-details {
   }
 }
 
-/* Hide status badge for finished/done orders (covers initial render and real-time updates) */
+/* Hide status badge for finished/done/canceled orders (covers initial render and real-time updates) */
 .fdm-orders-items[data-order-status="finished"] .fdm-order-list-items-status,
 .fdm-orders-items[data-order-status="done"] .fdm-order-list-items-status,
+.fdm-orders-items[data-order-status="canceled"] .fdm-order-list-items-status,
+.fdm-orders-items[data-order-status="cancelled"] .fdm-order-list-items-status,
+.fdm-orders-items[data-order-status="refunded"] .fdm-order-list-items-status,
 .fdm-order-list-item[data-order-status="finished"] .fdm-order-list-items-status,
-.fdm-order-list-item[data-order-status="done"] .fdm-order-list-items-status {
+.fdm-order-list-item[data-order-status="done"] .fdm-order-list-items-status,
+.fdm-order-list-item[data-order-status="canceled"] .fdm-order-list-items-status,
+.fdm-order-list-item[data-order-status="cancelled"] .fdm-order-list-items-status,
+.fdm-order-list-item[data-order-status="refunded"] .fdm-order-list-items-status {
   display: none !important;
 }
 

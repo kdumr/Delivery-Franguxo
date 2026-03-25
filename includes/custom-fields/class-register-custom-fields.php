@@ -176,6 +176,14 @@ class Register_Custom_Fields {
 					'required' => true,
 					'select_options' => $category_options,
 				],
+				'myd_product_featured' => [
+					'type' => 'checkbox',
+					'label' => __( 'Destacar produto', 'myd-delivery-pro' ),
+					'id' => 'myd_product_featured',
+					'name' => 'product_featured',
+					'custom_class' => '',
+					'required' => false,
+				],
 				'myd_discount_value' => [
 					'type' => 'number',
 					'label' => __( 'Price', 'myd-delivery-pro' ),

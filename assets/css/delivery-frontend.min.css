@@ -4,6 +4,7 @@
 	border-radius: 8px;
 	padding: 16px;
 }
+
 .myd-cart__address-preview {
 	background: #f7f7f7;
 	border: 1px solid #e6e6e6;
@@ -15,18 +16,21 @@
 	display: none;
 	margin-bottom: 10px;
 }
+
 .myd-address-preview-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 8px;
 }
+
 .myd-address-preview-left {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	min-width: 0;
 }
+
 .myd-address-preview-icon {
 	display: flex;
 	align-items: center;
@@ -35,14 +39,17 @@
 	height: 50px;
 	flex: 0 0 auto;
 }
+
 .myd-address-preview-text {
 	min-width: 0;
 }
+
 .myd-cart__address-preview-line3--sub {
 	font-size: 12px;
 	color: #666;
 	margin-top: 2px;
 }
+
 .myd-cart__address-change {
 	font-weight: 500;
 	text-decoration: underline;
@@ -54,6 +61,7 @@
 	display: block;
 	margin: 0 auto;
 }
+
 .myd-cart__address-change:focus {
 	background: none;
 	border: none;
@@ -84,6 +92,7 @@
 	width: 100%;
 	box-sizing: border-box;
 }
+
 .myd-cep-separator {
 	text-align: center;
 	margin: 5px 0;
@@ -91,15 +100,27 @@
 	font-size: 0.9rem;
 	font-weight: 500;
 }
+
 /* Garantir que o label do CEP ocupe toda a linha (substitui inline style no template) */
-#myd-cep-search-wrapper label[for="myd-cep-input"]{display:block;width:100%;}
+#myd-cep-search-wrapper label[for="myd-cep-input"] {
+	display: block;
+	width: 100%;
+}
+
 .myd-cep-input-row {
 	display: flex;
 	gap: 8px;
 	align-items: center;
 	width: 100%;
 }
-.myd-cep-input-row__inner{display:flex;gap:8px;align-items:flex-start;width:100%;}
+
+.myd-cep-input-row__inner {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+	width: 100%;
+}
+
 .myd-cep-search-btn {
 	margin: 5px 0px;
 	padding: 8px 16px;
@@ -112,30 +133,34 @@
 	white-space: nowrap;
 	transition: background 150ms ease;
 }
+
 .myd-cep-input-row input.myd-cart__checkout-input,
 .myd-cep-input-row input[type="text"],
 .myd-cep-input-row input[type="number"],
 .myd-cep-input-row input[type="tel"] {
 	flex: 1 1 auto;
-	min-width: 0; /* allow flex children to shrink */
+	min-width: 0;
+	/* allow flex children to shrink */
 }
+
 .myd-cep-input-row .myd-cep-search-btn {
 	flex: 0 0 auto;
 	margin-left: 8px;
 }
 
 /* Regras com maior especificidade/!important para forçar comportamento em temas conflitantes */
-.myd-cep-input-row > input.myd-cart__checkout-input,
-.myd-cep-input-row > input[type="text"].myd-cart__checkout-input,
-.myd-cep-input-row > input[type="number"].myd-cart__checkout-input,
-.myd-cep-input-row > input[type="tel"].myd-cart__checkout-input {
+.myd-cep-input-row>input.myd-cart__checkout-input,
+.myd-cep-input-row>input[type="text"].myd-cart__checkout-input,
+.myd-cep-input-row>input[type="number"].myd-cart__checkout-input,
+.myd-cep-input-row>input[type="tel"].myd-cart__checkout-input {
 	display: block !important;
 	flex: 1 1 auto !important;
 	width: auto !important;
 	min-width: 0 !important;
 	box-sizing: border-box !important;
 }
-.myd-cep-input-row > .myd-cep-search-btn {
+
+.myd-cep-input-row>.myd-cep-search-btn {
 	flex: 0 0 auto !important;
 	margin-left: 8px !important;
 }
@@ -146,32 +171,48 @@
 	width: 100% !important;
 	box-sizing: border-box !important;
 }
-.myd-cep-search-btn:hover { background: #e69d00 !important; }
-.myd-cep-search-btn:active { transform: translateY(1px); }
-.myd-cep-search-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.myd-cep-search-btn:hover {
+	background: #e69d00 !important;
+}
+
+.myd-cep-search-btn:active {
+	transform: translateY(1px);
+}
+
+.myd-cep-search-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
 .myd-cep-error {
 	display: none;
 	color: #cb2027;
 	font-size: 13px;
 	margin-top: 4px;
 }
+
 .myd-per-distance-address-extra {
 	display: none;
 }
+
 .myd-manual-number-input {
 	display: none;
 	margin-top: 6px;
 }
+
 .myd-cart__no-number {
 	margin-top: 6px;
 	display: flex;
 	align-items: center;
 	gap: 6px;
 }
+
 .myd-reference-wrapper {
 	display: none;
 	margin-top: 6px;
 }
+
 /* Ícone do balão de aviso marketing */
 .myd-marketing-warning {
 	display: flex;
@@ -676,9 +717,9 @@ select.myd-cart__checkout-input {
 input.myd-cart__checkout-input,
 select.myd-cart__checkout-input,
 textarea.myd-cart__checkout-input {
-    display: block !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+	display: block !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
 }
 
 input.myd-cart__checkout-input,
@@ -2114,6 +2155,97 @@ input[type=number].fmd-item-qty {
 	display: flex;
 	flex-direction: column;
 	gap: 16px
+}
+
+/* Ocultar descrição dos produtos na seção Destaques */
+.myd-Destaques .myd-product-item__desc {
+	display: none !important;
+}
+
+/* --- Seção Destaques: cards verticais com scroll horizontal --- */
+.myd-Destaques {
+	display: flex !important;
+	flex-wrap: nowrap !important;
+	align-items: stretch;
+	overflow-x: auto;
+	gap: 12px;
+	padding-bottom: 8px;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: thin;
+}
+
+.myd-Destaques .myd-product-item {
+	flex-direction: column;
+	align-items: flex-start;
+	min-width: 140px;
+	max-width: 160px;
+	min-height: unset;
+	padding: 10px;
+	flex-shrink: 0;
+	gap: 8px;
+	text-align: left;
+	overflow: hidden;
+}
+
+
+
+.myd-Destaques .myd-product-item__img {
+	width: 100%;
+	height: 140px;
+	flex-shrink: 0;
+	border-radius: 8px;
+	overflow: hidden;
+	order: -1;
+}
+
+.myd-Destaques .myd-product-item__img img,
+.myd-Destaques .myd-product-item-img {
+	max-height: unset !important;
+	height: 100% !important;
+	width: 100% !important;
+	object-fit: cover;
+}
+
+.myd-Destaques .myd-product-item__content {
+	width: 100%;
+	flex-direction: column;
+	align-items: flex-start;
+	text-align: left;
+}
+
+.myd-Destaques .myd-product-item__title {
+	margin-bottom: 5px;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.3;
+	min-height: 2.6em;
+	max-height: 2.6em;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+.myd-Destaques .myd-product-item__actions {
+	justify-content: flex-start;
+}
+
+.myd-Destaques .myd-product-item__price {
+	font-size: 13px;
+}
+
+/* Esconder dividers e badges na seção Destaques */
+.myd-Destaques .myd-product-item__divider {
+	display: none !important;
+}
+
+.myd-Destaques .myd-product-item__not-available,
+.myd-Destaques .myd-product-item__not-available-overlay {
+	display: none !important;
+}
+
+.myd-Destaques .myd-product-badge {
+	display: none !important;
 }
 
 @media only screen and (max-width:768px) {

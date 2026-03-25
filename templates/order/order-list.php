@@ -126,16 +126,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			if ( $order_dt instanceof DateTimeInterface ) {
 				$order_ts = (int) $order_dt->getTimestamp();
-				$date_formatted = $order_dt->format( 'd/m - H:i' );
+				$date_formatted = $order_dt->format( 'H:i' );
 			} else {
 				// fallback para strtotime; se falhar, usar agora
 				$order_ts = (int) strtotime( $date );
 				if ( $order_ts <= 0 ) $order_ts = time();
-				$date_formatted = date( 'd/m - H:i', $order_ts );
+				$date_formatted = date( 'H:i', $order_ts );
 			}
 		} else {
 			$order_ts = time();
-			$date_formatted = date( 'd/m - H:i', $order_ts );
+			$date_formatted = date( 'H:i', $order_ts );
 		}
 		$order_status = get_post_meta( $postid, 'order_status', true );
 		$original_status = $order_status;
@@ -181,7 +181,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					$time_background = '#2c9b2c'; // verde
 				}
 				?>
-				<div class="fdm-order-list-items-status" style="background:<?php echo esc_attr( $time_background ); ?>;">
+				<div class="fdm-order-list-items-status" style="background:<?php echo esc_attr( $time_background ); ?>; <?php if ( in_array( $order_status, array( 'done', 'finished', 'canceled', 'cancelled', 'refunded' ), true ) ) { echo 'display: none;'; } ?>">
 					<div class="myd-order-minutes"><?php echo intval( $minutes ); ?></div>
 					<div class="myd-order-minutes-unit">min</div>
 				</div>
@@ -278,8 +278,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 			var now = Math.floor(Date.now()/1000);
 			var items = document.querySelectorAll('.fdm-orders-items[data-order-ts]');
 			items.forEach(function(it){
-				var ts = parseInt(it.getAttribute('data-order-ts') || '0', 10);
-				if (!ts) return;
+			var status = it.getAttribute('data-order-status') || '';
+			if (['done','finished','canceled','cancelled','refunded'].indexOf(status) !== -1) return;
+			var ts = parseInt(it.getAttribute('data-order-ts') || '0', 10);
+			if (!ts) return;
 				var minutes = Math.floor(Math.max(0, now - ts)/60);
 				var badge = it.querySelector('.fdm-order-list-items-status');
 				if (!badge) return;

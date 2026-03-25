@@ -185,6 +185,31 @@ class Fdm_products_show {
 	 *
 	 * @return void
 	 */
+	/**
+	 * Loop featured products (destaques)
+	 *
+	 * @param \WP_Query $products
+	 * @return string|null
+	 */
+	public function fdm_loop_featured_products( $products ) {
+		if ( ! $products->have_posts() ) {
+			return null;
+		}
+
+		ob_start();
+		while ( $products->have_posts() ) :
+			$products->the_post();
+			$is_featured  = get_post_meta( get_the_ID(), 'product_featured', true );
+			$is_available = get_post_meta( get_the_ID(), 'product_available', true );
+			if ( $is_featured === '1' && $is_available !== 'hide' ) {
+				include MYD_PLUGIN_PATH . '/templates/products/loop-products.php';
+			}
+		endwhile;
+		wp_reset_postdata();
+		$output = ob_get_clean();
+		return ! empty( trim( $output ) ) ? $output : null;
+	}
+
 	public function fdm_loop_products_per_categorie( $categories = array() ) {
 		$categories = ! empty( $categories ) ? $categories : $this->get_categories();
 
@@ -195,6 +220,13 @@ class Fdm_products_show {
 		$grid_columns = get_option( 'myd-products-list-columns' );
 		$products_object = $this->get_products();
 		$products = '';
+
+		// Seção "Destaques" no topo (somente se houver produtos em destaque)
+		$featured_products = $this->fdm_loop_featured_products( $products_object );
+		if ( $featured_products !== null ) {
+			$products .= '<h2 class="myd-product-list__title" id="fdm-Destaques">Destaques<svg style="width:16px;height:16px;vertical-align:middle;margin-left:6px;" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC033" d="M98.029,491.893c-11.573-8.407-17.255-22.391-14.832-36.485l21.901-127.741c0.198-1.134-0.176-2.284-1.002-3.083l-92.803-90.457c-10.24-9.987-13.863-24.643-9.436-38.248s15.966-23.332,30.116-25.387L160.22,151.85c1.146-0.165,2.125-0.881,2.632-1.91l57.357-116.212c6.331-12.828,19.148-20.794,33.452-20.794s27.121,7.966,33.452,20.79l57.357,116.223c0.506,1.024,1.486,1.74,2.62,1.904l136.429,19.826c12.618,1.839,22.893,10.504,26.835,22.628c3.931,12.123,0.705,25.171-8.424,34.063l-98.716,96.221c-0.815,0.793-1.19,1.944-0.991,3.077l21.901,127.747c2.422,14.089-3.26,28.073-14.832,36.481c-11.562,8.407-26.592,9.514-39.3,2.841l-114.714-60.308c-1.002-0.518-2.202-0.529-3.237,0l-114.714,60.308C124.489,501.474,109.466,500.202,98.029,491.893z"/><path fill="#F9A926" d="M255.279,434.426l114.714,60.308c12.707,6.673,27.738,5.567,39.3-2.841c11.573-8.407,17.255-22.391,14.832-36.481l-21.901-127.747c-0.198-1.134,0.176-2.284,0.991-3.077l98.716-96.221c9.129-8.892,12.355-21.94,8.424-34.063c-3.942-12.123-14.215-20.79-26.835-22.628L347.09,151.85c-1.134-0.165-2.114-0.881-2.62-1.904L287.113,33.723c-6.331-12.822-19.148-20.79-33.452-20.79v421.103C254.22,434.035,254.773,434.165,255.279,434.426z"/></svg></h2><div class="myd-product-list myd-Destaques ' . $grid_columns . '">' . $featured_products . '</div>';
+		}
+
 		foreach ( $categories as $categorie ) {
 			$categorie_tag = str_replace( ' ', '-', $categorie );
 			$product_by_categorie = $this->fdm_loop_products( $products_object, $categorie );
