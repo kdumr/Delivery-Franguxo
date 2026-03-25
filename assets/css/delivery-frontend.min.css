@@ -2098,6 +2098,29 @@ input[type=number].fmd-item-qty {
 	font-weight: 700
 }
 
+.myd-product-item__original-price-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 2px;
+}
+
+.myd-product-item__original-price {
+	color: #888;
+	font-size: 12px;
+	text-decoration: line-through;
+	font-weight: 400;
+}
+
+.myd-product-item__discount-badge {
+	background-color: #c45b12;
+	color: #fff;
+	padding: 1px 5px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 700;
+}
+
 .myd-product-item__price--hide {
 	opacity: 0;
 	visibility: hidden
@@ -2179,7 +2202,7 @@ input[type=number].fmd-item-qty {
 	align-items: flex-start;
 	min-width: 140px;
 	max-width: 160px;
-	min-height: unset;
+	height: 250px;
 	padding: 10px;
 	flex-shrink: 0;
 	gap: 8px;
@@ -2208,9 +2231,18 @@ input[type=number].fmd-item-qty {
 
 .myd-Destaques .myd-product-item__content {
 	width: 100%;
+	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	text-align: left;
+	flex: 1;
+	/* Preenche o espaço restante do card de 265px */
+}
+
+.myd-Destaques .myd-product-item__actions {
+	margin-top: auto;
+	/* Empurra os botões e preços para o fundo do card */
+	width: 100%;
 }
 
 .myd-Destaques .myd-product-item__title {
@@ -2218,12 +2250,14 @@ input[type=number].fmd-item-qty {
 	font-size: 14px;
 	font-weight: 700;
 	line-height: 1.3;
-	min-height: 2.6em;
-	max-height: 2.6em;
 	overflow: hidden;
 	display: -webkit-box;
-	-webkit-line-clamp: 2;
+	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
+}
+
+.myd-Destaques .myd-product-item.myd-has-original-price .myd-product-item__title {
+	-webkit-line-clamp: 2;
 }
 
 .myd-Destaques .myd-product-item__actions {

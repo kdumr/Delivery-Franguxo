@@ -162,7 +162,7 @@ $logo_url = plugins_url( 'assets/img/logo-evo-ai.svg', MYD_PLUGIN_MAIN_FILE );
                 <strong>Variáveis disponíveis:</strong><br>
                 <code>{customer_name}</code> <code>{first_customer_name}</code> <code>{order_number}</code> <code>{order_code}</code> <code>{order_products}</code> <code>{shipping_price}</code> <code>{order_total}</code> <code>{payment_method}</code> <code>{payment_change}</code> <code>{customer_phone}</code> <code>{customer_address}</code> <code>{customer_address_number}</code> <code>{customer_address_complement}</code> <code>{customer_address_neighborhood}</code> <code>{customer_address_zipcode}</code> <code>{order_track_page}</code>
             </div>
-            <div class="evo-field">
+            <div class="evo-field" id="evo_msg_confirmed_title_wrapper" style="<?php echo $btn_enabled === 'on' ? 'display:none;' : ''; ?>">
                 <label for="evolution_msg_confirmed_title">Corpo da Mensagem</label>
                 <textarea name="evolution_msg_confirmed_title" id="evolution_msg_confirmed_title" style="max-width:100%;"><?php echo esc_textarea( $msg_confirmed_title ); ?></textarea>
             </div>
@@ -278,7 +278,9 @@ function evoToggleSection(header) {
 document.getElementById('evolution_btn_enabled').onchange = function() {
     var panel = document.getElementById('evo_btn_panel');
     var badge = document.getElementById('evo_btn_badge');
+    var msgWrapper = document.getElementById('evo_msg_confirmed_title_wrapper');
     panel.style.display = this.checked ? '' : 'none';
+    if (msgWrapper) msgWrapper.style.display = this.checked ? 'none' : '';
     badge.textContent = this.checked ? 'ATIVO' : 'INATIVO';
     badge.className = 'evo-badge ' + (this.checked ? 'evo-badge-green' : 'evo-badge-gray');
 };

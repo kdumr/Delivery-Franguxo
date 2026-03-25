@@ -201,7 +201,8 @@ final class Plugin {
 		if ( strpos( $msg, '\\n' ) !== false ) {
 			$msg = str_replace('\\n', "\n", $msg);
 		}
-		if ( empty( $msg ) ) return;
+		$btn_enabled = get_option( 'evolution_btn_enabled', '' );
+		if ( $btn_enabled !== 'on' && empty( $msg ) ) return;
 
 		$api_url = get_option( 'evolution_api_url' );
 		$api_key = get_option( 'evolution_api_key' );
@@ -294,11 +295,9 @@ final class Plugin {
 
 		$msg = strtr( $msg, $replace );
 
-		if ( $api_url && $api_key && $instance && $phone && $msg ) {
+		if ( $api_url && $api_key && $instance && $phone && ( $msg || $btn_enabled === 'on' ) ) {
 			$phone_digits = preg_replace( '/\D/', '', $phone );
 			$full_number = '+' . $ddi . $phone_digits;
-
-			$btn_enabled = get_option( 'evolution_btn_enabled', '' );
 
 			if ( $btn_enabled === 'on' ) {
 				// Build sendButtons payload

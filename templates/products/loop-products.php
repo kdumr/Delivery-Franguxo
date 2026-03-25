@@ -12,7 +12,10 @@ $image_id = get_post_meta( $postid, 'product_image', true );
 $image_url = wp_get_attachment_image_url( $image_id, 'large' );
 $box_shadow = get_option( 'myd-products-list-boxshadow' );
 $product_price = get_post_meta( $postid, 'product_price', true );
-$product_price = empty( $product_price ) ? 0 : $product_price;
+$product_price = empty( $product_price ) ? 0 : (float) $product_price;
+$product_original_price = get_post_meta( $postid, 'product_original_price', true );
+$product_original_price = empty( $product_original_price ) ? 0 : (float) $product_original_price;
+
 $button_text = apply_filters( 'myd-product-loop-button-text', '+' );
 $currency_simbol = Store_Data::get_store_data( 'currency_simbol' );
 $is_available = get_post_meta( $postid, 'product_available', true );
@@ -21,7 +24,7 @@ $price_label = get_post_meta( $postid, 'product_price_label', true );
 $hide_price_class = $price_label === 'hide' ? 'myd-product-item__price--hide' : '';
 
 ?>
-<article class="myd-product-item <?php echo esc_attr( $box_shadow ); ?> <?php echo esc_attr( $disabled_class ); ?>" itemscope itemtype="http://schema.org/Product" data-id="<?php echo esc_attr( $postid ); ?>">
+<article class="myd-product-item <?php echo esc_attr( $box_shadow ); ?> <?php echo esc_attr( $disabled_class ); ?> <?php echo $product_original_price > $product_price ? 'myd-has-original-price' : ''; ?>" itemscope itemtype="http://schema.org/Product" data-id="<?php echo esc_attr( $postid ); ?>">
 	<?php if ( $is_available === 'not-available' ) : ?>
 		<span class="myd-product-item__not-available"><?php esc_html_e( 'Not available', 'myd-delivery-pro' ); ?></span>
 		<div class="myd-product-item__not-available-overlay"></div>
@@ -36,11 +39,21 @@ $hide_price_class = $price_label === 'hide' ? 'myd-product-item__price--hide' : 
 		<div class="myd-product-item__actions">
 			<span class="myd-product-item__price <?php echo esc_attr( $hide_price_class ); ?>" itemprop="price">
 				<?php if ( $price_label === 'show' || $price_label === '' ) : ?>
-					<?php echo esc_html( $currency_simbol . ' ' . Myd_Store_Formatting::format_price( get_post_meta( $postid, 'product_price', true ) ) ); ?>
+					<?php echo esc_html( $currency_simbol . ' ' . Myd_Store_Formatting::format_price( $product_price ) ); ?>
+					
+					<?php if ( $product_original_price > $product_price ) : 
+						$discount_percentage = round( ( ( $product_original_price - $product_price ) / $product_original_price ) * 100 );
+					?>
+						<div class="myd-product-item__original-price-wrapper">
+							<del class="myd-product-item__original-price"><?php echo esc_html( $currency_simbol . ' ' . Myd_Store_Formatting::format_price( $product_original_price ) ); ?></del>
+							<span class="myd-product-item__discount-badge"><?php echo esc_html( $discount_percentage . '%' ); ?></span>
+						</div>
+					<?php endif; ?>
+
 				<?php endif; ?>
 
 				<?php if ( $price_label === 'from' ) : ?>
-					<?php echo esc_html__( 'From', 'myd-delivery-pro' ); ?> <?php echo esc_html( $currency_simbol . ' ' . Myd_Store_Formatting::format_price( get_post_meta( $postid, 'product_price', true ) ) ); ?>
+					<?php echo esc_html__( 'From', 'myd-delivery-pro' ); ?> <?php echo esc_html( $currency_simbol . ' ' . Myd_Store_Formatting::format_price( $product_price ) ); ?>
 				<?php endif; ?>
 
 				<?php if ( $price_label === 'consult' ) : ?>

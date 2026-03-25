@@ -2,6 +2,10 @@
 // Template para página de Fidelidade
 // Salva e carrega configurações do sistema de fidelidade
 if (is_admin() && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['myd_loyalty_form_submitted'])) {
+    if ( ! isset($_POST['loyalty_nonce_field']) || ! wp_verify_nonce( $_POST['loyalty_nonce_field'], 'myd_loyalty_nonce' ) || ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'Acesso negado. Falha na verificação de segurança.' );
+    }
+
     // Salvar opções
     $toggle_val = isset($_POST['fidelidade_toggle']) ? $_POST['fidelidade_toggle'] : (isset($_POST['fidelidade_toggle_hidden']) ? $_POST['fidelidade_toggle_hidden'] : 'off');
     update_option('myd_fidelidade_ativo', $toggle_val === 'on' ? 'on' : 'off');
@@ -49,6 +53,7 @@ $pontos_necessarios = intval( get_option('myd_fidelidade_pontos_necessarios', 0)
 <!-- Reabre container/form para manter layout abaixo -->
 <div class="wrap">
 	<form id="myd-loyalty-form" method="post" action="">
+	<?php wp_nonce_field( 'myd_loyalty_nonce', 'loyalty_nonce_field' ); ?>
 	<input type="hidden" name="myd_loyalty_form_submitted" value="1" />
 	<!-- hidden input que será enviado com o estado do slider -->
 	<input type="hidden" name="fidelidade_toggle" id="fidelidade_toggle_input" value="<?php echo $ativo === 'on' ? 'on' : 'off'; ?>" />

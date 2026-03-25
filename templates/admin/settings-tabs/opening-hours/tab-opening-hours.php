@@ -564,9 +564,12 @@ $force_close_store = get_option( 'myd-delivery-force-open-close-store' );
 
 
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['myd-preparation-time'])) {
-        update_option('myd-preparation-time', intval($_POST['myd-preparation-time']));
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['myd-preparation-time'])) {
+    if ( current_user_can('manage_options') ) {
+        // Verifica nonce padrão do options.php, se existir
+        if ( isset($_POST['_wpnonce']) && wp_verify_nonce($_POST['_wpnonce'], 'fmd-settings-group-options') ) {
+            update_option('myd-preparation-time', intval($_POST['myd-preparation-time']));
+        }
     }
 }
 ?>

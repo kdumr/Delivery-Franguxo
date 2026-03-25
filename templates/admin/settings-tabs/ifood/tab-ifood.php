@@ -56,7 +56,10 @@ $ifood_wp_api_secret  = get_option('ifood_wp_api_secret', '');
 <div id="tab-ifood-content" class="myd-tabs-content">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
         <img src="https://logospng.org/download/ifood/logo-ifood-1024.png" alt="iFood" style="height:36px;" />
-        <h2 style="margin:0;">Integração iFood</h2>
+        <h2 style="margin:0;display:flex;align-items:center;gap:8px;">
+            Integração iFood 
+            <span style="background-color:#ea1d2b;color:#fff;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:4px;letter-spacing:1px;">BETA</span>
+        </h2>
     </div>
 
     <!-- ── Autenticação ───────────────────────────────────────────── -->

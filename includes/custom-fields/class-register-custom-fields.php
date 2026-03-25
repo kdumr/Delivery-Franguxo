@@ -184,6 +184,15 @@ class Register_Custom_Fields {
 					'custom_class' => '',
 					'required' => false,
 				],
+				'myd_product_original_price' => [
+					'type' => 'number',
+					'label' => __( 'Preço real', 'myd-delivery-pro' ),
+					'description' => __( 'Esse valor será o valor sem desconto. Será exibido riscado.', 'myd-delivery-pro' ),
+					'id' => 'myd_product_original_price',
+					'name' => 'product_original_price',
+					'custom_class' => '',
+					'required' => false,
+				],
 				'myd_discount_value' => [
 					'type' => 'number',
 					'label' => __( 'Price', 'myd-delivery-pro' ),

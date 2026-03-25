@@ -48,6 +48,7 @@ class Myd_Custom_Fields {
 		$this->screens = array_unique( array_column( $this->fields, 'screens' ) );
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_box' ] );
 		add_action( 'save_post', [ $this, 'save_fields' ], 10, 2 );
+		add_action( 'admin_footer', [ $this, 'add_admin_js_validation' ] );
 	}
 
 	/**
@@ -73,6 +74,45 @@ class Myd_Custom_Fields {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Admin JS Validation
+	 * Prevents original price from being equal to or less than promotional price
+	 */
+	public function add_admin_js_validation() {
+		global $post_type;
+		if ( $post_type !== 'mydelivery-produtos' ) {
+			return;
+		}
+		?>
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var form = document.getElementById('post');
+			if (!form) return;
+			
+			form.addEventListener('submit', function(e) {
+				var originalPriceInput = document.getElementById('myd_product_original_price');
+				var promoPriceInput = document.getElementById('myd_product_price');
+				
+				if (originalPriceInput && promoPriceInput) {
+					var originalPrice = parseFloat(originalPriceInput.value);
+					var promoPrice = parseFloat(promoPriceInput.value);
+					
+					// Só valida se os dois forem preenchidos numericamente
+					if (!isNaN(originalPrice) && !isNaN(promoPrice)) {
+						if (originalPrice <= promoPrice) {
+							e.preventDefault();
+							alert('O Preço Real (valor sem desconto) deve ser estritamente maior que o Preço atual com desconto. Verifique os valores.');
+							originalPriceInput.focus();
+							return false;
+						}
+					}
+				}
+			});
+		});
+		</script>
+		<?php
 	}
 
 	/**
@@ -444,7 +484,7 @@ class Myd_Custom_Fields {
 		$description = isset( $args['description'] ) ? '<p class="description">' . esc_html( $args['description'] ) . '</p>' : '';
 
 		return sprintf(
-			'<input name="%s" type="number" id="%s" value="%s" class="%s" %s %s %s %s>%s',
+			'<input name="%s" type="number" step="any" id="%s" value="%s" class="%s" %s %s %s %s>%s',
 			esc_attr( $args['name'] ),
 			esc_attr( $args['id'] ),
 			esc_attr( $value ),

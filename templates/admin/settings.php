@@ -43,37 +43,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php submit_button(); ?>
 	</form>
 
-	<!-- Balão de Status Off -->
-	<div id="status-off-balloon" class="status-balloon status-off">
-		Status off
-	</div>
-
-	<style>
-		.status-balloon {
-			position: fixed;
-			bottom: 20px;
-			right: 20px;
-			background: #dc3545;
-			color: white;
-			padding: 12px 20px;
-			border-radius: 25px;
-			font-size: 14px;
-			font-weight: bold;
-			box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-			z-index: 9999;
-			animation: pulse-red 2s infinite;
-		}
-
-		@keyframes pulse-red {
-			0% {
-				box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-			}
-			50% {
-				box-shadow: 0 4px 12px rgba(220, 53, 69, 0.6);
-			}
-			100% {
-				box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-			}
-		}
-	</style>
 </div>
