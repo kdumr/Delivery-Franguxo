@@ -63,6 +63,11 @@ class Myd_Orders_Front_Panel {
 				'value'   => 'waiting',
 				'compare' => '=',
 			],
+			[
+				'key'     => 'order_status',
+				'value'   => 'canceled',
+				'compare' => '=',
+			],
 		]
 	];
 
@@ -1232,9 +1237,70 @@ class Myd_Orders_Front_Panel {
 		$prev_status = get_post_meta( $order_id, 'order_status', true );
 		$has_status_changed = ( $prev_status !== $order_action );
 
+		$ifood_error = null;
+
 		// Only update meta if status actually changed
 		if ( $has_status_changed ) {
-			update_post_meta( $order_id, 'order_status', $order_action );
+			// For iFood orders, route actions through the iFood API — don't change local status.
+			// The status will only update when the corresponding iFood event arrives via webhook.
+			$is_ifood = ( get_post_meta( $order_id, 'order_channel', true ) === 'IFD' );
+
+			// Map WordPress order_action → iFood backend endpoint
+			$ifood_action_map = [
+				'confirmed'   => '/ifood/confirm',
+				'in-delivery' => '/ifood/dispatch',
+				'waiting'     => '/ifood/readyToPickup',
+				'canceled'    => '/ifood/cancel',
+				'cancelled'   => '/ifood/cancel',
+			];
+
+			if ( $is_ifood && isset( $ifood_action_map[ $order_action ] ) ) {
+				$ifood_order_id = get_post_meta( $order_id, 'ifood_order_id', true );
+				$backend_url    = get_option( 'ifood_backend_url', '' );
+
+				if ( ! empty( $ifood_order_id ) && ! empty( $backend_url ) ) {
+					$url  = rtrim( $backend_url, '/' ) . $ifood_action_map[ $order_action ];
+					$body = [ 'ifood_order_id' => $ifood_order_id ];
+
+					// For cancellations, include reason if provided
+					if ( in_array( $order_action, [ 'canceled', 'cancelled' ], true ) ) {
+						$cancel_reason = isset( $_REQUEST['cancel_reason'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cancel_reason'] ) ) : '';
+						if ( $cancel_reason !== '' ) {
+							$body['reason'] = $cancel_reason;
+						}
+					}
+
+					$ifood_resp = wp_remote_post( $url, [
+						'headers' => [ 'Content-Type' => 'application/json' ],
+						'body'    => wp_json_encode( $body ),
+						'timeout' => 15,
+					]);
+
+					// Check for errors and set flag for frontend notification
+					if ( is_wp_error( $ifood_resp ) ) {
+						$ifood_error = $ifood_resp->get_error_message();
+					} else {
+						$http_code = wp_remote_retrieve_response_code( $ifood_resp );
+						if ( $http_code >= 400 ) {
+							$resp_body = json_decode( wp_remote_retrieve_body( $ifood_resp ), true );
+							$ifood_error = isset( $resp_body['error'] ) ? $resp_body['error'] : 'Erro HTTP ' . $http_code;
+							if ( isset( $resp_body['details'] ) && is_string( $resp_body['details'] ) ) {
+								$ifood_error .= ': ' . $resp_body['details'];
+							}
+						}
+					}
+				} else {
+					$ifood_error = 'Dados do pedido iFood incompletos (ID ou URL do backend ausentes).';
+				}
+				// Optimistic update: if the backend confirmed success, update local status now.
+				// When the iFood event (CFM/DSP/etc) arrives later, it's a no-op (same value).
+				// If there was an error, status stays unchanged and the user sees the error notification.
+				if ( empty( $ifood_error ) ) {
+					update_post_meta( $order_id, 'order_status', $order_action );
+				}
+			} else {
+				update_post_meta( $order_id, 'order_status', $order_action );
+			}
 			// If this update represents a cancellation, persist cancel reason (if provided)
 			if ( in_array( strtolower( (string) $order_action ), array( 'canceled', 'cancelled' ), true ) ) {
 				$cancel_reason = isset( $_REQUEST['cancel_reason'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cancel_reason'] ) ) : '';
@@ -1548,12 +1614,13 @@ class Myd_Orders_Front_Panel {
 		// SEM myd_customer_id (ex: pedidos manuais criados pelo painel).
 		// O hook updated_post_meta em class-plugin.php já dispara para pedidos COM customer,
 		// portanto aqui só chamamos quando customer está vazio (evita notificação duplicada).
-		if ( $has_status_changed && class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
+		// Para pedidos iFood, NÃO notificamos — não há customer vinculado.
+		if ( $has_status_changed && empty( $ifood_error ) && class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
 			try {
 				$customer_for_push = get_post_meta( $order_id, 'myd_customer_id', true );
-				// Só notifica diretamente se NÃO houver customer — o hook do class-plugin.php
-				// já cobre o caso com customer, evitando emissão duplicada do order.status
-				if ( empty( $customer_for_push ) ) {
+				$is_ifood_order = ( get_post_meta( $order_id, 'order_channel', true ) === 'IFD' );
+				// Só notifica diretamente se NÃO houver customer E NÃO for pedido iFood
+				if ( empty( $customer_for_push ) && ! $is_ifood_order ) {
 					\MydPro\Includes\Push\Push_Notifier::notify( '', $order_id, $order_action );
 				}
 			} catch ( \Exception $e ) {
@@ -1570,11 +1637,15 @@ class Myd_Orders_Front_Panel {
 			$this->orders_object = $orders;
 		}
 
-		echo wp_json_encode( array(
+		$response_data = array(
 			'loop' => $this->loop_orders_list(),
 			'full' => $this->loop_orders_full(),
 			'refund_debug' => $refund_debug,
-		));
+		);
+		if ( ! empty( $ifood_error ) ) {
+			$response_data['ifood_error'] = $ifood_error;
+		}
+		echo wp_json_encode( $response_data );
 
 		exit;
 	}

@@ -1,6 +1,6 @@
 {
   "name": "franguxo-gestor-pedidos",
-  "version": "4.1.11",
+  "version": "4.1.15",
   "description": "Franguxo Gestor de Pedidos",
   "main": "main.js",
   "scripts": {

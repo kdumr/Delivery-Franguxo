@@ -2810,25 +2810,58 @@ class Myd_Api {
 					'order_id' => $order_id,
 				], 200);
 			}
+
+			// Falha ao criar o pedido — NÃO ACK: Node.js vai retenttar
+			$error_msg = is_wp_error($post_id) ? $post_id->get_error_message() : 'wp_insert_post returned falsy';
+			error_log('[MYD][iFood] FAILED to create order post: ' . $error_msg);
+			return new \WP_REST_Response([
+				'success' => false,
+				'error'   => 'Failed to create order post: ' . $error_msg,
+				'event'   => $code,
+				'order_id' => $order_id,
+			], 500);
 		}
 
-		// Handle cancellation
-		if ( $code === 'CAN' && ! empty($order_id) ) {
+		// ─── iFood event → WordPress order_status mapping ─────────────────────
+		// iFood is the source of truth: status only changes when an event arrives.
+		$event_status_map = [
+			'CAN' => 'canceled',    // Cancelled
+			'CFM' => 'confirmed',   // Confirmed
+			'RTP' => 'waiting',     // Ready to Pickup
+			'DSP' => 'in-delivery', // Dispatched
+			'CON' => 'finished',    // Concluded
+		];
+
+		if ( isset( $event_status_map[ $code ] ) && ! empty( $order_id ) ) {
+			$new_status = $event_status_map[ $code ];
 			$existing = get_posts([
 				'post_type'   => 'mydelivery-orders',
 				'meta_key'    => 'ifood_order_id',
 				'meta_value'  => $order_id,
 				'numberposts' => 1,
 			]);
-			if ( ! empty($existing) ) {
-				$post_id_to_cancel = $existing[0]->ID;
-				update_post_meta( $post_id_to_cancel, 'order_status', 'canceled' );
-				error_log('[MYD][iFood] Order ' . $post_id_to_cancel . ' marked as canceled due to CAN event. (iFood ID: ' . $order_id . ')');
+			if ( ! empty( $existing ) ) {
+				$post_id = $existing[0]->ID;
+				update_post_meta( $post_id, 'order_status', $new_status );
+				error_log( '[MYD][iFood] Order ' . $post_id . ' → ' . $new_status . ' (event: ' . $code . ', iFood ID: ' . $order_id . ')' );
+
+				// Push notification so the panel updates in real-time
+				if ( class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
+					try {
+						\MydPro\Includes\Push\Push_Notifier::notify( '', $post_id, $new_status );
+					} catch ( \Exception $e ) { /* silently fail */ }
+				}
 			} else {
-				error_log('[MYD][iFood] CAN event received for unknown orderId: ' . $order_id);
+				error_log( '[MYD][iFood] ' . $code . ' event received for unknown orderId: ' . $order_id );
+				// Pedido não encontrado — retorna 404 mas com success: false para evitar ACK premature
+				return new \WP_REST_Response([
+					'success'  => false,
+					'error'    => 'Order not found for iFood ID: ' . $order_id,
+					'event'    => $code,
+					'order_id' => $order_id,
+				], 404);
 			}
 		}
-
 		return new \WP_REST_Response([
 			'success'  => true,
 			'event'    => $code,
@@ -2865,16 +2898,69 @@ class Myd_Api {
 		
 		$total = isset($order['total']['orderAmount']) ? $order['total']['orderAmount'] : 0;
 
-		// Build items list for storage
+		// Build items list for storage — mapeia iFood items para o formato myd_order_items
 		$items = [];
 		if ( ! empty($order['items']) && is_array($order['items']) ) {
 			foreach ( $order['items'] as $item ) {
+				// Monta extras no formato idêntico ao cardápio próprio: { groups: [ { group, items: [ { name, quantity, price } ] } ] }
+				$extras_groups = [];
+				if ( ! empty($item['options']) && is_array($item['options']) ) {
+					// Agrupa options pelo groupName
+					$groups_map = [];
+					foreach ( $item['options'] as $opt ) {
+						$group_name = isset($opt['groupName']) ? $opt['groupName'] : 'Complementos';
+						$opt_name   = isset($opt['name'])      ? $opt['name']      : '';
+						$opt_qty    = isset($opt['quantity'])   ? intval($opt['quantity'])   : 1;
+						$opt_price  = isset($opt['price'])      ? floatval($opt['price'])    : 0;
+						if ( ! isset($groups_map[$group_name]) ) {
+							$groups_map[$group_name] = [];
+						}
+						$groups_map[$group_name][] = [
+							'name'     => $opt_name,
+							'quantity' => $opt_qty,
+							'price'    => $opt_price,
+						];
+						// Nível 3: customizations — add ao mesmo grupo ou ao seu próprio grupo
+						if ( ! empty($opt['customizations']) && is_array($opt['customizations']) ) {
+							$cust_group = isset($opt['name']) ? $opt['name'] : $group_name;
+							if ( ! isset($groups_map[$cust_group]) ) {
+								$groups_map[$cust_group] = [];
+							}
+							foreach ( $opt['customizations'] as $cust ) {
+								$groups_map[$cust_group][] = [
+									'name'     => isset($cust['name']) ? $cust['name'] : '',
+									'quantity' => isset($cust['quantity']) ? intval($cust['quantity']) : 1,
+									'price'    => isset($cust['price']) ? floatval($cust['price']) : 0,
+								];
+							}
+						}
+					}
+					foreach ( $groups_map as $gname => $gitems ) {
+						$extras_groups[] = [ 'group' => $gname, 'items' => $gitems ];
+					}
+				}
 				$items[] = [
-					'product_name'  => isset($item['name']) ? $item['name'] : '',
-					'quantity'      => isset($item['quantity']) ? intval($item['quantity']) : 1,
-					'product_price' => isset($item['unitPrice']) ? $item['unitPrice'] : 0,
-					'product_extras'=> '',
-					'product_note'  => isset($item['observations']) ? $item['observations'] : '',
+					'product_image'  => isset($item['imageUrl']) ? $item['imageUrl'] : '',
+					'product_name'   => isset($item['name'])     ? $item['name']     : '',
+					'quantity'       => isset($item['quantity'])  ? intval($item['quantity'])   : 1,
+					'product_price'  => isset($item['unitPrice']) ? floatval($item['unitPrice']) : 0,
+					'product_total'  => isset($item['totalPrice']) ? floatval($item['totalPrice']) : 0,
+					'product_extras' => ( function() use ($extras_groups) {
+						// Gera texto para o campo textarea do admin
+						$lines = [];
+						foreach ( $extras_groups as $g ) {
+							if ( ! empty($g['group']) ) $lines[] = $g['group'] . ':';
+							foreach ( $g['items'] as $it ) {
+								$qty   = isset($it['quantity']) ? intval($it['quantity']) : 1;
+								$price = isset($it['price']) ? floatval($it['price']) : 0;
+								$p_str = $price > 0 ? ' (+R$ ' . number_format($price, 2, ',', '.') . ')' : '';
+								$lines[] = $qty . 'x ' . $it['name'] . $p_str;
+							}
+						}
+						return implode("\n", $lines);
+					} )(),
+					'product_note'   => isset($item['observations']) ? $item['observations'] : '',
+					'extras'         => [ 'groups' => $extras_groups ],
 				];
 			}
 		}
@@ -2906,13 +2992,17 @@ class Myd_Api {
 		}
 
 		// Store all relevant meta
-		update_post_meta($post_id, 'ifood_order_id',   $order_id);
-		update_post_meta($post_id, 'ifood_event_code', sanitize_text_field($event['code'] ?? ''));
-		update_post_meta($post_id, 'ifood_raw_order',  wp_json_encode($order));
-		update_post_meta($post_id, 'order_channel',    'IFD');
-		update_post_meta($post_id, 'order_status',     'new');
-		update_post_meta($post_id, 'order_total',      floatval($total));
-		update_post_meta($post_id, 'order_items',      wp_json_encode($items));
+		update_post_meta($post_id, 'ifood_order_id',              $order_id);
+		update_post_meta($post_id, 'ifood_event_code',            sanitize_text_field($event['code'] ?? ''));
+		update_post_meta($post_id, 'ifood_raw_order',             wp_json_encode($order));
+		update_post_meta($post_id, 'ifood_delivery_observations', sanitize_textarea_field($order['delivery']['observations'] ?? ''));
+		update_post_meta($post_id, 'order_channel',        'IFD');
+		update_post_meta($post_id, 'order_status',         'new');
+		update_post_meta($post_id, 'order_total',          floatval($total));
+		update_post_meta($post_id, 'order_subtotal',       floatval($order['total']['subTotal']    ?? 0));
+		update_post_meta($post_id, 'order_delivery_price', floatval($order['total']['deliveryFee'] ?? 0));
+		update_post_meta($post_id, 'order_items',          wp_json_encode($items)); // legado
+		update_post_meta($post_id, 'myd_order_items',      $items);                // formato do painel
 		
 		// Map iFood orderType to our order_ship_method
 		$order_type = isset($order['orderType']) ? $order['orderType'] : '';
@@ -2941,27 +3031,51 @@ class Myd_Api {
 			update_post_meta($post_id, 'order_locator',       sanitize_text_field($c['phone']['localizer'] ?? ''));
 		}
 
-		// Delivery address
+		// Delivery address — map individual iFood fields to WP meta
 		if ( ! empty($order['delivery']['deliveryAddress']) ) {
 			$addr = $order['delivery']['deliveryAddress'];
-			$full_addr = implode(', ', array_filter([
-				$addr['streetName'] ?? '',
-				$addr['streetNumber'] ?? '',
-				$addr['complement'] ?? '',
-				$addr['neighborhood'] ?? '',
-				$addr['city'] ?? '',
-			]));
-			update_post_meta($post_id, 'order_address', sanitize_text_field($full_addr));
+			update_post_meta($post_id, 'order_address',           sanitize_text_field($addr['streetName'] ?? ''));
+			update_post_meta($post_id, 'order_address_number',    sanitize_text_field($addr['streetNumber'] ?? ''));
+			update_post_meta($post_id, 'order_address_reference', sanitize_text_field($addr['reference'] ?? ''));
+			update_post_meta($post_id, 'order_address_comp',      sanitize_text_field($addr['complement'] ?? ''));
+			update_post_meta($post_id, 'order_neighborhood',      sanitize_text_field($addr['neighborhood'] ?? ''));
+			update_post_meta($post_id, 'order_zipcode',           sanitize_text_field($addr['postalCode'] ?? ''));
+			update_post_meta($post_id, 'order_city',              sanitize_text_field($addr['city'] ?? ''));
+		}
+
+		// Entrega prevista: usar deliveryDateTime do iFood (UTC ISO) convertido para timezone local
+		if ( ! empty($order['delivery']['deliveryDateTime']) ) {
+			$delivery_ts = strtotime($order['delivery']['deliveryDateTime']);
+			if ( $delivery_ts ) {
+				$local_ts = $delivery_ts + ( get_option('gmt_offset') * HOUR_IN_SECONDS );
+				update_post_meta($post_id, 'order_eta', gmdate('d-m-Y H:i', $local_ts));
+			}
 		}
 
 		// Payment
 		if ( ! empty($order['payments']['methods'][0]) ) {
 			$payment = $order['payments']['methods'][0];
+			$payment_type_raw = strtoupper($payment['type'] ?? '');
 			update_post_meta($post_id, 'order_payment_method', sanitize_text_field($payment['method'] ?? ''));
-			update_post_meta($post_id, 'order_payment_status', 'pending');
+			if ( $payment_type_raw === 'ONLINE' ) {
+				update_post_meta($post_id, 'order_payment_status', 'paid');
+				update_post_meta($post_id, 'order_payment_type',   'payment-integration');
+			} else {
+				update_post_meta($post_id, 'order_payment_status', 'pending');
+				update_post_meta($post_id, 'order_payment_type',   'upon-delivery');
+			}
 		}
 
 		error_log('[MYD][iFood] Order post created: post_id=' . $post_id . ' ifood_order_id=' . $order_id);
+
+		// Notify push server so the panel receives the new order in real-time
+		if ( class_exists('MydPro\\Includes\\Push\\Push_Notifier') ) {
+			try {
+				\MydPro\Includes\Push\Push_Notifier::notify( '', $post_id, 'new' );
+			} catch ( \Exception $e ) {
+				error_log('[MYD][iFood] Push notification failed: ' . $e->getMessage());
+			}
+		}
 
 		return $post_id;
 	}

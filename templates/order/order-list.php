@@ -122,6 +122,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					if ( $tmp instanceof DateTimeInterface ) { $order_dt = $tmp; break; }
 				}
 			}
+			
 
 			if ( $order_dt instanceof DateTimeInterface ) {
 				$order_ts = (int) $order_dt->getTimestamp();
@@ -138,15 +139,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 		$order_status = get_post_meta( $postid, 'order_status', true );
 		$original_status = $order_status;
+		$order_channel = get_post_meta( $postid, 'order_channel', true );
 
 			   // Não exibe mais o status textual no badge, apenas minutos
 
 		?>
 			<?php // order_ts already calculado acima ?>
-			<div class="fdm-orders-items<?php echo ($original_status === 'new') ? ' fdm-new-unclicked' : ''; ?>" id="<?php echo esc_attr( $postid ); ?>" data-order-status="<?php echo esc_attr( $original_status ); ?>" data-order-ts="<?php echo esc_attr( $order_ts ); ?>">
+			<div class="fdm-orders-items<?php echo ($original_status === 'new') ? ' fdm-new-unclicked' : ''; ?><?php echo in_array($original_status, ['canceled','cancelled'], true) ? ' myd-order-canceled' : ''; ?>" id="<?php echo esc_attr( $postid ); ?>" data-order-status="<?php echo esc_attr( $original_status ); ?>" data-order-ts="<?php echo esc_attr( $order_ts ); ?>">
 			<div class="fdm-orders-items-left">
-				<div class="fdm-order-list-items-order-number"># <?php echo get_the_title( $postid ); ?></div>
-				<div class="fdm-order-list-items-date"><?php echo esc_html( $date_formatted ); ?></div>
+				<div class="fdm-order-list-items-order-number"># <?php echo get_the_title( $postid ); ?><?php if ( in_array($original_status, ['canceled','cancelled'], true) ) : ?><span class="myd-canceled-badge">Cancelado</span><?php endif; ?></div>
+				<div class="fdm-order-list-items-date"><?php echo esc_html( $date_formatted ); ?><?php if ( $order_channel === 'IFD' ) : ?><span class="myd-ifood-badge"><svg fill="#ea1d2c" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="14" height="14"><path d="M8.428 1.67c-4.65 0-7.184 4.149-7.184 6.998 0 2.294 2.2 3.299 4.25 3.299l-.006-.006c4.244 0 7.184-3.854 7.184-6.998 0-2.29-2.175-3.293-4.244-3.293m11.328 0c-4.65 0-7.184 4.149-7.184 6.998 0 2.294 2.2 3.299 4.25 3.299l-.006-.006C21.061 11.96 24 8.107 24 4.963c0-2.29-2.18-3.293-4.244-3.293m-5.584 12.85 2.435 1.834c-2.17 2.07-6.124 3.525-9.353 3.17A8.91 8.91 0 0 1 .23 14.541H0a9.6 9.6 0 0 0 8.828 7.758c3.814.24 7.323-.905 9.947-3.13l-.004.007 1.08 2.988 1.555-7.623-7.234-.02z"/></svg></span><?php endif; ?></div>
+				<?php
+				// Entrega prevista: order_date + tempo estimado de entrega
+				?>
 				<div class="fdm-order-list-items-customer"><?php echo esc_html( myd_truncate_name( get_post_meta( $postid, 'order_customer_name', true ), 28 ) ); ?></div>
 			</div>
 
@@ -398,6 +403,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 		.fdm-order-list-items-status .myd-order-minutes { font-size:16px; font-weight:700; line-height:1; }
 		.fdm-order-list-items-status .myd-order-minutes-unit { font-size:11px; opacity:0.95; margin-top:2px; }
 		@media (max-width:480px){ .fdm-order-list-items-status{ min-width:36px; height:36px; } .fdm-order-list-items-status .myd-order-minutes{ font-size:14px; } }
+
+		/* Canceled order styling */
+		.myd-order-canceled .fdm-order-list-items-order-number {
+			text-decoration: line-through;
+			text-decoration-color: #dc3545;
+			text-decoration-thickness: 2px;
+			opacity: 0.7;
+		}
+		.myd-order-canceled { opacity: 0.75; }
+
+		.myd-ifood-badge {
+			display: inline-flex;
+			align-items: center;
+			margin-left: 5px;
+			vertical-align: middle;
+		}
+		.myd-ifood-badge svg { display: block; }
+		.myd-canceled-badge {
+			display: inline-block;
+			background: #dc3545;
+			color: #fff;
+			font-size: 10px;
+			font-weight: 700;
+			padding: 2px 6px;
+			border-radius: 4px;
+			margin-left: 6px;
+			text-decoration: none;
+			vertical-align: middle;
+			letter-spacing: 0.3px;
+			text-transform: uppercase;
+		}
 
 		/* === MOBILE: empilhar colunas verticalmente === */
 		@media (max-width: 768px) {

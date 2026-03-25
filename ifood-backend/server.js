@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { pollEvents, acknowledgeEvents } = require('./src/ifood-client');
-const { confirmOrder } = require('./src/ifood-client');
+const { confirmOrder, dispatchOrder, readyToPickupOrder, requestCancellation } = require('./src/ifood-client');
 const { processEvent } = require('./src/order-processor');
 
 // ─── Configuration ─────────────────────────────────────────────────────────
@@ -132,6 +132,61 @@ app.post('/ifood/confirm', async (req, res) => {
   }
 });
 
+// ─── iFood Order Dispatch (WordPress → Backend → iFood) ────────────────────
+app.post('/ifood/dispatch', async (req, res) => {
+  const body = req.body || {};
+  const orderId = body.ifood_order_id || body.orderId;
+
+  if (!orderId) {
+    return res.status(400).json({ error: 'Missing orderId' });
+  }
+
+  try {
+    await dispatchOrder(orderId, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+    res.json({ success: true, dispatched: orderId });
+  } catch (err) {
+    console.error('[Dispatch] Error:', err.response?.data || err.message);
+    res.status(502).json({ error: 'Failed to dispatch on iFood', details: err.response?.data || err.message });
+  }
+});
+
+// ─── iFood Order Ready to Pickup (WordPress → Backend → iFood) ─────────────
+app.post('/ifood/readyToPickup', async (req, res) => {
+  const body = req.body || {};
+  const orderId = body.ifood_order_id || body.orderId;
+
+  if (!orderId) {
+    return res.status(400).json({ error: 'Missing orderId' });
+  }
+
+  try {
+    await readyToPickupOrder(orderId, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+    res.json({ success: true, readyToPickup: orderId });
+  } catch (err) {
+    console.error('[ReadyToPickup] Error:', err.response?.data || err.message);
+    res.status(502).json({ error: 'Failed to mark ready on iFood', details: err.response?.data || err.message });
+  }
+});
+
+// ─── iFood Order Cancel (WordPress → Backend → iFood) ──────────────────────
+app.post('/ifood/cancel', async (req, res) => {
+  const body = req.body || {};
+  const orderId = body.ifood_order_id || body.orderId;
+  const reason = body.reason || '';
+
+  if (!orderId) {
+    return res.status(400).json({ error: 'Missing orderId' });
+  }
+
+  try {
+    await requestCancellation(orderId, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET, reason);
+    res.json({ success: true, cancellationRequested: orderId });
+  } catch (err) {
+    console.error('[Cancel] Error:', err.response?.data || err.message);
+    res.status(502).json({ error: 'Failed to cancel on iFood', details: err.response?.data || err.message });
+  }
+});
+
 // ─── iFood Webhook (Primary method) ─────────────────────────────────────────
 // Registered in iFood Developer Portal → My Apps → Webhook URL
 app.post('/ifood/webhook', async (req, res) => {
@@ -225,9 +280,9 @@ async function runPollCycle() {
     if (!events || events.length === 0) return;
 
     if (webhooksActive) {
-      console.log(`[Polling] Webhooks active — ${events.length} event(s) skipped (already handled by webhook)`);
-      // Still acknowledge to keep the queue clean
-      await acknowledgeEvents(events, IFOOD_CLIENT_ID, IFOOD_CLIENT_SECRET);
+      console.log(`[Polling] Webhooks active — ${events.length} event(s) received (keepalive only, no ACK — webhook will handle)`);
+      // NOTE: Não fazemos ACK aqui. O webhook já processou ou vai processar esses eventos.
+      // ACK automático aqui causaria pedidos perdidos se o webhook falhasse silenciosamente.
       return;
     }
 

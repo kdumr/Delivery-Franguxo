@@ -17,7 +17,11 @@ try {
 // Pré-carregar a imagem da logo para impressão ESC/POS
 let LETTER_IMG_BASE64 = null;
 try {
-  const letterImgPath = path.join(__dirname, '..', 'assets', 'img', 'franguxoletter.png');
+  let letterImgPath = path.join(__dirname, 'assets', 'img', 'franguxoletter.png');
+  // Se estiver empacotado, o server.js roda em app.asar.unpacked, mas a pasta assets fica no app.asar
+  if (!fs.existsSync(letterImgPath) && __dirname.includes('app.asar.unpacked')) {
+    letterImgPath = letterImgPath.replace('app.asar.unpacked', 'app.asar');
+  }
   if (fs.existsSync(letterImgPath)) {
     LETTER_IMG_BASE64 = 'data:image/png;base64,' + fs.readFileSync(letterImgPath).toString('base64');
     console.log('[print-server] Logo carregada:', letterImgPath);
@@ -133,11 +137,6 @@ function formatMoney(n) {
   return Number(n || 0).toFixed(2).replace('.', ',');
 }
 
-/**
- * Converte um Buffer PNG em bytes ESC/POS raster (GS v 0).
- * maxWidthPx: largura máxima em pixels (384 para 58mm, 576 para 80mm).
- * Retorna um Buffer com os comandos ESC/POS ou null em caso de erro.
- */
 function pngToEscPosRaster(pngBuffer, maxWidthPx) {
   maxWidthPx = maxWidthPx || 384;
   try {
@@ -145,7 +144,6 @@ function pngToEscPosRaster(pngBuffer, maxWidthPx) {
     const srcW = png.width;
     const srcH = png.height;
 
-    // Escalar para caber na largura máxima mantendo proporção
     let dstW = srcW;
     let dstH = srcH;
     if (dstW > maxWidthPx) {
@@ -154,17 +152,11 @@ function pngToEscPosRaster(pngBuffer, maxWidthPx) {
       dstH = Math.round(srcH * ratio);
     }
 
-    // Largura em bytes deve ser múltiplo de 1 byte (8 pixels por byte)
-    // Arredondar dstW para múltiplo de 8
-    const printW = Math.ceil(dstW / 8) * 8;
-    const widthBytes = printW / 8;
-
-    // Criar bitmap monocromático escalado
-    const monoRows = [];
+    // Convert to monochrome pixels (0 or 1)
+    const pixels = [];
     for (let y = 0; y < dstH; y++) {
-      const row = new Uint8Array(widthBytes);
-      for (let x = 0; x < printW; x++) {
-        // Coordenada na imagem original (nearest-neighbor)
+      const row = [];
+      for (let x = 0; x < dstW; x++) {
         const srcX = Math.min(Math.round(x * srcW / dstW), srcW - 1);
         const srcY = Math.min(Math.round(y * srcH / dstH), srcH - 1);
         const idx = (srcY * srcW + srcX) * 4;
@@ -172,35 +164,48 @@ function pngToEscPosRaster(pngBuffer, maxWidthPx) {
         const g = png.data[idx + 1];
         const b = png.data[idx + 2];
         const a = png.data[idx + 3];
-        // Compor sobre fundo branco (alfa)
         const rr = Math.round(r * a / 255 + 255 * (1 - a / 255));
         const gg = Math.round(g * a / 255 + 255 * (1 - a / 255));
         const bb = Math.round(b * a / 255 + 255 * (1 - a / 255));
-        // Luminância (gray)
         const lum = 0.299 * rr + 0.587 * gg + 0.114 * bb;
-        if (lum < 128) {
-          // Pixel escuro: bit = 1 (imprime)
-          const byteIdx = Math.floor(x / 8);
-          const bitIdx = 7 - (x % 8);
-          row[byteIdx] |= (1 << bitIdx);
-        }
+        row.push(lum < 128 ? 1 : 0);
       }
-      monoRows.push(Buffer.from(row));
+      pixels.push(row);
     }
 
-    // Montar comando GS v 0 (raster bit image)
-    // GS v 0 m xL xH yL yH d1...dk
-    // m=0 (normal density), xL/xH = widthBytes, yL/yH = dstH
-    const header = Buffer.from([
-      0x1D, 0x76, 0x30, 0x00,           // GS v 0 m=0
-      widthBytes & 0xFF,                 // xL
-      (widthBytes >> 8) & 0xFF,          // xH
-      dstH & 0xFF,                       // yL
-      (dstH >> 8) & 0xFF                 // yH
-    ]);
+    // Process in bands of 24 pixels height (ESC * m=33)
+    const chunks = [];
+    const lineSpacing24 = Buffer.from([0x1B, 0x33, 24]); // Set line spacing to 24 dots
+    chunks.push(lineSpacing24);
 
-    const parts = [header, ...monoRows];
-    return Buffer.concat(parts);
+    for (let currentY = 0; currentY < dstH; currentY += 24) {
+      const nL = dstW & 0xFF;
+      const nH = (dstW >> 8) & 0xFF;
+      const header = Buffer.from([0x1B, 0x2A, 33, nL, nH]);
+      chunks.push(header);
+
+      const dataBytes = Buffer.alloc(dstW * 3);
+      for (let x = 0; x < dstW; x++) {
+        for (let k = 0; k < 3; k++) { // 3 bytes per column (24 pixels)
+          let byteVal = 0;
+          for (let b = 0; b < 8; b++) { // 8 pixels per byte
+            const py = currentY + k * 8 + b;
+            const p = (py < dstH) ? pixels[py][x] : 0;
+            if (p) {
+              byteVal |= (1 << (7 - b));
+            }
+          }
+          dataBytes[x * 3 + k] = byteVal;
+        }
+      }
+      chunks.push(dataBytes);
+      chunks.push(Buffer.from([0x0A])); // LF
+    }
+
+    const resetLineSpacing = Buffer.from([0x1B, 0x32]); // Default line spacing
+    chunks.push(resetLineSpacing);
+
+    return Buffer.concat(chunks);
   } catch (e) {
     console.error('[print-server] pngToEscPosRaster error:', e);
     return null;
@@ -510,8 +515,8 @@ app.post('/print', (req, res) => {
     let dataToSend = normalized;
     if (isPosPrinter) {
       try {
-        // init escpos
-        const init = Buffer.from([0x1B, 0x40]); // ESC @
+        // init escpos (with protective line feeds to flush the USB serial port buffer)
+        const init = Buffer.from([0x0A, 0x0A, 0x1B, 0x40]); // LF LF ESC @
 
         // --- Imagem no topo (payload ou pré-carregada) ---
         let imgBuf = Buffer.alloc(0);
@@ -673,7 +678,8 @@ app.post('/test-print', (req, res) => {
     let usedEncoding = 'utf8';
     let bufferHex = '';
     if (forceEscPos) {
-      const init = Buffer.from([0x1B, 0x40]);
+      // Protective line feeds before ESC @
+      const init = Buffer.from([0x0A, 0x0A, 0x1B, 0x40]);
       let textBuf;
       try {
         textBuf = iconv.encode(normalized, 'cp850');

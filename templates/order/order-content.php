@@ -127,7 +127,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="fdm-order-list-items-order-number">
 								<?php esc_html_e( 'Order', 'myd-delivery-pro' ); ?> <?php echo esc_html( get_the_title( $postid ) ); ?>
 							</div>
-							<div class="fdm-order-list-items-date"><?php echo esc_html( $date ); ?></div>
+							<div class="fdm-order-list-items-date">Feito às&nbsp;<strong><?php echo esc_html( substr( $date, -5 ) ); ?></strong></div>
 						</div>
 						<div class="myd-order-header-actions">
 							<?php if ( ! empty( $gmaps_url_early ) ) : ?>
@@ -250,14 +250,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 							?>
 								<div class="myd-address-real-neighborhood-text">Bairro Real: <?php echo esc_html( $real_neigh ); ?></div>
 							<?php endif; ?>
+							<div style="display: flex; flex-direction: row; gap: 5px;">
 								<?php if ( ! empty( $comp ) ) : ?>
 									<div class="myd-address-title-text myd-address-complement">
 										<?php echo esc_html( $comp ); ?>
 									</div>
 								<?php endif; ?>
+							<?php if ( ! empty( $comp ) && ! empty( $ref ) ) : ?>
+								<span style="color:#aaa;">•</span>
+							<?php endif; ?>
 								<?php if ( ! empty( $ref ) ) : ?>
-									<div class="fdm-order-list-items-customer"><?php echo esc_html__( 'Ponto de referência', 'myd-delivery-pro' ) . ': ' . esc_html( $ref ); ?></div>
+									<div class="myd-address-title-text myd-address-reference"><?php echo esc_html__( 'Ponto de referência', 'myd-delivery-pro' ) . ': ' . esc_html( $ref ); ?></div>
 								<?php endif; ?>
+							</div>
+							</div>
+							<div>
+
 							</div>
 						</div>
 					</div>
@@ -271,6 +279,51 @@ if ( ! defined( 'ABSPATH' ) ) {
 					case 'canceled': $status_text = __( 'Cancelado', 'myd-delivery-pro' ); break;
 				}
 				?>
+				
+			
+				</div>
+
+						<?php
+						// Get estimated delivery time from saved meta, or calculate if not available
+						$estimated_delivery = get_post_meta($postid, 'order_estimated_delivery', true);
+						if ($estimated_delivery) {
+							$eta_ts = strtotime($estimated_delivery);
+						} else {
+							// Fallback calculation: order time + preparation time + delivery time
+							$avg_prep_time = (int) get_option('myd-average-preparation-time', 30);
+							$avg_delivery_time_str = get_option('fdm-estimate-time-delivery', '30');
+							preg_match('/(\d+)/', $avg_delivery_time_str, $matches);
+							$avg_delivery_time = isset($matches[1]) ? (int) $matches[1] : 30;
+							$total_minutes = $avg_prep_time + $avg_delivery_time;
+							
+							$order_date_raw = get_post_meta($postid, 'order_date', true);
+							$eta_ts = $order_date_raw ? (strtotime($order_date_raw) + ($total_minutes * 60)) : (time() + ($total_minutes * 60));
+						}
+						$eta_text = gmdate('H:i', $eta_ts);
+
+
+						
+						// Dados
+						$customer_phone = isset($customer_phone) ? $customer_phone : get_post_meta($postid, 'customer_phone', true);
+						$order_number = get_the_title($postid);
+						?>
+
+						
+
+			</div><!-- /.myd-detail-header -->
+
+			<div class="myd-detail-scroll">
+				<?php
+				$ifood_obs = get_post_meta( $postid, 'ifood_delivery_observations', true );
+				if ( ! empty( $ifood_obs ) ) : ?>
+				<div class="myd-obs-card" style="background:#f2f2f2;padding:10px 14px;margin:10px;border-radius:6px;margin-top:10px;font-size:13px;color:#5a4500;line-height:1.5;">
+				<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+					<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#717171" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg>
+					<span style="font-weight:600;">Observação:</span>
+					<span><?php echo esc_html( $ifood_obs ); ?></span>
+				</div>
+				</div>
+				<?php endif; ?>
 				<?php if ( $status_text ) : ?>
 					<?php if ( strtolower( (string) $status ) === 'new' ) : ?>
 						<div class="myd-status-banner myd-status-new" style="display:flex;gap:8px;">
@@ -324,34 +377,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php endif; ?>
 				<?php endif; ?>
 				<?php endif; ?>
-				</div>
-
-						<?php
-						// Get estimated delivery time from saved meta, or calculate if not available
-						$estimated_delivery = get_post_meta($postid, 'order_estimated_delivery', true);
-						if ($estimated_delivery) {
-							$eta_ts = strtotime($estimated_delivery);
-						} else {
-							// Fallback calculation: order time + preparation time + delivery time
-							$avg_prep_time = (int) get_option('myd-average-preparation-time', 30);
-							$avg_delivery_time_str = get_option('fdm-estimate-time-delivery', '30');
-							preg_match('/(\d+)/', $avg_delivery_time_str, $matches);
-							$avg_delivery_time = isset($matches[1]) ? (int) $matches[1] : 30;
-							$total_minutes = $avg_prep_time + $avg_delivery_time;
-							
-							$order_date_raw = get_post_meta($postid, 'order_date', true);
-							$eta_ts = $order_date_raw ? (strtotime($order_date_raw) + ($total_minutes * 60)) : (time() + ($total_minutes * 60));
-						}
-						$eta_text = gmdate('H:i', $eta_ts);
-
-
-						
-						// Dados
-						$customer_phone = isset($customer_phone) ? $customer_phone : get_post_meta($postid, 'customer_phone', true);
-						$order_number = get_the_title($postid);
-						?>
-
-						<div class="myd-info-chips">
+				<div class="myd-info-chips">
 											<div class="myd-chip">
 												<div class="myd-chip-label">
 													<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="myd-chip-icon"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16.5562 12.9062L16.1007 13.359C16.1007 13.359 15.0181 14.4355 12.0631 11.4972C9.10812 8.55901 10.1907 7.48257 10.1907 7.48257L10.4775 7.19738C11.1841 6.49484 11.2507 5.36691 10.6342 4.54348L9.37326 2.85908C8.61028 1.83992 7.13596 1.70529 6.26145 2.57483L4.69185 4.13552C4.25823 4.56668 3.96765 5.12559 4.00289 5.74561C4.09304 7.33182 4.81071 10.7447 8.81536 14.7266C13.0621 18.9492 17.0468 19.117 18.6763 18.9651C19.1917 18.9171 19.6399 18.6546 20.0011 18.2954L21.4217 16.883C22.3806 15.9295 22.1102 14.2949 20.8833 13.628L18.9728 12.5894C18.1672 12.1515 17.1858 12.2801 16.5562 12.9062Z" fill="#bdbaba"></path> </g></svg>
@@ -387,10 +413,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 												<div class="myd-chip-value"><?php echo esc_html( $display_value ); ?></div>
 											</div>
 						</div>
-
-			</div><!-- /.myd-detail-header -->
-
-			<div class="myd-detail-scroll">
 
 				<!-- .myd-detail-scroll styles moved to assets/css/panel-overrides.css -->
 			<script>
@@ -518,9 +540,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 												$image_url = '';
 												// Primeiro, tentar imagem armazenada dentro dos itens do pedido (product_image salvo ao criar o pedido)
 												if ( ! empty( $value['product_image'] ) ) {
-													$image_id = intval( $value['product_image'] );
-													if ( $image_id ) {
-														$image_url = wp_get_attachment_image_url( $image_id, 'thumbnail' );
+													// iFood: product_image pode ser URL externa (https://...)
+													if ( is_string( $value['product_image'] ) && strpos( $value['product_image'], 'http' ) === 0 ) {
+														$image_url = $value['product_image'];
+													} else {
+														$image_id = intval( $value['product_image'] );
+														if ( $image_id ) {
+															$image_url = wp_get_attachment_image_url( $image_id, 'thumbnail' );
+														}
 													}
 												}
 												// Se não houver, tentar obter via post meta do produto (compatibilidade antiga)

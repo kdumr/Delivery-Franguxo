@@ -611,6 +611,45 @@ final class Plugin {
 			}
 		}, 25, 3 );
 
+		// Calcula e salva entrega prevista (order_eta = order_date + fdm-estimate-time-delivery)
+		// Pedidos iFood (order_channel = IFD) já têm order_eta definido pelo deliveryDateTime — pula recálculo
+		add_action( 'save_post_mydelivery-orders', function( $post_id, $post, $update ) {
+			if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+			if ( wp_is_post_revision( $post_id ) ) return;
+			// Pedidos iFood usam deliveryDateTime — não recalcular
+			if ( get_post_meta( $post_id, 'order_channel', true ) === 'IFD' ) return;
+			$order_date = get_post_meta( $post_id, 'order_date', true );
+			if ( empty( $order_date ) ) return;
+
+			// Parse da data no formato armazenado (d-m-Y H:i)
+			$tz = wp_timezone();
+			$dt = \DateTimeImmutable::createFromFormat( 'd-m-Y H:i', $order_date, $tz );
+			// Fallback para outros formatos
+			if ( ! $dt ) $dt = \DateTimeImmutable::createFromFormat( 'd/m/Y H:i', $order_date, $tz );
+			if ( ! $dt ) $dt = \DateTimeImmutable::createFromFormat( 'd/m - H:i', $order_date, $tz );
+			if ( ! $dt ) return;
+
+			// Tempo estimado de entrega em minutos
+			$estimate_str = get_option( 'fdm-estimate-time-delivery', '30' );
+			preg_match( '/(\d+)/', $estimate_str, $m );
+			$estimate_min = isset( $m[1] ) ? (int) $m[1] : 30;
+
+			// Soma os minutos — DateTimeImmutable lida com virada de hora/data automaticamente
+			$eta_dt = $dt->modify( '+' . $estimate_min . ' minutes' );
+			update_post_meta( $post_id, 'order_eta', $eta_dt->format( 'd-m-Y H:i' ) );
+		}, 30, 3 );
+
+		// Ao publicar um pedido, define order_date como o momento exato da publicação
+		add_action( 'transition_post_status', function( $new_status, $old_status, $post ) {
+			if ( $post->post_type !== 'mydelivery-orders' ) return;
+			if ( $new_status !== 'publish' || $old_status === 'publish' ) return;
+			// Só define se ainda não tiver order_date preenchido
+			$existing = get_post_meta( $post->ID, 'order_date', true );
+			if ( ! empty( $existing ) ) return;
+			$now = current_time( 'd-m-Y H:i' );
+			update_post_meta( $post->ID, 'order_date', $now );
+		}, 10, 3 );
+
 		// Agendar hook para limpeza de tokens
 		add_action('myd_cleanup_expired_tokens', array($this, 'cleanup_expired_tokens'));
 			// notify push server when order_status meta changes
@@ -620,6 +659,7 @@ final class Plugin {
 			add_action( 'updated_post_meta', function($meta_id, $object_id, $meta_key, $_meta_value) {
 				if ($meta_key !== 'order_status') return;
 				if ( get_post_type($object_id) !== 'mydelivery-orders' ) return;
+
 				$customer = get_post_meta($object_id, 'myd_customer_id', true);
 				if (!$customer) return;
 
@@ -647,35 +687,6 @@ final class Plugin {
 							}
 							// marcar que este pedido não mais resgatou
 							update_post_meta( $object_id, 'order_loyalty_redeemed', '0' );
-						}
-					}
-				}
-
-				// Se o status foi alterado para 'confirmed' e é pedido iFood, notifica o backend
-				if ( $_meta_value === 'confirmed' ) {
-					$channel = get_post_meta( $object_id, 'order_channel', true );
-					if ( $channel === 'IFD' ) {
-						$ifood_order_id  = get_post_meta( $object_id, 'ifood_order_id', true );
-						$backend_url     = get_option( 'ifood_backend_url', '' );
-						$backend_secret  = get_option( 'ifood_backend_secret', '' );
-						$wp_api_secret   = get_option( 'ifood_wp_api_secret', '' );
-
-						if ( ! empty( $ifood_order_id ) && ! empty( $backend_url ) ) {
-							$url = rtrim( $backend_url, '/' ) . '/ifood/confirm';
-							$response = wp_remote_post( $url, [
-								'headers' => [ 'Content-Type' => 'application/json' ],
-								'body'    => wp_json_encode([
-									'ifood_order_id' => $ifood_order_id,
-									'backend_secret' => $backend_secret,
-									'wp_api_secret'  => $wp_api_secret,
-								]),
-								'timeout' => 15,
-							]);
-							if ( is_wp_error( $response ) ) {
-								error_log( '[MYD][iFood] Failed to send confirm to backend: ' . $response->get_error_message() );
-							} else {
-								error_log( '[MYD][iFood] Confirm sent to backend for order ' . $object_id . ' (iFood: ' . $ifood_order_id . ')' );
-							}
 						}
 					}
 				}

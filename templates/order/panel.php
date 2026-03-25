@@ -1661,12 +1661,14 @@ document.addEventListener('DOMContentLoaded', function(){
 					// ensure confirm button reflects cleared state
 					try { if (btnConfirm) { btnConfirm.disabled = true; } if (typeof updateCancelConfirmState === 'function') updateCancelConfirmState(); } catch(_e){}
 			} catch(e){}
+			modal.classList.remove('myd-hidden');
 			modal.classList.add('show');
 			modal.style.display = 'flex';
 			modal.setAttribute('aria-hidden','false');
 		}
 		function closeModal(){
 			modal.classList.remove('show');
+			modal.classList.add('myd-hidden');
 			modal.style.display = 'none';
 			modal.setAttribute('aria-hidden','true');
 			pendingTarget = null;
@@ -1698,7 +1700,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			var el = e.target && e.target.closest ? e.target.closest('.fdm-btn-order-action.myd-cancel-btn') : null;
 			if (!el) return;
 			if (el.getAttribute('data-bypass-cancel-confirm') === '1') return; // let it pass
-			e.preventDefault(); e.stopPropagation();
+			e.preventDefault(); e.stopImmediatePropagation();
 			openModal(el);
 		}, true);
 	} catch(e) { /* noop */ }
@@ -2590,10 +2592,10 @@ window.printOrderSingle = function(orderId){
 						'confirmed': { text: '<?php echo esc_js( __( 'Confirmed', 'myd-delivery-pro' ) ); ?>', color: '#208e2a' },
 						'in-delivery': { text: '<?php echo esc_js( __( 'In Delivery', 'myd-delivery-pro' ) ); ?>', color: '#d8800d' },
 						'done': { text: '<?php echo esc_js( __( 'Done', 'myd-delivery-pro' ) ); ?>', color: '#037d91' },
-						'waiting': { text: '<?php echo esc_js( __( 'Waiting', 'myd-delivery-pro' ) ); ?>', color: '#4e6585' }
+						'waiting': { text: '<?php echo esc_js( __( 'Waiting', 'myd-delivery-pro' ) ); ?>', color: '#4e6585' },
+						'canceled': { text: 'Cancelado', color: '#dc3545' }
 					};
-					var data = map[status] || map[normalizeStatus(status)];
-					if (!data) return;
+					var data = map[status] || map[normalizeStatus(status)] || { text: status, color: '#6c757d' };
 					var badge = item.querySelector('.fdm-order-list-items-status');
 					if (badge) {
 						// Hide badge for terminal statuses
@@ -2607,6 +2609,20 @@ window.printOrderSingle = function(orderId){
 					}
 					// keep status attribute up to date
 					item.setAttribute('data-order-status', status);
+					// Apply canceled visual treatment (strikethrough + badge)
+					if (status === 'canceled') {
+						item.classList.add('myd-order-canceled');
+						var orderNumEl = item.querySelector('.fdm-order-list-items-order-number');
+						if (orderNumEl && !orderNumEl.querySelector('.myd-canceled-badge')) {
+							var badge = document.createElement('span');
+							badge.className = 'myd-canceled-badge';
+							badge.textContent = 'Cancelado';
+							orderNumEl.appendChild(badge);
+						}
+					} else {
+						item.classList.remove('myd-order-canceled');
+						try { var cb = item.querySelector('.myd-canceled-badge'); if(cb) cb.remove(); } catch(_){}
+					}
 					// If order moved to a terminal status, remove "new" highlight which may override colors
 					if (['done', 'finished', 'canceled', 'refunded'].indexOf(status) !== -1) {
 						try {

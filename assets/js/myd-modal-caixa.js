@@ -1162,32 +1162,52 @@
 
         imagePromise.then(function (imageBase64) {
             var payload = { text: textToPrint, escpos: true, imagePrintWidth: 280 };
+            try { var storedPrinter = localStorage.getItem('myd-default-printer'); if (storedPrinter) payload.printer = storedPrinter; } catch (_) { }
             if (imageBase64) payload.imageBase64 = imageBase64;
 
-            return fetch('http://127.0.0.1:3420/print', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-        })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (window.MydGlobalNotify) {
-                    if (data.ok) window.MydGlobalNotify('success', 'Impressão', 'Comando enviado para a impressora.');
-                    else {
-                        window.MydGlobalNotify('error', 'Impressão', 'Erro: ' + (data.error || 'Desconhecido'));
-                        window.print(); // fallback
-                    }
+            var bodyStr = JSON.stringify(payload);
+            var candidates = [];
+            if (typeof window !== 'undefined' && window.MYD_LOCAL_PRINT_ENDPOINT) {
+                candidates.push(String(window.MYD_LOCAL_PRINT_ENDPOINT));
+            }
+            candidates.push('http://127.0.0.1:3420/print');
+            candidates.push('http://localhost:3420/print');
+
+            function attempt(index) {
+                if (index >= candidates.length) {
+                    return Promise.reject(new Error('Falha ao conectar no servidor de impressão local.'));
                 }
-            })
-            .catch(function (err) {
-                console.error('Print erro:', err);
-                // Fallback
-                window.print();
-            })
-            .finally(function () {
-                if (printBtn) { printBtn.innerText = originalText; printBtn.disabled = false; }
-            });
+                return fetch(candidates[index], {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: bodyStr
+                }).then(function (res) {
+                    if (!res.ok) throw new Error('Status ' + res.status);
+                    return res.json();
+                }).catch(function () {
+                    return attempt(index + 1);
+                });
+            }
+
+            return attempt(0)
+                .then(function (data) {
+                    if (window.MydGlobalNotify) {
+                        if (data.ok) window.MydGlobalNotify('success', 'Impressão', 'Comando enviado para a impressora.');
+                        else {
+                            window.MydGlobalNotify('error', 'Impressão', 'Erro: ' + (data.error || 'Desconhecido'));
+                            window.print(); // fallback
+                        }
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Print erro:', err);
+                    // Fallback
+                    window.print();
+                })
+                .finally(function () {
+                    if (printBtn) { printBtn.innerText = originalText; printBtn.disabled = false; }
+                });
+        });
     }
 
 })();

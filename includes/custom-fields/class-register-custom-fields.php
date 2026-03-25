@@ -407,6 +407,16 @@ class Register_Custom_Fields {
 					'custom_class' => '',
 					'required' => false
 				],
+				'myd_order_eta' => [
+					'type'         => 'text',
+					'label'        => __( 'Entrega prevista', 'myd-delivery-pro' ),
+					'id'           => 'myd_order_eta',
+					'name'         => 'order_eta',
+					'custom_class' => '',
+					'required'     => false,
+					'readonly'     => true,
+					'description'  => __( 'Calculado automaticamente: Data + tempo estimado de entrega.', 'myd-delivery-pro' ),
+				],
 				'myd_order_ship_method' => [
 					'type' => 'text',
 					'label' => __( 'Type', 'myd-delivery-pro' ),
@@ -649,11 +659,21 @@ class Register_Custom_Fields {
 					'type' => 'text',
 					'label' => __( 'ID Original do iFood', 'myd-delivery-pro' ),
 					'id' => 'ifood_order_id',
-					'name' => 'ifood_order_id', // Note: O custom class map saving usa o id/name. Se name == meta_key, funciona direto.
+					'name' => 'ifood_order_id',
 					'custom_class' => '',
 					'required' => false,
 					'description' => __( 'Identificador original (UUID) importado do iFood.', 'myd-delivery-pro' ),
-				]
+				],
+				'ifood_delivery_observations' => [
+					'type'         => 'textarea',
+					'label'        => __( 'Observação', 'myd-delivery-pro' ),
+					'id'           => 'ifood_delivery_observations',
+					'name'         => 'ifood_delivery_observations',
+					'custom_class' => '',
+					'required'     => false,
+					'readonly'     => true,
+					'description'  => __( 'Observação de entrega enviada pelo iFood.', 'myd-delivery-pro' ),
+				],
 			]
 		];
 
